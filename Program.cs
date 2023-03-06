@@ -1,5 +1,6 @@
 using TestApiSalon.Data;
 using TestApiSalon.Middlewares;
+using TestApiSalon.Models;
 using TestApiSalon.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ var connections = new Dictionary<DbConnectionName, string>
 };
 builder.Services.AddSingleton<IDictionary<DbConnectionName, string>>(connections);
 builder.Services.AddSingleton<DataContext>();
+builder.Services.AddScoped<IToken<Customer>, JsonToken>();
 builder.Services.AddScoped<IDbConnectionManager, DbConnectionManager>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();

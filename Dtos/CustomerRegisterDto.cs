@@ -2,7 +2,7 @@
 
 namespace TestApiSalon.Dtos
 {
-    public class CustomerRequestDto
+    public class CustomerRegisterDto
     {
         public required string Name { get; set; }
 

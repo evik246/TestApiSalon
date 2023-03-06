@@ -1,5 +1,4 @@
-﻿using TestApiSalon.Data;
-using TestApiSalon.Dtos;
+﻿using TestApiSalon.Dtos;
 using TestApiSalon.Models;
 
 namespace TestApiSalon.Services
@@ -7,7 +6,8 @@ namespace TestApiSalon.Services
     public interface ICustomerService
     {
         Task<IEnumerable<Customer>> GetAllCustomers();
-        Task<Customer> GetCustomerByEmail(string email);
-        Task<Customer> CreateCustomer(CustomerRequestDto request);
+        Task<Customer?> GetCustomerByEmail(string email);
+        Task<Customer> CreateCustomer(CustomerRegisterDto request);
+        Task<string> LoginCustomer(UserLoginDto request);
     }
 }

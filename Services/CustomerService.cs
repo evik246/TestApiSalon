@@ -1,5 +1,5 @@
-﻿using BCrypt.Net;
-using Dapper;
+﻿using Dapper;
+using Microsoft.AspNetCore.Components.Forms;
 using TestApiSalon.Data;
 using TestApiSalon.Dtos;
 using TestApiSalon.Models;
@@ -10,15 +10,23 @@ namespace TestApiSalon.Services
     {
         private readonly DataContext _context;
         private readonly IDbConnectionManager _connectionManager;
+        private readonly IToken<Customer> _token;
 
-        public CustomerService(DataContext context, IDbConnectionManager connectionManager)
+        public CustomerService(DataContext context, IDbConnectionManager connectionManager, IToken<Customer> token)
         {
             _context = context;
             _connectionManager = connectionManager;
+            _token = token;
         }
 
-        public async Task<Customer> CreateCustomer(CustomerRequestDto request)
+        public async Task<Customer> CreateCustomer(CustomerRegisterDto request)
         {
+            var customer = await GetCustomerByEmail(request.Email);
+            if (customer is not null)
+            {
+                throw new ArgumentException("Email is used");
+            }
+
             request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
             var query = "INSERT INTO Customer (name, birthday, email, password, phone) " +
@@ -27,24 +35,51 @@ namespace TestApiSalon.Services
             using (var connection = _context.CreateConnection(_connectionManager.ConnectionName))
             {
                 await connection.ExecuteAsync(query, request);
-                return await GetCustomerByEmail(request.Email);
+                
+                var createdCustomer = await GetCustomerByEmail(request.Email);
+                if (createdCustomer is null) 
+                {
+                    throw new OperationCanceledException("Customer cannot be created");
+                }
+                return createdCustomer;
             }
         }
 
-        public async Task<Customer> GetCustomerByEmail(string email)
+        public async Task<string> LoginCustomer(UserLoginDto request)
+        {
+            var customer = await GetCustomerByEmail(request.Email);
+
+            if (customer is null)
+            {
+                throw new ArgumentException("Unvalid email");
+            }
+
+            if (BCrypt.Net.BCrypt.Verify(request.Password, customer.Password.Trim()) == false)
+            {
+                throw new ArgumentException("Unvalid password");
+            }
+
+            return _token.Create(customer);
+        }
+
+        public async Task<Customer?> GetCustomerByEmail(string email)
         {
             var parameters = new
             {
                 Email = email
             };
 
-            var query = "SELECT * FROM Customer WHERE EMAIL = @Email LIMIT 1";
+            var query = "SELECT * FROM Customer WHERE EMAIL = @Email";
 
             using (var connection = _context.CreateConnection(_connectionManager.ConnectionName))
             {
-                var customer = await connection
+                var customers = await connection
                     .QueryAsync<Customer>(query, parameters);
-                return customer.First();
+                if (!customers.Any())
+                {
+                    return null;
+                }
+                return customers.First();
             }
         }
 

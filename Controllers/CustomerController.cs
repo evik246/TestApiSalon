@@ -31,12 +31,26 @@ namespace TestApiSalon.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<Customer>> Register(CustomerRequestDto request)
+        public async Task<ActionResult<Customer>> Register(CustomerRegisterDto request)
         {
             try
             {
                 var customer = await _customerService.CreateCustomer(request);
                 return Ok(customer);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<string>> Login(UserLoginDto request)
+        {
+            try
+            {
+                var token = await _customerService.LoginCustomer(request);
+                return Ok(token);
             }
             catch (Exception ex)
             {

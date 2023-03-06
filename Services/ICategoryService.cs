@@ -1,4 +1,3 @@
-using TestApiSalon.Data;
 using TestApiSalon.Models;
 
 namespace TestApiSalon.Services
