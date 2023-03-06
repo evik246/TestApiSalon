@@ -20,7 +20,6 @@ namespace TestApiSalon.Controllers
         {
             try
             {
-                _categoryService.ConnectionName = Data.DbConnectionName.Client;
                 var categories = await _categoryService.GetAllCategories();
                 return Ok(categories);
             }

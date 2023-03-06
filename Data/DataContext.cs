@@ -20,7 +20,7 @@ namespace TestApiSalon.Data
             {
                 return new NpgsqlConnection(_configuration.GetConnectionString(connectionString));
             }
-            throw new ArgumentNullException();
+            throw new ArgumentNullException("User role could not be determined");
         }
     }
 }

@@ -9,12 +9,12 @@ namespace TestApiSalon.Services
     public class CustomerService : ICustomerService
     {
         private readonly DataContext _context;
+        private readonly IDbConnectionManager _connectionManager;
 
-        public DbConnectionName ConnectionName { get; set; }
-
-        public CustomerService(DataContext context)
+        public CustomerService(DataContext context, IDbConnectionManager connectionManager)
         {
             _context = context;
+            _connectionManager = connectionManager;
         }
 
         public async Task<Customer> CreateCustomer(CustomerRequestDto request)
@@ -24,7 +24,7 @@ namespace TestApiSalon.Services
             var query = "INSERT INTO Customer (name, birthday, email, password, phone) " +
                 "values (@Name, @Birthday, @Email, @Password, @Phone)";
 
-            using (var connection = _context.CreateConnection(ConnectionName))
+            using (var connection = _context.CreateConnection(_connectionManager.ConnectionName))
             {
                 await connection.ExecuteAsync(query, request);
                 return await GetCustomerByEmail(request.Email);
@@ -40,7 +40,7 @@ namespace TestApiSalon.Services
 
             var query = "SELECT * FROM Customer WHERE EMAIL = @Email LIMIT 1";
 
-            using (var connection = _context.CreateConnection(ConnectionName))
+            using (var connection = _context.CreateConnection(_connectionManager.ConnectionName))
             {
                 var customer = await connection
                     .QueryAsync<Customer>(query, parameters);
@@ -52,7 +52,7 @@ namespace TestApiSalon.Services
         {
             var query = "SELECT * FROM Customer";
 
-            using (var connection = _context.CreateConnection(ConnectionName))
+            using (var connection = _context.CreateConnection(_connectionManager.ConnectionName))
             {
                 var customers = await connection
                     .QueryAsync<Customer>(query);

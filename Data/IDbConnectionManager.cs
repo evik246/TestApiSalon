@@ -1,6 +1,6 @@
 ﻿namespace TestApiSalon.Data
 {
-    public interface IDbConnectionBase
+    public interface IDbConnectionManager
     {
         DbConnectionName ConnectionName { get; set; }
     }

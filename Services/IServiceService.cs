@@ -3,7 +3,7 @@ using TestApiSalon.Models;
 
 namespace TestApiSalon.Services
 {
-    public interface IServiceService : IDbConnectionBase
+    public interface IServiceService
     {
         Task<IEnumerable<Service>> GetAllServices();
         Task<Service> GetServiceById(int id);

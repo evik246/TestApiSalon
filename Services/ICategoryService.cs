@@ -3,7 +3,7 @@ using TestApiSalon.Models;
 
 namespace TestApiSalon.Services
 {
-    public interface ICategoryService : IDbConnectionBase
+    public interface ICategoryService
     {
         Task<IEnumerable<ServiceCategory>> GetAllCategories();
     }

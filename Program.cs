@@ -1,4 +1,5 @@
 using TestApiSalon.Data;
+using TestApiSalon.Middlewares;
 using TestApiSalon.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,7 @@ var connections = new Dictionary<DbConnectionName, string>
 };
 builder.Services.AddSingleton<IDictionary<DbConnectionName, string>>(connections);
 builder.Services.AddSingleton<DataContext>();
+builder.Services.AddScoped<IDbConnectionManager, DbConnectionManager>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
@@ -31,6 +33,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<DbConnectionMiddleware>();
 
 app.MapControllers();
 

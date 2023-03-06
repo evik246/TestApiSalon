@@ -4,7 +4,7 @@ using TestApiSalon.Models;
 
 namespace TestApiSalon.Services
 {
-    public interface ICustomerService : IDbConnectionBase
+    public interface ICustomerService
     {
         Task<IEnumerable<Customer>> GetAllCustomers();
         Task<Customer> GetCustomerByEmail(string email);
