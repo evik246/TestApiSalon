@@ -19,7 +19,7 @@ namespace TestApiSalon.Services
         {
             if (request is null)
             {
-                throw new ArgumentNullException("Unvalid customer");
+                throw new ArgumentNullException("Invalid customer");
             }
 
             List<Claim> claims = new()

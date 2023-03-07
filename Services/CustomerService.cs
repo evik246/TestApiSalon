@@ -51,12 +51,12 @@ namespace TestApiSalon.Services
 
             if (customer is null)
             {
-                throw new ArgumentException("Unvalid email");
+                throw new ArgumentException("Invalid email");
             }
 
             if (BCrypt.Net.BCrypt.Verify(request.Password, customer.Password.Trim()) == false)
             {
-                throw new ArgumentException("Unvalid password");
+                throw new ArgumentException("Invalid password");
             }
 
             return _token.Create(customer);
