@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services;
 
@@ -18,33 +19,19 @@ namespace TestApiSalon.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Service>>> GetServices()
         {
-            try
-            {
-                var services = await _serviceService.GetAllServices();
-                return Ok(services);
-            }
-            catch(Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var services = await _serviceService.GetAllServices();
+            return Ok(services);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Service>> GetServiceById(int id)
         {
-            try
+            var service = await _serviceService.GetServiceById(id);
+            if (service == null)
             {
-                var service = await _serviceService.GetServiceById(id);
-                if (service == null)
-                {
-                    return NotFound("Service is not found");
-                }
-                return Ok(service);
+                throw new NotFoundException("Service is not found");
             }
-            catch(Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            return Ok(service);
         }
     }
 }

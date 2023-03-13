@@ -1,7 +1,7 @@
 ﻿using Dapper;
-using Microsoft.AspNetCore.Components.Forms;
 using TestApiSalon.Data;
 using TestApiSalon.Dtos;
+using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 
 namespace TestApiSalon.Services
@@ -10,13 +10,15 @@ namespace TestApiSalon.Services
     {
         private readonly DataContext _context;
         private readonly IDbConnectionManager _connectionManager;
-        private readonly IToken<Customer> _token;
+        private readonly ITokenGeneratorService<Customer> _tokenGenerator;
+        private readonly IHashService _hashService;
 
-        public CustomerService(DataContext context, IDbConnectionManager connectionManager, IToken<Customer> token)
+        public CustomerService(DataContext context, IDbConnectionManager connectionManager, ITokenGeneratorService<Customer> token, IHashService hashService)
         {
             _context = context;
             _connectionManager = connectionManager;
-            _token = token;
+            _tokenGenerator = token;
+            _hashService = hashService;
         }
 
         public async Task<Customer> CreateCustomer(CustomerRegisterDto request)
@@ -24,10 +26,10 @@ namespace TestApiSalon.Services
             var customer = await GetCustomerByEmail(request.Email);
             if (customer is not null)
             {
-                throw new ArgumentException("Email is used");
+                throw new ConflictException("Email is used");
             }
 
-            request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
+            request.Password = _hashService.Hash(request.Password);
 
             var query = "INSERT INTO Customer (name, birthday, email, password, phone) " +
                 "values (@Name, @Birthday, @Email, @Password, @Phone)";
@@ -51,15 +53,15 @@ namespace TestApiSalon.Services
 
             if (customer is null)
             {
-                throw new ArgumentException("Invalid email");
+                throw new UnauthorizedException("Invalid email");
             }
 
-            if (BCrypt.Net.BCrypt.Verify(request.Password, customer.Password.Trim()) == false)
+            if (_hashService.Verify(customer.Password.Trim(), request.Password) == false)
             {
-                throw new ArgumentException("Invalid password");
+                throw new UnauthorizedException("Invalid password");
             }
 
-            return _token.Create(customer);
+            return _tokenGenerator.CreateToken(customer);
         }
 
         public async Task<Customer?> GetCustomerByEmail(string email)

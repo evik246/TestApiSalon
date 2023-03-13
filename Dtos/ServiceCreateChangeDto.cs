@@ -4,18 +4,19 @@ namespace TestApiSalon.Dtos
 {
     public class ServiceCreateChangeDto
     {
-        [Required]
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(100, ErrorMessage = "Name should be less than or equal 100 characters")]
         public required string Name { get; set; }
 
-        [Required]
-        [Range(1, 999999, ErrorMessage = "Invalid service price")]
-        public double Price { get; set; }
+        [Required(ErrorMessage = "Price is required")]
+        [Range(1, 999999, ErrorMessage = "Price is invalid")]
+        public required double Price { get; set; }
 
-        [Required]
-        [Range(typeof(TimeSpan), "00:00", "23:59", ErrorMessage = "Invalid service execution time")]
-        public TimeSpan ExecutionTime { get; set; }
+        [Required(ErrorMessage = "Execution time is required")]
+        [Range(typeof(TimeSpan), "00:00", "23:59", ErrorMessage = "Execution time should be less than 24 hours")]
+        public required TimeSpan ExecutionTime { get; set; }
 
-        [Required]
-        public int CategoryId { get; set; }
+        [Required(ErrorMessage = "Category id is required")]
+        public required int CategoryId { get; set; }
     }
 }

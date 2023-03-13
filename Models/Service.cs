@@ -1,5 +1,4 @@
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace TestApiSalon.Models
 {
@@ -13,6 +12,7 @@ namespace TestApiSalon.Models
 
         public TimeSpan ExecutionTime { get; set; }
 
+        [JsonIgnore]
         public int CategoryId { get; set; }
 
         public ServiceCategory Category { get; set; } = new ServiceCategory();

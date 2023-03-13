@@ -18,15 +18,8 @@ namespace TestApiSalon.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ServiceCategory>>> GetCategories()
         {
-            try
-            {
-                var categories = await _categoryService.GetAllCategories();
-                return Ok(categories);
-            }
-            catch(Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var categories = await _categoryService.GetAllCategories();
+            return Ok(categories);
         }
     }
 }

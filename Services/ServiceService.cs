@@ -41,7 +41,7 @@ namespace TestApiSalon.Services
             }
         }
 
-        public async Task<Service> GetServiceById(int id)
+        public async Task<Service?> GetServiceById(int id)
         {
             var parameters = new
             {
@@ -61,7 +61,7 @@ namespace TestApiSalon.Services
             
             using (var connection = _context.CreateConnection(_connectionManager.ConnectionName))
             {
-                var service = await connection
+                var services = await connection
                     .QueryAsync<Service, ServiceCategory, Service>(
                     query, (service, category) =>
                     {
@@ -70,7 +70,11 @@ namespace TestApiSalon.Services
                     },
                     parameters
                 );
-                return service.First();
+                if (!services.Any())
+                {
+                    return null;
+                }
+                return services.First();
             }
         }
     }

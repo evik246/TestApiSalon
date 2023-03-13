@@ -6,16 +6,16 @@ using TestApiSalon.Models;
 
 namespace TestApiSalon.Services
 {
-    public class JsonToken : IToken<Customer>
+    public class JsonTokenGeneratorService : ITokenGeneratorService<Customer>
     {
         private readonly IConfiguration _configuration;
 
-        public JsonToken(IConfiguration configuration)
+        public JsonTokenGeneratorService(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
-        public string Create(Customer request)
+        public string CreateToken(Customer request)
         {
             if (request is null)
             {

@@ -13,7 +13,8 @@ var connections = new Dictionary<DbConnectionName, string>
 };
 builder.Services.AddSingleton<IDictionary<DbConnectionName, string>>(connections);
 builder.Services.AddSingleton<DataContext>();
-builder.Services.AddScoped<IToken<Customer>, JsonToken>();
+builder.Services.AddScoped<ITokenGeneratorService<Customer>, JsonTokenGeneratorService>();
+builder.Services.AddScoped<IHashService, SHA384HashService>();
 builder.Services.AddScoped<IDbConnectionManager, DbConnectionManager>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -24,6 +25,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+var logger = app.Services.GetRequiredService<ILogger<ErrorHandlerMiddleware>>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -37,6 +40,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.UseMiddleware<DbConnectionMiddleware>();
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.MapControllers();
 

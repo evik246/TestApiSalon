@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using System.Net;
+﻿using System.Net;
 using TestApiSalon.Data;
 
 namespace TestApiSalon.Middlewares
@@ -24,7 +23,9 @@ namespace TestApiSalon.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
+                const string message = "An unhandled exception has occurred while executing the request.";
+                _logger.LogError(ex, message);
+                context.Response.Clear();
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             }
         }

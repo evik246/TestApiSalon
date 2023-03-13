@@ -19,43 +19,22 @@ namespace TestApiSalon.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Customer>>> GetAll()
         {
-            try
-            {
-                var customers = await _customerService.GetAllCustomers();
-                return Ok(customers);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var customers = await _customerService.GetAllCustomers();
+            return Ok(customers);
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<Customer>> Register(CustomerRegisterDto request)
         {
-            try
-            {
-                var customer = await _customerService.CreateCustomer(request);
-                return Ok(customer);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var customer = await _customerService.CreateCustomer(request);
+            return Ok(customer);
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserLoginDto request)
         {
-            try
-            {
-                var token = await _customerService.LoginCustomer(request);
-                return Ok(token);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var token = await _customerService.LoginCustomer(request);
+            return Ok(token);
         }
     }
 }

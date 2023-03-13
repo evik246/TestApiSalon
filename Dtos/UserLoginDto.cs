@@ -4,11 +4,11 @@ namespace TestApiSalon.Dtos
 {
     public class UserLoginDto
     {
-        [Required]
-        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        [Required(ErrorMessage = "Email address is required")]
+        [EmailAddress(ErrorMessage = "Email address is invalid")]
         public required string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Password is required")]
         public required string Password { get; set; }
     }
 }
