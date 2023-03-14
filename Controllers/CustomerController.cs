@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TestApiSalon.Dtos;
+using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services;
 
@@ -26,14 +27,14 @@ namespace TestApiSalon.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<Customer>> Register(CustomerRegisterDto request)
         {
-            var customer = await _customerService.CreateCustomer(request);
+            var customer = await _customerService.CreateCustomer(request) ?? throw new ConflictException("This email is already used");
             return Ok(customer);
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserLoginDto request)
         {
-            var token = await _customerService.LoginCustomer(request);
+            var token = await _customerService.LoginCustomer(request) ?? throw new UnauthorizedException("Incorrect email or password");
             return Ok(token);
         }
     }

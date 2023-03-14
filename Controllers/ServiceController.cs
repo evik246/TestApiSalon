@@ -26,11 +26,7 @@ namespace TestApiSalon.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Service>> GetServiceById(int id)
         {
-            var service = await _serviceService.GetServiceById(id);
-            if (service == null)
-            {
-                throw new NotFoundException("Service is not found");
-            }
+            var service = await _serviceService.GetServiceById(id) ?? throw new NotFoundException("Service is not found");
             return Ok(service);
         }
     }

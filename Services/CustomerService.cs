@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using TestApiSalon.Data;
 using TestApiSalon.Dtos;
-using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 
 namespace TestApiSalon.Services
@@ -21,12 +20,12 @@ namespace TestApiSalon.Services
             _hashService = hashService;
         }
 
-        public async Task<Customer> CreateCustomer(CustomerRegisterDto request)
+        public async Task<Customer?> CreateCustomer(CustomerRegisterDto request)
         {
             var customer = await GetCustomerByEmail(request.Email);
             if (customer is not null)
             {
-                throw new ConflictException("Email is used");
+                return null;
             }
 
             request.Password = _hashService.Hash(request.Password);
@@ -47,18 +46,18 @@ namespace TestApiSalon.Services
             }
         }
 
-        public async Task<string> LoginCustomer(UserLoginDto request)
+        public async Task<string?> LoginCustomer(UserLoginDto request)
         {
             var customer = await GetCustomerByEmail(request.Email);
 
             if (customer is null)
             {
-                throw new UnauthorizedException("Invalid email");
+                return null;
             }
 
             if (_hashService.Verify(customer.Password.Trim(), request.Password) == false)
             {
-                throw new UnauthorizedException("Invalid password");
+                return null;
             }
 
             return _tokenGenerator.CreateToken(customer);

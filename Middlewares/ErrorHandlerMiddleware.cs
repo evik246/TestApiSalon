@@ -33,11 +33,9 @@ namespace TestApiSalon.Middlewares
                 {
                     case UnauthorizedException:
                         response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        message = "Incorrect email or password";
                         break;
                     case ConflictException:
                         response.StatusCode = (int)HttpStatusCode.Conflict;
-                        message = "This email is already used";
                         break;
                     case NotFoundException:
                         response.StatusCode = (int)HttpStatusCode.NotFound;
