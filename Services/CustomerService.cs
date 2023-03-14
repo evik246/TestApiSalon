@@ -38,10 +38,6 @@ namespace TestApiSalon.Services
                 await connection.ExecuteAsync(query, request);
                 
                 var createdCustomer = await GetCustomerByEmail(request.Email);
-                if (createdCustomer is null) 
-                {
-                    throw new OperationCanceledException("Customer cannot be created");
-                }
                 return createdCustomer;
             }
         }
