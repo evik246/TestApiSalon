@@ -1,8 +1,6 @@
-﻿using TestApiSalon.Dtos;
-
-namespace TestApiSalon.Services
+﻿namespace TestApiSalon.Services
 {
-    public interface ITokenGeneratorService<T> where T : class
+    public interface ITokenGeneratorService<T>
     {
         string CreateToken(T request);
     }
