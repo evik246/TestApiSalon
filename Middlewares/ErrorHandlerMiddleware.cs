@@ -40,6 +40,9 @@ namespace TestApiSalon.Middlewares
                     case NotFoundException:
                         response.StatusCode = (int)HttpStatusCode.NotFound;
                         break;
+                    case ForbiddenException:
+                        response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        break;
                     default:
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         message = "Internal Server Error: " + ex.Message;

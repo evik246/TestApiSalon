@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TestApiSalon.Attributes;
 using TestApiSalon.Models;
 using TestApiSalon.Services;
 
@@ -16,6 +17,7 @@ namespace TestApiSalon.Controllers
         }
 
         [HttpGet]
+        [Roles("Client")]
         public async Task<ActionResult<IEnumerable<ServiceCategory>>> GetCategories()
         {
             var categories = await _categoryService.GetAllCategories();

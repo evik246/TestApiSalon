@@ -9,15 +9,20 @@ namespace TestApiSalon.Services
     {
         private readonly DataContext _context;
         private readonly IDbConnectionManager _connectionManager;
-        private readonly ITokenGeneratorService<Customer> _tokenGenerator;
+        private readonly ITokenService _tokenService;
+        private readonly IClaimsIdentityService<Customer> _identityService;
         private readonly IHashService _hashService;
 
-        public CustomerService(DataContext context, IDbConnectionManager connectionManager, ITokenGeneratorService<Customer> token, IHashService hashService)
+        public CustomerService(DataContext context, IDbConnectionManager connectionManager, 
+            ITokenService tokenService, 
+            IHashService hashService, 
+            IClaimsIdentityService<Customer> identityService)
         {
             _context = context;
             _connectionManager = connectionManager;
-            _tokenGenerator = token;
+            _tokenService = tokenService;
             _hashService = hashService;
+            _identityService = identityService;
         }
 
         public async Task<Customer?> CreateCustomer(CustomerRegisterDto request)
@@ -56,7 +61,7 @@ namespace TestApiSalon.Services
                 return null;
             }
 
-            return _tokenGenerator.CreateToken(customer);
+            return _tokenService.CreateToken(_identityService.CreateClaimsIdentity(customer));
         }
 
         public async Task<Customer?> GetCustomerByEmail(string email)
