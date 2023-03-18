@@ -17,18 +17,13 @@ namespace TestApiSalon.Attributes
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var httpContext = context.HttpContext;
-            if (httpContext == null || httpContext.User == null || httpContext.User.Identity == null)
+            var user = context.HttpContext?.User;
+            var identity = user?.Identity as ClaimsIdentity;
+
+            if (user == null ||  identity == null || !identity.IsAuthenticated) 
             {
                 throw new UnauthorizedException("Bearer token is missed");
             }
-
-            if (!httpContext.User.Identity.IsAuthenticated)
-            {
-                throw new UnauthorizedException("Bearer token is missed");
-            }
-
-            ClaimsIdentity identity = (ClaimsIdentity)httpContext.User.Identity;
 
             var roles = identity.Claims
                 .Where(c => c.Type.Equals("role"))

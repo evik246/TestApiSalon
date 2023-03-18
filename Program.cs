@@ -12,7 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connections = new Dictionary<DbConnectionName, string>
 {
-    { DbConnectionName.Client, "TestConnection"}
+    { DbConnectionName.Guest, "TestConnection" },
+    { DbConnectionName.Client, "TestConnection" }
 };
 builder.Services.AddSingleton<IDictionary<DbConnectionName, string>>(connections);
 builder.Services.AddSingleton<DataContext>();
@@ -37,13 +38,14 @@ builder.Services.AddSwaggerGen(options =>
 
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+builder.Services.AddLogging(logging =>
+{
+    logging.ClearProviders();
+    logging.AddConsole();
+});
 
 var app = builder.Build();
-
-var logger = app.Services.GetRequiredService<ILogger<ErrorHandlerMiddleware>>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

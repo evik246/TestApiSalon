@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Text.Json;
 using TestApiSalon.Exceptions;
 
 namespace TestApiSalon.Middlewares
@@ -23,7 +22,7 @@ namespace TestApiSalon.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong: {ex}");
+                _logger.LogError(ex, $"An error occurred while processing the request: {context.Request.Path}");
 
                 var response = context.Response;
                 response.ContentType = "application/json";
@@ -48,9 +47,7 @@ namespace TestApiSalon.Middlewares
                         message = "Internal Server Error: " + ex.Message;
                         break;
                 }
-
-                var result = JsonSerializer.Serialize(new { message = message });
-                await response.WriteAsync(result);
+                await response.WriteAsJsonAsync(new { message = message });
             }
         }
     }

@@ -2,6 +2,7 @@
 
 namespace TestApiSalon.Attributes
 {
+    [AttributeUsage(AttributeTargets.Property)]
     public class BirthdayAttribute : ValidationAttribute
     {
         public int MinAge { get; set; }

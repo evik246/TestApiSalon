@@ -1,4 +1,4 @@
-﻿using System.Net;
+﻿using System.Security.Claims;
 using TestApiSalon.Data;
 
 namespace TestApiSalon.Middlewares
@@ -8,7 +8,7 @@ namespace TestApiSalon.Middlewares
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
 
-        public DbConnectionMiddleware(RequestDelegate next, ILogger<IDbConnectionManager> logger)
+        public DbConnectionMiddleware(RequestDelegate next, ILogger<DbConnectionMiddleware> logger)
         {
             _next = next;
             _logger = logger;
@@ -18,15 +18,25 @@ namespace TestApiSalon.Middlewares
         {
             try
             {
-                connectionManager.ConnectionName = DbConnectionName.Client;
+                var identity = context.User.Identity as ClaimsIdentity;
+
+                var role = identity?.FindFirst(ClaimTypes.Role)?.Value;
+
+                connectionManager.ConnectionName = role switch
+                {
+                    "Admin" => DbConnectionName.Admin,
+                    "Manager" => DbConnectionName.Manager,
+                    "Master" => DbConnectionName.Master,
+                    "Client" => DbConnectionName.Client,
+                    _ => DbConnectionName.Guest,
+                };
                 await _next(context);
             }
             catch (Exception ex)
             {
                 const string message = "An unhandled exception has occurred while executing the request.";
                 _logger.LogError(ex, message);
-                context.Response.Clear();
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                throw new Exception(message);
             }
         }
     }
