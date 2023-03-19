@@ -9,26 +9,37 @@ namespace TestApiSalon.Services
     {
         private readonly IConfiguration _configuration;
 
-        public string Key => _configuration.GetSection("AppSettings:Key").Value ?? string.Empty;
-        public string Issuer => _configuration.GetSection("AppSettings:Issuer").Value ?? string.Empty;
-        public string Audience => _configuration.GetSection("AppSettings:Audience").Value ?? string.Empty;
+        private readonly string _key;
+        private readonly string _issuer;
+        private readonly string _audience;
 
         public JwtService(IConfiguration configuration)
         {
             _configuration = configuration;
+
+            _key = _configuration.GetSection("AppSettings:Key").Value ?? string.Empty;
+            _issuer = _configuration.GetSection("AppSettings:Issuer").Value ?? string.Empty;
+            _audience = _configuration.GetSection("AppSettings:Audience").Value ?? string.Empty;
+
+            if (string.IsNullOrEmpty(_key) ||
+                string.IsNullOrEmpty(_issuer) ||
+                string.IsNullOrEmpty(_audience))
+            {
+                throw new Exception("Invalid configuration settings for JWT token");
+            }
         }
 
         public string CreateToken(ClaimsIdentity identity)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = identity,
                 Expires = DateTime.UtcNow.AddDays(1),
-                Issuer = Issuer,
-                Audience = Audience,
+                Issuer = _issuer,
+                Audience = _audience,
                 SigningCredentials = new SigningCredentials(
                     securityKey, SecurityAlgorithms.HmacSha256Signature)
             };
@@ -39,7 +50,7 @@ namespace TestApiSalon.Services
 
         public bool ValidateToken(string token)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
 
             var tokenHandler = new JwtSecurityTokenHandler();
             try
@@ -49,8 +60,8 @@ namespace TestApiSalon.Services
                     ValidateIssuerSigningKey = true,
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidIssuer = Issuer,
-                    ValidAudience = Audience,
+                    ValidIssuer = _issuer,
+                    ValidAudience = _audience,
                     IssuerSigningKey = securityKey
                 }, out SecurityToken validatedToken);
             }
