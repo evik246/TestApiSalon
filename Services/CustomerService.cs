@@ -7,19 +7,17 @@ namespace TestApiSalon.Services
 {
     public class CustomerService : ICustomerService
     {
-        private readonly DataContext _context;
-        private readonly IDbConnectionManager _connectionManager;
+        private readonly IDbConnectionService _connectionService;
         private readonly ITokenService _tokenService;
         private readonly IClaimsIdentityService<Customer> _identityService;
         private readonly IHashService _hashService;
 
-        public CustomerService(DataContext context, IDbConnectionManager connectionManager, 
+        public CustomerService(IDbConnectionService connectionManager, 
             ITokenService tokenService, 
             IHashService hashService, 
             IClaimsIdentityService<Customer> identityService)
         {
-            _context = context;
-            _connectionManager = connectionManager;
+            _connectionService = connectionManager;
             _tokenService = tokenService;
             _hashService = hashService;
             _identityService = identityService;
@@ -38,10 +36,10 @@ namespace TestApiSalon.Services
             var query = "INSERT INTO Customer (name, birthday, email, password, phone) " +
                 "values (@Name, @Birthday, @Email, @Password, @Phone)";
 
-            using (var connection = _context.CreateConnection(_connectionManager.ConnectionName))
+            using (var connection = _connectionService.CreateConnection())
             {
                 await connection.ExecuteAsync(query, request);
-                
+
                 var createdCustomer = await GetCustomerByEmail(request.Email);
                 return createdCustomer;
             }
@@ -73,7 +71,7 @@ namespace TestApiSalon.Services
 
             var query = "SELECT * FROM Customer WHERE EMAIL = @Email";
 
-            using (var connection = _context.CreateConnection(_connectionManager.ConnectionName))
+            using (var connection = _connectionService.CreateConnection())
             {
                 var customers = await connection
                     .QueryAsync<Customer>(query, parameters);
@@ -89,7 +87,7 @@ namespace TestApiSalon.Services
         {
             var query = "SELECT * FROM Customer";
 
-            using (var connection = _context.CreateConnection(_connectionManager.ConnectionName))
+            using (var connection = _connectionService.CreateConnection())
             {
                 var customers = await connection
                     .QueryAsync<Customer>(query);

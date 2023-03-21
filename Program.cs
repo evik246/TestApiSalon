@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
 using TestApiSalon.Data;
-using TestApiSalon.Filters;
 using TestApiSalon.Middlewares;
 using TestApiSalon.Models;
 using TestApiSalon.Services;
@@ -21,7 +19,7 @@ builder.Services.AddSingleton<DataContext>();
 builder.Services.AddScoped<IClaimsIdentityService<Customer>, CustomerClaimsIdentityService>();
 builder.Services.AddScoped<ITokenService, JwtService>();
 builder.Services.AddScoped<IHashService, SHA384HashService>();
-builder.Services.AddScoped<IDbConnectionManager, DbConnectionManager>();
+builder.Services.AddScoped<IDbConnectionService, DbConnectionService>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();

@@ -6,13 +6,11 @@ namespace TestApiSalon.Services
 {
     public class ServiceService : IServiceService
     {
-        private readonly DataContext _context;
-        private readonly IDbConnectionManager _connectionManager;
+        private readonly IDbConnectionService _connectionService;
 
-        public ServiceService(DataContext context, IDbConnectionManager connectionManager)
+        public ServiceService(IDbConnectionService connectionManager)
         {
-            _context = context;
-            _connectionManager = connectionManager;
+            _connectionService = connectionManager;
         }
 
         public async Task<IEnumerable<Service>> GetAllServices()
@@ -27,7 +25,7 @@ namespace TestApiSalon.Services
                     "FROM Service s " +
                     "JOIN ServiceCategory c ON s.category_id = c.id;";
 
-            using (var connection = _context.CreateConnection(_connectionManager.ConnectionName))
+            using (var connection = _connectionService.CreateConnection())
             {
                 var services = await connection
                     .QueryAsync<Service, ServiceCategory, Service>(
@@ -58,8 +56,8 @@ namespace TestApiSalon.Services
                     "FROM Service s " +
                     "JOIN ServiceCategory c ON s.category_id = c.id " +
                     "WHERE s.id = @Id;";
-            
-            using (var connection = _context.CreateConnection(_connectionManager.ConnectionName))
+
+            using (var connection = _connectionService.CreateConnection())
             {
                 var services = await connection
                     .QueryAsync<Service, ServiceCategory, Service>(

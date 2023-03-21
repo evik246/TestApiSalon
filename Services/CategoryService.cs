@@ -6,20 +6,18 @@ namespace TestApiSalon.Services
 {
     public class CategoryService : ICategoryService
     {
-        private readonly DataContext _context;
-        private readonly IDbConnectionManager _connectionManager;
+        private readonly IDbConnectionService _connectionService;
 
-        public CategoryService(DataContext context, IDbConnectionManager connectionManager)
+        public CategoryService(IDbConnectionService connectionManager)
         {
-            _context = context;
-            _connectionManager = connectionManager;
+            _connectionService = connectionManager;
         }
 
         public async Task<IEnumerable<ServiceCategory>> GetAllCategories()
         {
             var query = "SELECT * FROM ServiceCategory";
 
-            using (var connection = _context.CreateConnection(_connectionManager.ConnectionName))
+            using (var connection = _connectionService.CreateConnection())
             {
                 var categories = await connection
                     .QueryAsync<ServiceCategory>(query);
