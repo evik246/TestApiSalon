@@ -14,7 +14,7 @@ namespace TestApiSalon.Middlewares
             _logger = logger;
         }
 
-        public async Task InvokeAsync(HttpContext context, IDbConnectionManager connectionManager)
+        public async Task InvokeAsync(HttpContext context, IDbConnectionService connectionManager)
         {
             try
             {
