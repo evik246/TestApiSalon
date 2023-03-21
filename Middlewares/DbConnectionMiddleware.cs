@@ -20,7 +20,7 @@ namespace TestApiSalon.Middlewares
             {
                 var identity = context.User.Identity as ClaimsIdentity;
 
-                var role = identity?.FindFirst(ClaimTypes.Role)?.Value;
+                var role = identity?.FindFirst("role")?.Value;
 
                 connectionManager.ConnectionName = role switch
                 {
