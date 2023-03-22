@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using TestApiSalon.Data;
 
-namespace TestApiSalon.Services
+namespace TestApiSalon.Services.ConnectionService
 {
     public interface IDbConnectionService
     {

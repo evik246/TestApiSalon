@@ -72,7 +72,7 @@ CREATE TABLE Employee (
     salon_id INTEGER NULL,
     email email UNIQUE NOT NULL,
     password CHAR(120) NOT NULL,
-    role CHAR(15) NOT NULL CHECK (role in('Master', 'Manager', 'Admin')),
+    role VARCHAR(15) NOT NULL CHECK (role in('Master', 'Manager', 'Admin')),
     photo_path VARCHAR(260) NULL,
     specialization VARCHAR(100) NULL,
     FOREIGN KEY (salon_id) references Salon (id) on delete restrict on update cascade
@@ -80,7 +80,7 @@ CREATE TABLE Employee (
 
 CREATE TABLE Schedule (
     id SERIAL NOT NULL PRIMARY KEY,
-    weekday CHAR(15) NOT NULL CHECK (weekday in('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')),
+    weekday VARCHAR(15) NOT NULL CHECK (weekday in('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')),
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     employee_id INTEGER NOT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE Appointment (
     customer_id INTEGER NOT NULL,
     service_id INTEGER NOT NULL,
     employee_id INTEGER NOT NULL,
-    status CHAR(15) NOT NULL CHECK (status in('Canceled', 'Active', 'Completed')) DEFAULT 'Active',
+    status VARCHAR(15) NOT NULL CHECK (status in('Canceled', 'Active', 'Completed')) DEFAULT 'Active',
     FOREIGN KEY (customer_id) references Customer (id) on delete restrict on update cascade,
     FOREIGN KEY (employee_id) references Employee (id) on delete restrict on update cascade,
     FOREIGN KEY (service_id) references Service (id) on delete restrict on update cascade

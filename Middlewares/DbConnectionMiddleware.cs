@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using TestApiSalon.Data;
-using TestApiSalon.Services;
+using TestApiSalon.Services.ConnectionService;
 
 namespace TestApiSalon.Middlewares
 {

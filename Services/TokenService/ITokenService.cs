@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace TestApiSalon.Services
+namespace TestApiSalon.Services.TokenService
 {
     public interface ITokenService
     {

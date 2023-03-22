@@ -1,4 +1,4 @@
-﻿namespace TestApiSalon.Services
+﻿namespace TestApiSalon.Services.HashService
 {
     public class SHA384HashService : IHashService
     {

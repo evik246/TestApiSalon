@@ -1,8 +1,8 @@
 using Dapper;
-using TestApiSalon.Data;
 using TestApiSalon.Models;
+using TestApiSalon.Services.ConnectionService;
 
-namespace TestApiSalon.Services
+namespace TestApiSalon.Services.CategoryService
 {
     public class CategoryService : ICategoryService
     {

@@ -1,6 +1,6 @@
 using TestApiSalon.Models;
 
-namespace TestApiSalon.Services
+namespace TestApiSalon.Services.CategoryService
 {
     public interface ICategoryService
     {

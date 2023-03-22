@@ -2,7 +2,7 @@
 using TestApiSalon.Data;
 using TestApiSalon.Models;
 
-namespace TestApiSalon.Services
+namespace TestApiSalon.Services.ClaimsIdentityService
 {
     public class CustomerClaimsIdentityService : IClaimsIdentityService<Customer>
     {

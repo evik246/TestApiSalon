@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace TestApiSalon.Services
+namespace TestApiSalon.Services.TokenService
 {
     public class JwtService : ITokenService
     {

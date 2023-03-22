@@ -2,7 +2,7 @@
 using TestApiSalon.Dtos;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
-using TestApiSalon.Services;
+using TestApiSalon.Services.CustomerService;
 
 namespace TestApiSalon.Controllers
 {

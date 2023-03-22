@@ -1,9 +1,12 @@
 ﻿using Dapper;
-using TestApiSalon.Data;
 using TestApiSalon.Dtos;
 using TestApiSalon.Models;
+using TestApiSalon.Services.ClaimsIdentityService;
+using TestApiSalon.Services.ConnectionService;
+using TestApiSalon.Services.HashService;
+using TestApiSalon.Services.TokenService;
 
-namespace TestApiSalon.Services
+namespace TestApiSalon.Services.CustomerService
 {
     public class CustomerService : ICustomerService
     {
@@ -12,9 +15,9 @@ namespace TestApiSalon.Services
         private readonly IClaimsIdentityService<Customer> _identityService;
         private readonly IHashService _hashService;
 
-        public CustomerService(IDbConnectionService connectionManager, 
-            ITokenService tokenService, 
-            IHashService hashService, 
+        public CustomerService(IDbConnectionService connectionManager,
+            ITokenService tokenService,
+            IHashService hashService,
             IClaimsIdentityService<Customer> identityService)
         {
             _connectionService = connectionManager;

@@ -1,8 +1,8 @@
 using Dapper;
-using TestApiSalon.Data;
 using TestApiSalon.Models;
+using TestApiSalon.Services.ConnectionService;
 
-namespace TestApiSalon.Services
+namespace TestApiSalon.Services.ServiceService
 {
     public class ServiceService : IServiceService
     {
@@ -28,8 +28,8 @@ namespace TestApiSalon.Services
             using (var connection = _connectionService.CreateConnection())
             {
                 var services = await connection
-                    .QueryAsync<Service, ServiceCategory, Service>(
-                    query, (service, category) =>
+                    .QueryAsync(
+                    query, (Service service, ServiceCategory category) =>
                     {
                         service.Category = category;
                         return service;
@@ -46,11 +46,11 @@ namespace TestApiSalon.Services
                 Id = id
             };
 
-            var query = "SELECT " + 
-                    "s.id, " + 
-                    "s.name, " + 
-                    "s.category_id AS CategoryId, " + 
-                    "s.price, " + 
+            var query = "SELECT " +
+                    "s.id, " +
+                    "s.name, " +
+                    "s.category_id AS CategoryId, " +
+                    "s.price, " +
                     "s.execution_time AS ExecutionTime, " +
                     "c.* " +
                     "FROM Service s " +
@@ -60,8 +60,8 @@ namespace TestApiSalon.Services
             using (var connection = _connectionService.CreateConnection())
             {
                 var services = await connection
-                    .QueryAsync<Service, ServiceCategory, Service>(
-                    query, (service, category) =>
+                    .QueryAsync(
+                    query, (Service service, ServiceCategory category) =>
                     {
                         service.Category = category;
                         return service;

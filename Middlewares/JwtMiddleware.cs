@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using TestApiSalon.Services;
+using TestApiSalon.Services.TokenService;
 
 namespace TestApiSalon.Middlewares
 {

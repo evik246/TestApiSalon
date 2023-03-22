@@ -1,7 +1,7 @@
 ﻿using TestApiSalon.Dtos;
 using TestApiSalon.Models;
 
-namespace TestApiSalon.Services
+namespace TestApiSalon.Services.CustomerService
 {
     public interface ICustomerService
     {

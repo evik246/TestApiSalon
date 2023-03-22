@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
-using TestApiSalon.Services;
+using TestApiSalon.Services.ServiceService;
 
 namespace TestApiSalon.Controllers
 {
