@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using TestApiSalon.Data;
 using TestApiSalon.Middlewares;
@@ -9,6 +8,7 @@ using TestApiSalon.Services.ClaimsIdentityService;
 using TestApiSalon.Services.ConnectionService;
 using TestApiSalon.Services.CustomerService;
 using TestApiSalon.Services.EmployeeService;
+using TestApiSalon.Services.FileService;
 using TestApiSalon.Services.HashService;
 using TestApiSalon.Services.ServiceService;
 using TestApiSalon.Services.TokenService;
@@ -32,6 +32,7 @@ builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -78,13 +79,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "StaticFiles")),
-    RequestPath = ""
-});
 
 app.UseAuthentication();
 
