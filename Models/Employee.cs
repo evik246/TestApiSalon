@@ -20,7 +20,10 @@ namespace TestApiSalon.Models
 
         public string Role { get; set; } = string.Empty;
 
+        [JsonIgnore]
         public string? PhotoName { get; set; }
+
+        public string? PhotoURL { get; set; }
 
         public string? Specialization { get; set; }
     }

@@ -68,6 +68,7 @@ builder.Services.AddLogging(logging =>
     logging.ClearProviders();
     logging.AddConsole();
 });
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

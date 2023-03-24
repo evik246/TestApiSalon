@@ -19,48 +19,49 @@ namespace TestApiSalon.Services.FileService
 
         public async Task<IEnumerable<UploadFileResultDto>> UploadFiles(IEnumerable<IFormFile> files)
         {
-            try
+            List<UploadFileResultDto> result = new();
+            foreach (var file in files)
             {
-                List<UploadFileResultDto> result = new();
-                foreach (var file in files)
+                string trustedFileNameForStorage = Path.GetRandomFileName();
+                var trustedFileNameForDisplay = WebUtility.HtmlEncode(file.FileName);
+
+                var path = Path.Combine(StoragePath, trustedFileNameForStorage);
+
+                await using FileStream fs = new(path, FileMode.Create);
+                await file.CopyToAsync(fs);
+
+                UploadFileResultDto uploadFile = new()
                 {
-                    string trustedFileNameForStorage = Path.GetRandomFileName();
-                    var trustedFileNameForDisplay = WebUtility.HtmlEncode(file.FileName);
+                    StoredFileName = trustedFileNameForStorage,
+                    FileName = trustedFileNameForDisplay,
+                    Uploaded = true
+                };
+                result.Add(uploadFile);
 
-                    var path = Path.Combine(StoragePath, trustedFileNameForStorage);
-
-                    await using FileStream fs = new(path, FileMode.Create);
-                    await file.CopyToAsync(fs);
-
-                    UploadFileResultDto uploadFile = new()
-                    {
-                        StoredFileName = trustedFileNameForStorage,
-                        FileName = trustedFileNameForDisplay,
-                        Uploaded = true
-                    };
-                    result.Add(uploadFile);
-                }
-                return result;
+                _logger.LogInformation($"Upload file path: {path}");
             }
-            catch (IOException ex)
-            {
-                const string message = "File error on upload";
-                _logger.LogError(ex, message);
-                throw new IOException(message);
-            }
+            return result;
         }
 
-        public async Task<Stream> DownloadFile(string storedFileName)
+        public async Task<Stream?> DownloadFile(string storedFileName)
         {
-            var path = Path.Combine(StoragePath, storedFileName);
-            var memory = new MemoryStream();
-
-            using (var stream = new FileStream(path, FileMode.Open))
+            try
             {
-                await stream.CopyToAsync(memory);
+                var path = Path.Combine(StoragePath, storedFileName);
+                var memory = new MemoryStream();
+
+                using (var stream = new FileStream(path, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;
+                return memory;
             }
-            memory.Position = 0;
-            return memory;
+            catch (FileNotFoundException)
+            {
+                _logger.LogError($"File {storedFileName} not found");
+                return null;
+            }
         }
     }
 }

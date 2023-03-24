@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
+using TestApiSalon.Exceptions;
 using TestApiSalon.Services.FileService;
 
 namespace TestApiSalon.Controllers
@@ -22,10 +23,10 @@ namespace TestApiSalon.Controllers
             return Ok(fileNames);
         }
 
-        [HttpGet("images/{storedFileName}")]
+        [HttpGet("{storedFileName}")]
         public async Task<ActionResult> GetFile(string storedFileName)
         {
-            var file = await _fileService.DownloadFile(storedFileName);
+            var file = await _fileService.DownloadFile(storedFileName) ?? throw new NotFoundException("File is not found");
             return File(file, MediaTypeNames.Image.Jpeg);
         }
     }

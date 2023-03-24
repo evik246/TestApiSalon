@@ -6,6 +6,6 @@ namespace TestApiSalon.Services.FileService
     {
         string StoragePath { get; set; }
         Task<IEnumerable<UploadFileResultDto>> UploadFiles(IEnumerable<IFormFile> files);
-        Task<Stream> DownloadFile(string storedFileName);
+        Task<Stream?> DownloadFile(string storedFileName);
     }
 }
