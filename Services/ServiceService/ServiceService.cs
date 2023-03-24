@@ -15,15 +15,8 @@ namespace TestApiSalon.Services.ServiceService
 
         public async Task<IEnumerable<Service>> GetAllServices()
         {
-            var query = "SELECT " +
-                    "s.id, " +
-                    "s.name, " +
-                    "s.category_id AS CategoryId, " +
-                    "s.price, " +
-                    "s.execution_time AS ExecutionTime, " +
-                    "c.* " +
-                    "FROM Service s " +
-                    "JOIN ServiceCategory c ON s.category_id = c.id;";
+            var query = "SELECT s.*, c.* FROM Service s " +
+                "JOIN ServiceCategory c ON s.category_id = c.id;";
 
             using (var connection = _connectionService.CreateConnection())
             {
@@ -46,16 +39,9 @@ namespace TestApiSalon.Services.ServiceService
                 Id = id
             };
 
-            var query = "SELECT " +
-                    "s.id, " +
-                    "s.name, " +
-                    "s.category_id AS CategoryId, " +
-                    "s.price, " +
-                    "s.execution_time AS ExecutionTime, " +
-                    "c.* " +
-                    "FROM Service s " +
-                    "JOIN ServiceCategory c ON s.category_id = c.id " +
-                    "WHERE s.id = @Id;";
+            var query = "SELECT s.*, c.* FROM Service s " +
+                "JOIN ServiceCategory c ON s.category_id = c.id " +
+                "WHERE s.id = @Id;";
 
             using (var connection = _connectionService.CreateConnection())
             {

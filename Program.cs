@@ -17,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
 var connections = new Dictionary<DbConnectionName, string>
 {
     { DbConnectionName.Guest, "TestConnection" },
