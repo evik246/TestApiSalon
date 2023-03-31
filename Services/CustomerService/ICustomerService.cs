@@ -8,6 +8,5 @@ namespace TestApiSalon.Services.CustomerService
         Task<IEnumerable<Customer>> GetAllCustomers();
         Task<Customer?> GetCustomerByEmail(string email);
         Task<Customer?> CreateCustomer(CustomerRegisterDto request);
-        Task<string?> LoginCustomer(UserLoginDto request);
     }
 }

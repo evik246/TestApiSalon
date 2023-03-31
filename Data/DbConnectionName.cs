@@ -2,6 +2,7 @@
 {
     public enum DbConnectionName
     {
+        Default,
         Guest,
         Client,
         Master,

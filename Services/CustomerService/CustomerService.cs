@@ -1,29 +1,20 @@
 ﻿using Dapper;
 using TestApiSalon.Dtos;
 using TestApiSalon.Models;
-using TestApiSalon.Services.ClaimsIdentityService;
 using TestApiSalon.Services.ConnectionService;
 using TestApiSalon.Services.HashService;
-using TestApiSalon.Services.TokenService;
 
 namespace TestApiSalon.Services.CustomerService
 {
     public class CustomerService : ICustomerService
     {
         private readonly IDbConnectionService _connectionService;
-        private readonly ITokenService _tokenService;
-        private readonly IClaimsIdentityService<Customer> _identityService;
         private readonly IHashService _hashService;
 
-        public CustomerService(IDbConnectionService connectionManager,
-            ITokenService tokenService,
-            IHashService hashService,
-            IClaimsIdentityService<Customer> identityService)
+        public CustomerService(IDbConnectionService connectionManager, IHashService hashService)
         {
             _connectionService = connectionManager;
-            _tokenService = tokenService;
             _hashService = hashService;
-            _identityService = identityService;
         }
 
         public async Task<Customer?> CreateCustomer(CustomerRegisterDto request)
@@ -46,23 +37,6 @@ namespace TestApiSalon.Services.CustomerService
                 var createdCustomer = await GetCustomerByEmail(request.Email);
                 return createdCustomer;
             }
-        }
-
-        public async Task<string?> LoginCustomer(UserLoginDto request)
-        {
-            var customer = await GetCustomerByEmail(request.Email);
-
-            if (customer is null)
-            {
-                return null;
-            }
-
-            if (_hashService.Verify(customer.Password.Trim(), request.Password) == false)
-            {
-                return null;
-            }
-
-            return _tokenService.CreateToken(_identityService.CreateClaimsIdentity(customer));
         }
 
         public async Task<Customer?> GetCustomerByEmail(string email)

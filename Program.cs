@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using TestApiSalon.Data;
 using TestApiSalon.Middlewares;
 using TestApiSalon.Models;
+using TestApiSalon.Services.AuthService;
 using TestApiSalon.Services.CategoryService;
 using TestApiSalon.Services.ClaimsIdentityService;
 using TestApiSalon.Services.ConnectionService;
@@ -27,6 +28,7 @@ var connections = new Dictionary<DbConnectionName, string>
 builder.Services.AddSingleton<IDictionary<DbConnectionName, string>>(connections);
 builder.Services.AddSingleton<DataContext>();
 builder.Services.AddScoped<IClaimsIdentityService<Customer>, CustomerClaimsIdentityService>();
+builder.Services.AddScoped<IClaimsIdentityService<User>, UserClaimsIdentityService>();
 builder.Services.AddScoped<ITokenService, JwtService>();
 builder.Services.AddScoped<IHashService, SHA384HashService>();
 builder.Services.AddScoped<IDbConnectionService, DbConnectionService>();
@@ -35,6 +37,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

@@ -30,12 +30,5 @@ namespace TestApiSalon.Controllers
             var customer = await _customerService.CreateCustomer(request) ?? throw new ConflictException("This email is already used");
             return Ok(customer);
         }
-
-        [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserLoginDto request)
-        {
-            var token = await _customerService.LoginCustomer(request) ?? throw new UnauthorizedException("Incorrect email or password");
-            return Ok(token);
-        }
     }
 }
