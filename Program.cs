@@ -22,8 +22,8 @@ Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 var connections = new Dictionary<DbConnectionName, string>
 {
-    { DbConnectionName.Guest, "TestConnection" },
-    { DbConnectionName.Client, "TestConnection" }
+    { DbConnectionName.Default, "DefaultConnection" },
+    { DbConnectionName.Guest, "GuestConnection" },
 };
 builder.Services.AddSingleton<IDictionary<DbConnectionName, string>>(connections);
 builder.Services.AddSingleton<DataContext>();

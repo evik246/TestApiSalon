@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using TestApiSalon.Data;
 using TestApiSalon.Dtos;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ClaimsIdentityService;
@@ -23,7 +24,7 @@ namespace TestApiSalon.Services.AuthService
             _identityService = identityService;
             _hashService = hashService;
 
-            _connectionService.ConnectionName = Data.DbConnectionName.Default;
+            _connectionService.ConnectionName = DbConnectionName.Default;
         }
 
         public async Task<string?> Login(UserLoginDto request)
@@ -33,7 +34,7 @@ namespace TestApiSalon.Services.AuthService
                 Email = request.Email
             };
 
-            var query = "SELECT * FROM User WHERE EMAIL = @Email";
+            var query = "SELECT * FROM salon_users_schema.Users WHERE EMAIL = @Email";
 
             User? user = null;
 

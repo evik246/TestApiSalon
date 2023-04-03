@@ -11,7 +11,7 @@ namespace TestApiSalon.Services.ConnectionService
 
         public DbConnectionService(DataContext context)
         {
-            ConnectionName = DbConnectionName.Default;
+            ConnectionName = DbConnectionName.Guest;
             _context = context;
         }
 

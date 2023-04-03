@@ -17,7 +17,6 @@ namespace TestApiSalon.Controllers
         }
 
         [HttpGet]
-        [Roles("Client")]
         public async Task<ActionResult<IEnumerable<ServiceCategory>>> GetCategories()
         {
             var categories = await _categoryService.GetAllCategories();
