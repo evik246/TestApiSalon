@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using TestApiSalon.Data;
 using TestApiSalon.Models;
 
 namespace TestApiSalon.Services.ClaimsIdentityService

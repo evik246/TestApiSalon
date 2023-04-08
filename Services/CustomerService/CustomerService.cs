@@ -1,75 +1,72 @@
 ﻿using Dapper;
+using Npgsql;
+using System.Data;
 using TestApiSalon.Dtos;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
-using TestApiSalon.Services.HashService;
 
 namespace TestApiSalon.Services.CustomerService
 {
     public class CustomerService : ICustomerService
     {
         private readonly IDbConnectionService _connectionService;
-        private readonly IHashService _hashService;
 
-        public CustomerService(IDbConnectionService connectionManager, IHashService hashService)
+        public CustomerService(IDbConnectionService connectionService)
         {
-            _connectionService = connectionManager;
-            _hashService = hashService;
+            _connectionService = connectionService;
         }
 
         public async Task<Customer?> CreateCustomer(CustomerRegisterDto request)
         {
-            var customer = await GetCustomerByEmail(request.Email);
-            if (customer is not null)
-            {
-                return null;
-            }
+            var parameters = new DynamicParameters();
+            parameters.Add("Name", request.Name, DbType.AnsiStringFixedLength);
+            parameters.Add("Email", request.Email, DbType.AnsiStringFixedLength);
+            parameters.Add("Password", request.Password, DbType.AnsiStringFixedLength);
+            parameters.Add("Phone", request.Phone, DbType.AnsiStringFixedLength);
+            parameters.Add("Birthday", request.Birthday, DbType.Date);
 
-            request.Password = _hashService.Hash(request.Password);
-
-            var query = "INSERT INTO Customer (name, birthday, email, password, phone) " +
-                "values (@Name, @Birthday, @Email, @Password, @Phone)";
+            var query = "SELECT * FROM register_customer(@Name, @Email, @Password, @Phone, @Birthday);";
 
             using (var connection = _connectionService.CreateConnection())
             {
-                await connection.ExecuteAsync(query, request);
-
-                var createdCustomer = await GetCustomerByEmail(request.Email);
-                return createdCustomer;
+                try
+                {
+                    return await connection.QueryFirstOrDefaultAsync<Customer>(query, parameters);
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("23505"))
+                {
+                    return null;
+                }
             }
         }
 
         public async Task<Customer?> GetCustomerByEmail(string email)
         {
-            var parameters = new
-            {
-                Email = email
-            };
+            var parameters = new { Email = email };
 
-            var query = "SELECT * FROM Customer WHERE EMAIL = @Email";
+            var query = "SELECT * FROM Customer WHERE email = @Email;";
 
             using (var connection = _connectionService.CreateConnection())
             {
-                var customers = await connection
-                    .QueryAsync<Customer>(query, parameters);
-                if (!customers.Any())
-                {
-                    return null;
-                }
-                return customers.First();
+                return await connection.QueryFirstOrDefaultAsync<Customer>(query, parameters);
             }
         }
 
-        public async Task<IEnumerable<Customer>> GetAllCustomers()
+        public async Task<Customer?> GetCustomerById(int id)
         {
-            var query = "SELECT * FROM Customer";
+            var parameters = new { Id = id };
+
+            var query = "SELECT * FROM Customer WHERE id = @Id;";
 
             using (var connection = _connectionService.CreateConnection())
             {
-                var customers = await connection
-                    .QueryAsync<Customer>(query);
-                return customers.ToList();
+                return await connection.QueryFirstOrDefaultAsync<Customer>(query, parameters);
             }
+        }
+
+        public Task<Customer?> UpdateCustomer(int id, CustomerUpdateDto request)
+        {
+            throw new NotImplementedException();
         }
     }
 }

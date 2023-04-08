@@ -2,6 +2,11 @@
 {
     public class SHA384HashService : IHashService
     {
+        public string Hash(string key, string salt)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(key, salt);
+        }
+
         public string Hash(string key)
         {
             return BCrypt.Net.BCrypt.HashPassword(key);

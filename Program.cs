@@ -23,11 +23,10 @@ Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 var connections = new Dictionary<DbConnectionName, string>
 {
     { DbConnectionName.Default, "DefaultConnection" },
-    { DbConnectionName.Guest, "GuestConnection" },
+    { DbConnectionName.Client, "ClientConnection" },
 };
 builder.Services.AddSingleton<IDictionary<DbConnectionName, string>>(connections);
 builder.Services.AddSingleton<DataContext>();
-builder.Services.AddScoped<IClaimsIdentityService<Customer>, CustomerClaimsIdentityService>();
 builder.Services.AddScoped<IClaimsIdentityService<User>, UserClaimsIdentityService>();
 builder.Services.AddScoped<ITokenService, JwtService>();
 builder.Services.AddScoped<IHashService, SHA384HashService>();

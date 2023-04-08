@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TestApiSalon.Attributes;
 using TestApiSalon.Dtos;
 using TestApiSalon.Exceptions;
-using TestApiSalon.Models;
 using TestApiSalon.Services.CustomerService;
 
 namespace TestApiSalon.Controllers
@@ -17,17 +17,26 @@ namespace TestApiSalon.Controllers
             _customerService = customerService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetAll()
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody]CustomerRegisterDto request)
         {
-            var customers = await _customerService.GetAllCustomers();
-            return Ok(customers);
+            var customer = await _customerService.CreateCustomer(request) 
+                ?? throw new ConflictException("This email or phone number is already used");
+            return Ok(customer);
         }
 
-        [HttpPost("register")]
-        public async Task<ActionResult<Customer>> Register(CustomerRegisterDto request)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCustomer(int id)
         {
-            var customer = await _customerService.CreateCustomer(request) ?? throw new ConflictException("This email is already used");
+            var customer = await _customerService.GetCustomerById(id) 
+                ?? throw new NotFoundException("Client is not found");
+            return Ok(customer);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ChangeCustomer(int id, [FromBody]CustomerUpdateDto request)
+        {
+            var customer = await _customerService.UpdateCustomer(id, request) ?? throw new NotFoundException("Client is not found");
             return Ok(customer);
         }
     }
