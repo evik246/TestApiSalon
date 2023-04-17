@@ -26,7 +26,8 @@ namespace TestApiSalon.Controllers
         [HttpGet("{storedFileName}")]
         public async Task<ActionResult> GetFile(string storedFileName)
         {
-            var file = await _fileService.DownloadFile(storedFileName) ?? throw new NotFoundException("File is not found");
+            var file = await _fileService.DownloadFile(storedFileName) 
+                ?? throw new NotFoundException("File is not found");
             return File(file, MediaTypeNames.Image.Jpeg);
         }
     }

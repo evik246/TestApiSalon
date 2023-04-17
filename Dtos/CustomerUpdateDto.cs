@@ -3,6 +3,7 @@ using TestApiSalon.Attributes;
 
 namespace TestApiSalon.Dtos
 {
+    [AtLeastOneProperty(ErrorMessage = "At least one property must be specified")]
     public class CustomerUpdateDto
     {
         [StringLength(40, ErrorMessage = "Max length of the name is 40")]
@@ -17,5 +18,8 @@ namespace TestApiSalon.Dtos
         [Phone(ErrorMessage = "Phone number is invalid")]
         [RegularExpression(@"\+[0-9]{12}", ErrorMessage = "Phone number is invalid")]
         public string? Phone { get; set; }
+
+        [ExcludeFromValidation]
+        public bool IsBirthdayUpdated { get; set; }
     }
 }

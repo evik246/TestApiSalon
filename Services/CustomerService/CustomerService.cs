@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Npgsql;
 using System.Data;
+using System.Text;
 using TestApiSalon.Dtos;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
@@ -64,9 +65,52 @@ namespace TestApiSalon.Services.CustomerService
             }
         }
 
-        public Task<Customer?> UpdateCustomer(int id, CustomerUpdateDto request)
+        public async Task<Customer?> UpdateCustomer(int id, CustomerUpdateDto request)
         {
-            throw new NotImplementedException();
+            var query = new StringBuilder("UPDATE Customer SET ");
+            var parameters = new DynamicParameters();
+
+            if (!string.IsNullOrEmpty(request.Name)) 
+            {
+                query.Append("name = @Name, ");
+                parameters.Add("Name", request.Name, DbType.AnsiStringFixedLength);
+            }
+
+            if (!string.IsNullOrEmpty(request.Email)) 
+            {
+                query.Append("email = @Email, ");
+                parameters.Add("Email", request.Email, DbType.AnsiStringFixedLength);
+            }
+
+            if (!string.IsNullOrEmpty(request.Phone))
+            {
+                query.Append("phone = @Phone, ");
+                parameters.Add("Phone", request.Phone, DbType.AnsiStringFixedLength);
+            }
+
+            if (request.Birthday.HasValue)
+            {
+                query.Append("birthday = @Birthday, ");
+                parameters.Add("Birthday", request.Birthday, DbType.Date);
+            }
+            else if (request.IsBirthdayUpdated)
+            {
+                query.Append("birthday = @Birthday, ");
+                parameters.Add("Birthday", null, DbType.Date);
+            }
+
+            if (query.ToString().EndsWith(", "))
+            {
+                query.Remove(query.Length - 2, 2);
+            }
+
+            query.Append(" WHERE id = @Id RETURNING *;");
+            parameters.Add("Id", id, DbType.Int32);
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                return await connection.QueryFirstOrDefaultAsync<Customer>(query.ToString(), parameters);
+            }
         }
     }
 }

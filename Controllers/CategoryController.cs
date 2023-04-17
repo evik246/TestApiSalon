@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using TestApiSalon.Attributes;
 using TestApiSalon.Models;
 using TestApiSalon.Services.CategoryService;
 

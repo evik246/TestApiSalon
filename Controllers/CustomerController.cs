@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TestApiSalon.Attributes;
 using TestApiSalon.Dtos;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Services.CustomerService;
@@ -36,7 +35,8 @@ namespace TestApiSalon.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> ChangeCustomer(int id, [FromBody]CustomerUpdateDto request)
         {
-            var customer = await _customerService.UpdateCustomer(id, request) ?? throw new NotFoundException("Client is not found");
+            var customer = await _customerService.UpdateCustomer(id, request) 
+                ?? throw new NotFoundException("Client is not found");
             return Ok(customer);
         }
     }

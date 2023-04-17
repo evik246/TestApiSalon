@@ -27,7 +27,8 @@ namespace TestApiSalon.Controllers
         [HttpGet("{id}/photo")]
         public async Task<ActionResult> GetEmployeePhoto(int id)
         {
-            var file = await _employeeService.GetEmployeePhoto(id) ?? throw new NotFoundException("Photo of the employee is not found");
+            var file = await _employeeService.GetEmployeePhoto(id) 
+                ?? throw new NotFoundException("Photo of the employee is not found");
             return File(file, MediaTypeNames.Image.Jpeg);
         }
     }

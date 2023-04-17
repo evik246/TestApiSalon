@@ -19,14 +19,16 @@ namespace TestApiSalon.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login([FromBody]UserLoginDto request)
         {
-            var token = await _authService.Login(request) ?? throw new UnauthorizedException("Invalid email or password");
+            var token = await _authService.Login(request) 
+                ?? throw new UnauthorizedException("Invalid email or password");
             return Ok(token);
         }
 
         [HttpPut("reset_password")]
         public async Task<IActionResult> ResetPassword([FromBody] UserUpdatePasswordDto request)
         {
-            return await _authService.ResetPassword(request) ? Ok("Password is changed") 
+            return await _authService.ResetPassword(request) 
+                ? Ok("Password is changed") 
                 : throw new UnauthorizedException("Invalid email or password");
         }
     }
