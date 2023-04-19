@@ -88,7 +88,7 @@ namespace TestApiSalon.Services.CustomerService
                 parameters.Add("Phone", request.Phone, DbType.AnsiStringFixedLength);
             }
 
-            if (request.Birthday.HasValue || (request.IsBirthdayUpdated && request.Birthday is null))
+            if (request.IsBirthdayNullable || request.Birthday.HasValue)
             {
                 query.Append("birthday = @Birthday, ");
                 parameters.Add("Birthday", request.Birthday, DbType.Date);

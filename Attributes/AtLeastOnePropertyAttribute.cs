@@ -32,10 +32,13 @@ namespace TestApiSalon.Attributes
                         return true;
                     }
 
-                    PropertyInfo? flagProperty = type.GetProperty(nullableProperty.FlagPropertyName);
-                    if (flagProperty != null && flagProperty.GetValue(value) is bool isNull && isNull)
+                    PropertyInfo? flagProperty = type.GetProperty(nullableProperty.FlagPropertyName)
+                        ?? throw new InvalidOperationException
+                        ($"Property {nullableProperty.FlagPropertyName} does not exist");
+
+                    if (flagProperty.GetValue(value) is bool isNull && isNull)
                     {
-                        continue;
+                        return true;
                     }
                 }
 
