@@ -9,6 +9,7 @@ namespace TestApiSalon.Dtos
         [StringLength(40, ErrorMessage = "Max length of the name is 40")]
         public string? Name { get; set; }
 
+        [NullableProperty(nameof(IsBirthdayUpdated))]
         [Birthday(MinAge = 1, MaxAge = 100, ErrorMessage = "Birthday is invalid")]
         public DateTime? Birthday { get; set; }
 
@@ -19,7 +20,6 @@ namespace TestApiSalon.Dtos
         [RegularExpression(@"\+[0-9]{12}", ErrorMessage = "Phone number is invalid")]
         public string? Phone { get; set; }
 
-        [ExcludeFromValidation]
-        public bool IsBirthdayUpdated { get; set; }
+        public bool IsBirthdayUpdated { get; set; } = false;
     }
 }
