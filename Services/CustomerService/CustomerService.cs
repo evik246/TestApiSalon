@@ -38,7 +38,18 @@ namespace TestApiSalon.Services.CustomerService
                 }
                 catch (PostgresException ex) when (ex.SqlState.Equals("23505"))
                 {
-                    return new Result<string>(new ConflictException("This email or phone number is already used"));
+                    if (!string.IsNullOrEmpty(ex.ConstraintName))
+                    {
+                        if (ex.ConstraintName.Equals("customer_email_key"))
+                        {
+                            return new Result<string>(new ConflictException("This email is already used"));
+                        }
+                        if (ex.ConstraintName.Equals("customer_phone_key"))
+                        {
+                            return new Result<string>(new ConflictException("This phone number is already used"));
+                        }
+                    }
+                    return new Result<string>(new ConflictException("Invalid data"));
                 }
             }
         }

@@ -70,7 +70,7 @@ namespace TestApiSalon.Services.AuthService
                 }
                 catch (PostgresException ex) when (ex.SqlState.Equals("P0001")) 
                 {
-                    return new Result<string>(new UnauthorizedException("Invalid email or password"));
+                    return new Result<string>(new UnauthorizedException(ex.MessageText));
                 }
             }
         }
