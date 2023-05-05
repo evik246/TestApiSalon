@@ -57,6 +57,25 @@ namespace TestApiSalon.Extensions
                 {
                     return new ForbiddenException("No permission to access");
                 }
+                if (p.SqlState.Equals("23503"))
+                {
+                    if (!string.IsNullOrEmpty(p.ConstraintName))
+                    {
+                        string tableName = p.ConstraintName.Split('_')[1];
+
+                        string message = tableName switch
+                        {
+                            "category" => "Service category is not found",
+                            "city" => "City is not found",
+                            "salon" => "Salon is not found",
+                            "customer" => "Customer is not found",
+                            "employee" => "Employee is not found",
+                            "service" => "Service is not found",
+                            _ => throw new NotImplementedException(),
+                        };
+                        return new NotFoundException(message);
+                    }
+                }
             }
             return exception;
         }
