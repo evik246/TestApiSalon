@@ -18,7 +18,7 @@ namespace TestApiSalon.Services.CustomerService
             _connectionService = connectionService;
         }
 
-        public async Task<Result<Customer>> CreateCustomer(CustomerRegisterDto request)
+        public async Task<Result<string>> CreateCustomer(CustomerRegisterDto request)
         {
             var parameters = new DynamicParameters();
             parameters.Add("Name", request.Name, DbType.AnsiStringFixedLength);
@@ -27,18 +27,18 @@ namespace TestApiSalon.Services.CustomerService
             parameters.Add("Phone", request.Phone, DbType.AnsiStringFixedLength);
             parameters.Add("Birthday", request.Birthday, DbType.Date);
 
-            var query = "SELECT * FROM register_customer(@Name, @Email, @Password, @Phone, @Birthday);";
+            var query = "CALL register_customer(@Name, @Email, @Password, @Phone, @Birthday);";
 
             using (var connection = _connectionService.CreateConnection())
             {
                 try
                 {
-                    var customer = await connection.QueryFirstOrDefaultAsync<Customer>(query, parameters);
-                    return new Result<Customer>(customer);
+                    await connection.QueryFirstOrDefaultAsync<Customer>(query, parameters);
+                    return new Result<string>("Registration is successful");
                 }
                 catch (PostgresException ex) when (ex.SqlState.Equals("23505"))
                 {
-                    return new Result<Customer>(new ConflictException("This email or phone number is already used"));
+                    return new Result<string>(new ConflictException("This email or phone number is already used"));
                 }
             }
         }

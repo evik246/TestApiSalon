@@ -1,6 +1,4 @@
-﻿using Npgsql;
-using TestApiSalon.Exceptions;
-using TestApiSalon.Extensions;
+﻿using TestApiSalon.Extensions;
 
 namespace TestApiSalon.Middlewares
 {
