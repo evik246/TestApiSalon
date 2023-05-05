@@ -1,12 +1,13 @@
-﻿using TestApiSalon.Models;
+﻿using TestApiSalon.Dtos;
+using TestApiSalon.Models;
 
 namespace TestApiSalon.Services.EmployeeService
 {
     public interface IEmployeeService
     {
-        string? GetPhotoURL(Employee employee);
-        Task<IEnumerable<Employee>> GetAllEmployees();
-        Task<Employee?> GetEmployeeById(int id);
-        Task<Stream?> GetEmployeePhoto(int id);
+        Result<string> GetPhotoURL(Employee employee);
+        Task<Result<IEnumerable<Employee>>> GetAllEmployees();
+        Task<Result<Employee>> GetEmployeeById(int id);
+        Task<Result<Stream>> GetEmployeePhoto(int id);
     }
 }

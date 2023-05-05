@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using TestApiSalon.Models;
+using TestApiSalon.Extensions;
 using TestApiSalon.Services.CategoryService;
 
 namespace TestApiSalon.Controllers
@@ -16,10 +16,10 @@ namespace TestApiSalon.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ServiceCategory>>> GetCategories()
+        public async Task<IActionResult> GetCategories()
         {
             var categories = await _categoryService.GetAllCategories();
-            return Ok(categories);
+            return categories.MakeResponse();
         }
     }
 }

@@ -1,4 +1,5 @@
 using Dapper;
+using TestApiSalon.Dtos;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
 
@@ -13,7 +14,7 @@ namespace TestApiSalon.Services.CategoryService
             _connectionService = connectionManager;
         }
 
-        public async Task<IEnumerable<ServiceCategory>> GetAllCategories()
+        public async Task<Result<IEnumerable<ServiceCategory>>> GetAllCategories()
         {
             var query = "SELECT * FROM ServiceCategory";
 
@@ -21,7 +22,7 @@ namespace TestApiSalon.Services.CategoryService
             {
                 var categories = await connection
                     .QueryAsync<ServiceCategory>(query);
-                return categories.ToList();
+                return new Result<IEnumerable<ServiceCategory>>(categories);
             }
         }
     }

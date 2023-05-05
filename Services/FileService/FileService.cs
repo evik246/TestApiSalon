@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using TestApiSalon.Dtos;
+using TestApiSalon.Exceptions;
 
 namespace TestApiSalon.Services.FileService
 {
@@ -17,7 +18,7 @@ namespace TestApiSalon.Services.FileService
             StoragePath = Path.Combine(_environment.ContentRootPath,"Files", "Uploads");
         }
 
-        public async Task<IEnumerable<UploadFileResultDto>> UploadFiles(IEnumerable<IFormFile> files)
+        public async Task<Result<IEnumerable<UploadFileResultDto>>> UploadFiles(IEnumerable<IFormFile> files)
         {
             List<UploadFileResultDto> result = new();
             foreach (var file in files)
@@ -40,10 +41,10 @@ namespace TestApiSalon.Services.FileService
 
                 _logger.LogInformation($"Upload file path: {path}");
             }
-            return result;
+            return new Result<IEnumerable<UploadFileResultDto>>(result);
         }
 
-        public async Task<Stream?> DownloadFile(string storedFileName)
+        public async Task<Result<Stream>> DownloadFile(string storedFileName)
         {
             try
             {
@@ -55,12 +56,12 @@ namespace TestApiSalon.Services.FileService
                     await stream.CopyToAsync(memory);
                 }
                 memory.Position = 0;
-                return memory;
+                return new Result<Stream>(memory);
             }
             catch (FileNotFoundException)
             {
                 _logger.LogError($"File {storedFileName} not found");
-                return null;
+                return new Result<Stream>(new NotFoundException("File is not found"));
             }
         }
     }

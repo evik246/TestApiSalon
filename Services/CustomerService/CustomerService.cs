@@ -3,6 +3,7 @@ using Npgsql;
 using System.Data;
 using System.Text;
 using TestApiSalon.Dtos;
+using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
 
@@ -17,7 +18,7 @@ namespace TestApiSalon.Services.CustomerService
             _connectionService = connectionService;
         }
 
-        public async Task<Customer?> CreateCustomer(CustomerRegisterDto request)
+        public async Task<Result<Customer>> CreateCustomer(CustomerRegisterDto request)
         {
             var parameters = new DynamicParameters();
             parameters.Add("Name", request.Name, DbType.AnsiStringFixedLength);
@@ -32,16 +33,17 @@ namespace TestApiSalon.Services.CustomerService
             {
                 try
                 {
-                    return await connection.QueryFirstOrDefaultAsync<Customer>(query, parameters);
+                    var customer = await connection.QueryFirstOrDefaultAsync<Customer>(query, parameters);
+                    return new Result<Customer>(customer);
                 }
                 catch (PostgresException ex) when (ex.SqlState.Equals("23505"))
                 {
-                    return null;
+                    return new Result<Customer>(new ConflictException("This email or phone number is already used"));
                 }
             }
         }
 
-        public async Task<Customer?> GetCustomerByEmail(string email)
+        public async Task<Result<Customer>> GetCustomerByEmail(string email)
         {
             var parameters = new { Email = email };
 
@@ -49,11 +51,16 @@ namespace TestApiSalon.Services.CustomerService
 
             using (var connection = _connectionService.CreateConnection())
             {
-                return await connection.QueryFirstOrDefaultAsync<Customer>(query, parameters);
+                var customer = await connection.QueryFirstOrDefaultAsync<Customer>(query, parameters);
+                if (customer is null)
+                {
+                    return new Result<Customer>(new NotFoundException("Client is not found"));
+                }
+                return new Result<Customer>(customer);
             }
         }
 
-        public async Task<Customer?> GetCustomerById(int id)
+        public async Task<Result<Customer>> GetCustomerById(int id)
         {
             var parameters = new { Id = id };
 
@@ -61,11 +68,16 @@ namespace TestApiSalon.Services.CustomerService
 
             using (var connection = _connectionService.CreateConnection())
             {
-                return await connection.QueryFirstOrDefaultAsync<Customer>(query, parameters);
+                var customer = await connection.QueryFirstOrDefaultAsync<Customer>(query, parameters);
+                if (customer is null)
+                {
+                    return new Result<Customer>(new NotFoundException("Client is not found"));
+                }
+                return new Result<Customer>(customer);
             }
         }
 
-        public async Task<Customer?> UpdateCustomer(int id, CustomerUpdateDto request)
+        public async Task<Result<Customer>> UpdateCustomer(int id, CustomerUpdateDto request)
         {
             var query = new StringBuilder("UPDATE Customer SET ");
             var parameters = new DynamicParameters();
@@ -104,7 +116,12 @@ namespace TestApiSalon.Services.CustomerService
 
             using (var connection = _connectionService.CreateConnection())
             {
-                return await connection.QueryFirstOrDefaultAsync<Customer>(query.ToString(), parameters);
+                var customer = await connection.QueryFirstOrDefaultAsync<Customer>(query.ToString(), parameters);
+                if (customer is null)
+                {
+                    return new Result<Customer>(new NotFoundException("Client is not found"));
+                }
+                return new Result<Customer>(customer);
             }
         }
     }

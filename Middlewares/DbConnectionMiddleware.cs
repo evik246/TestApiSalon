@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using TestApiSalon.Data;
+using TestApiSalon.Extensions;
 using TestApiSalon.Services.ConnectionService;
 
 namespace TestApiSalon.Middlewares
@@ -37,7 +38,7 @@ namespace TestApiSalon.Middlewares
             {
                 const string message = "An unhandled exception has occurred while executing the request.";
                 _logger.LogError(ex, message);
-                throw new Exception(message);
+                await context.Response.MakeResponse(ex);
             }
         }
     }

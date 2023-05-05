@@ -1,5 +1,6 @@
-﻿using System.Net;
+﻿using Npgsql;
 using TestApiSalon.Exceptions;
+using TestApiSalon.Extensions;
 
 namespace TestApiSalon.Middlewares
 {
@@ -22,32 +23,9 @@ namespace TestApiSalon.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An error occurred while processing the request: {context.Request.Path}");
+                _logger.LogError(ex, $"Error occurred while processing the request: {context.Request.Path}");
 
-                var response = context.Response;
-                response.ContentType = "application/json";
-                string message = ex.Message;
-
-                switch (ex)
-                {
-                    case UnauthorizedException:
-                        response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        break;
-                    case ConflictException:
-                        response.StatusCode = (int)HttpStatusCode.Conflict;
-                        break;
-                    case NotFoundException:
-                        response.StatusCode = (int)HttpStatusCode.NotFound;
-                        break;
-                    case ForbiddenException:
-                        response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        break;
-                    default:
-                        response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        message = "Internal Server Error: " + ex.Message;
-                        break;
-                }
-                await response.WriteAsJsonAsync(new { message = message });
+                await context.Response.MakeResponse(ex);
             }
         }
     }

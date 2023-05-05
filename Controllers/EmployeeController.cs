@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
-using TestApiSalon.Exceptions;
-using TestApiSalon.Models;
+using TestApiSalon.Extensions;
 using TestApiSalon.Services.EmployeeService;
 
 namespace TestApiSalon.Controllers
@@ -18,18 +17,23 @@ namespace TestApiSalon.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
+        public async Task<IActionResult> GetEmployees()
         {
             var employees = await _employeeService.GetAllEmployees();
-            return Ok(employees);
+            return employees.MakeResponse();
         }
 
         [HttpGet("{id}/photo")]
-        public async Task<ActionResult> GetEmployeePhoto(int id)
+        public async Task<IActionResult> GetEmployeePhoto(int id)
         {
-            var file = await _employeeService.GetEmployeePhoto(id) 
-                ?? throw new NotFoundException("Photo of the employee is not found");
-            return File(file, MediaTypeNames.Image.Jpeg);
+            var file = await _employeeService.GetEmployeePhoto(id);
+            return file.Match(stream =>
+            {
+                return File(stream, MediaTypeNames.Image.Jpeg);
+            }, exception =>
+            {
+                return file.MakeResponse();
+            });
         }
     }
 }

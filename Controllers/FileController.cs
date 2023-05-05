@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
-using TestApiSalon.Exceptions;
+using TestApiSalon.Extensions;
 using TestApiSalon.Services.FileService;
 
 namespace TestApiSalon.Controllers
@@ -17,18 +17,23 @@ namespace TestApiSalon.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<IEnumerable<string>>> UploadFiles(IEnumerable<IFormFile> files)
+        public async Task<IActionResult> UploadFiles(IEnumerable<IFormFile> files)
         {
             var fileNames = await _fileService.UploadFiles(files);
-            return Ok(fileNames);
+            return fileNames.MakeResponse();
         }
 
         [HttpGet("{storedFileName}")]
-        public async Task<ActionResult> GetFile(string storedFileName)
+        public async Task<IActionResult> GetFile(string storedFileName)
         {
-            var file = await _fileService.DownloadFile(storedFileName) 
-                ?? throw new NotFoundException("File is not found");
-            return File(file, MediaTypeNames.Image.Jpeg);
+            var file = await _fileService.DownloadFile(storedFileName);
+            return file.Match(stream =>
+            {
+                return File(stream, MediaTypeNames.Image.Jpeg);
+            }, exception =>
+            {
+                return file.MakeResponse();
+            });
         }
     }
 }

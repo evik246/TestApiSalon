@@ -3,6 +3,7 @@ using Npgsql;
 using System.Data;
 using TestApiSalon.Data;
 using TestApiSalon.Dtos;
+using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ClaimsIdentityService;
 using TestApiSalon.Services.ConnectionService;
@@ -24,7 +25,7 @@ namespace TestApiSalon.Services.AuthService
             _identityService = identityService;
         }
 
-        public async Task<string?> Login(UserLoginDto request)
+        public async Task<Result<string>> Login(UserLoginDto request)
         {
             _connectionService.ConnectionName = DbConnectionName.Default;
 
@@ -42,12 +43,16 @@ namespace TestApiSalon.Services.AuthService
             {
                 user = await connection.QuerySingleOrDefaultAsync<User>(query, parameters);
 
-                if (user == null) { return null; }
+                if (user == null) 
+                {
+                    return new Result<string>(new UnauthorizedException("Invalid email or password"));
+                }
             }
-            return _tokenService.CreateToken(_identityService.CreateClaimsIdentity(user));
+            string token = _tokenService.CreateToken(_identityService.CreateClaimsIdentity(user));
+            return new Result<string>(token);
         }
 
-        public async Task<bool> ResetPassword(UserUpdatePasswordDto request)
+        public async Task<Result<string>> ResetPassword(UserUpdatePasswordDto request)
         {
             var parameters = new DynamicParameters();
             parameters.Add("Email", request.Email, DbType.AnsiStringFixedLength);
@@ -61,11 +66,11 @@ namespace TestApiSalon.Services.AuthService
                 try
                 {
                     await connection.ExecuteAsync(query, parameters);
-                    return true;
+                    return new Result<string>("Password is changed");
                 }
                 catch (PostgresException ex) when (ex.SqlState.Equals("P0001")) 
                 {
-                    return false;
+                    return new Result<string>(new UnauthorizedException("Invalid email or password"));
                 }
             }
         }

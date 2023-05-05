@@ -1,4 +1,6 @@
 using Dapper;
+using TestApiSalon.Dtos;
+using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
 
@@ -13,7 +15,7 @@ namespace TestApiSalon.Services.ServiceService
             _connectionService = connectionManager;
         }
 
-        public async Task<IEnumerable<Service>> GetAllServices()
+        public async Task<Result<IEnumerable<Service>>> GetAllServices()
         {
             var query = "SELECT s.*, c.* FROM Service s " +
                 "JOIN ServiceCategory c ON s.category_id = c.id;";
@@ -28,11 +30,11 @@ namespace TestApiSalon.Services.ServiceService
                         return service;
                     }
                 );
-                return services.ToList();
+                return new Result<IEnumerable<Service>>(services);
             }
         }
 
-        public async Task<Service?> GetServiceById(int id)
+        public async Task<Result<Service>> GetServiceById(int id)
         {
             var parameters = new
             {
@@ -56,9 +58,9 @@ namespace TestApiSalon.Services.ServiceService
                 );
                 if (!services.Any())
                 {
-                    return null;
+                    return new Result<Service>(new NotFoundException("Service is not found"));
                 }
-                return services.First();
+                return new Result<Service>(services.First());
             }
         }
     }

@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using TestApiSalon.Dtos;
+using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
 using TestApiSalon.Services.FileService;
@@ -23,17 +25,22 @@ namespace TestApiSalon.Services.EmployeeService
             _contextAccessor = contextAccessor;
         }
 
-        public string? GetPhotoURL(Employee employee)
+        public Result<string> GetPhotoURL(Employee employee)
         {
             if (!string.IsNullOrEmpty(employee.PhotoPath) && _contextAccessor.HttpContext is not null)
             {
-                return _linkGenerator.GetUriByAction(_contextAccessor.HttpContext,
+                var url = _linkGenerator.GetUriByAction(_contextAccessor.HttpContext,
                     "GetEmployeePhoto", "Employee", new { id = employee.Id });
+                if (url is null)
+                {
+                    return new Result<string>(new NotFoundException("Photo path is not found"));
+                }
+                return new Result<string>(url);
             }
-            return null;
+            return new Result<string>(new NotFoundException("Photo path is not found"));
         }
 
-        public async Task<IEnumerable<Employee>> GetAllEmployees()
+        public async Task<Result<IEnumerable<Employee>>> GetAllEmployees()
         {
             var query = "SELECT * FROM Employee;";
 
@@ -43,13 +50,13 @@ namespace TestApiSalon.Services.EmployeeService
 
                 foreach (var employee in employees)
                 {
-                    employee.PhotoURL = GetPhotoURL(employee);
+                    employee.PhotoURL = GetPhotoURL(employee).Value;
                 }
-                return employees.ToList();
+                return new Result<IEnumerable<Employee>>(employees);
             }
         }
 
-        public async Task<Employee?> GetEmployeeById(int id)
+        public async Task<Result<Employee>> GetEmployeeById(int id)
         {
             var parameters = new
             {
@@ -60,27 +67,32 @@ namespace TestApiSalon.Services.EmployeeService
 
             using (var connection = _connectionService.CreateConnection())
             {
-                var employees = await connection.QueryAsync<Employee>(query, parameters);
-                if (!employees.Any()) 
+                var employee = await connection.QueryFirstOrDefaultAsync<Employee>(query, parameters);
+                if (employee is null) 
                 {
-                    return null;
+                    return new Result<Employee>(new NotFoundException("Employee is not found"));
                 }
-
-                var employee = employees.First();
-                employee.PhotoURL = GetPhotoURL(employee);
-
-                return employee;
+                employee.PhotoURL = GetPhotoURL(employee).Value;
+                return new Result<Employee>(employee);
             }
         }
 
-        public async Task<Stream?> GetEmployeePhoto(int id)
+        public async Task<Result<Stream>> GetEmployeePhoto(int id)
         {
-            var employee = await GetEmployeeById(id);
-            if (employee is null || string.IsNullOrEmpty(employee.PhotoPath))
+            Result<Employee> employee = await GetEmployeeById(id);
+            if (employee.Value is null || string.IsNullOrEmpty(employee.Value.PhotoPath))
             {
-                return null;
+                return new Result<Stream>(new NotFoundException("Photo of the employee is not found"));
             }
-            return await _fileService.DownloadFile(employee.PhotoPath);
+            var stream = await _fileService.DownloadFile(employee.Value.PhotoPath);
+
+            return stream.Match(result =>
+            {
+                return new Result<Stream>(result);
+            }, exception =>
+            {
+                return new Result<Stream>(new NotFoundException("Photo of the employee is not found"));
+            });
         }
     }
 }
