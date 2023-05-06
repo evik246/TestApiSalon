@@ -9,5 +9,7 @@ namespace TestApiSalon.Services.EmployeeService
         Task<Result<IEnumerable<Employee>>> GetAllEmployees();
         Task<Result<Employee>> GetEmployeeById(int id);
         Task<Result<Stream>> GetEmployeePhoto(int id);
+        Task<Result<MasterWithServicesDto>> GetMasterWithServices(int id);
+        Task<Result<IEnumerable<MasterWithServicesDto>>> GetAllMastersWithServices(int salonId);
     }
 }

@@ -35,5 +35,19 @@ namespace TestApiSalon.Controllers
                 return file.MakeResponse();
             });
         }
+
+        [HttpGet("master/{id}")]
+        public async Task<IActionResult> GetMasterWithServicesById(int id)
+        {
+            var master = await _employeeService.GetMasterWithServices(id);
+            return master.MakeResponse();
+        }
+
+        [HttpGet("salon/{id}/master")]
+        public async Task<IActionResult> GetAllMastersWithServices(int id)
+        {
+            var master = await _employeeService.GetAllMastersWithServices(id);
+            return master.MakeResponse();
+        }
     }
 }
