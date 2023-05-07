@@ -109,7 +109,7 @@ namespace TestApiSalon.Services.EmployeeService
                 "FROM Employee e " +
                 "JOIN Skill sk ON sk.employee_id = e.id " +
                 "JOIN Service s ON sk.service_id = s.id " +
-                "WHERE e.id = @Id;";
+                "WHERE e.role = 'Master' AND e.id = @Id;";
 
             using (var connection = _connectionService.CreateConnection())
             {
