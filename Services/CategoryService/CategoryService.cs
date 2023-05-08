@@ -14,14 +14,20 @@ namespace TestApiSalon.Services.CategoryService
             _connectionService = connectionManager;
         }
 
-        public async Task<Result<IEnumerable<ServiceCategory>>> GetAllCategories()
+        public async Task<Result<IEnumerable<ServiceCategory>>> GetAllCategories(Paging paging)
         {
-            var query = "SELECT * FROM ServiceCategory";
+            var parameters = new 
+            {
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT * FROM ServiceCategory OFFSET @Skip LIMIT @Take;";
 
             using (var connection = _connectionService.CreateConnection())
             {
                 var categories = await connection
-                    .QueryAsync<ServiceCategory>(query);
+                    .QueryAsync<ServiceCategory>(query, parameters);
                 return new Result<IEnumerable<ServiceCategory>>(categories);
             }
         }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TestApiSalon.Dtos;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.ServiceService;
 
@@ -16,9 +17,9 @@ namespace TestApiSalon.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetServices()
+        public async Task<IActionResult> GetServices([FromQuery] Paging paging)
         {
-            var services = await _serviceService.GetAllServices();
+            var services = await _serviceService.GetAllServices(paging);
             return services.MakeResponse();
         }
 

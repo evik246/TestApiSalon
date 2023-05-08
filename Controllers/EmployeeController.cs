@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
+using TestApiSalon.Dtos;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.EmployeeService;
 
@@ -17,9 +18,9 @@ namespace TestApiSalon.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEmployees()
+        public async Task<IActionResult> GetEmployees([FromQuery] Paging paging)
         {
-            var employees = await _employeeService.GetAllEmployees();
+            var employees = await _employeeService.GetAllEmployees(paging);
             return employees.MakeResponse();
         }
 
@@ -44,9 +45,9 @@ namespace TestApiSalon.Controllers
         }
 
         [HttpGet("salon/{id}/master")]
-        public async Task<IActionResult> GetAllMastersWithServices(int id)
+        public async Task<IActionResult> GetAllMastersWithServices(int id, [FromQuery] Paging paging)
         {
-            var master = await _employeeService.GetAllMastersWithServices(id);
+            var master = await _employeeService.GetAllMastersWithServices(id, paging);
             return master.MakeResponse();
         }
     }

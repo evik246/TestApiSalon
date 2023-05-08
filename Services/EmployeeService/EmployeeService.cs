@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System.Net.NetworkInformation;
 using TestApiSalon.Dtos;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
@@ -40,13 +41,19 @@ namespace TestApiSalon.Services.EmployeeService
             return new Result<string>(new NotFoundException("Photo path is not found"));
         }
 
-        public async Task<Result<IEnumerable<Employee>>> GetAllEmployees()
+        public async Task<Result<IEnumerable<Employee>>> GetAllEmployees(Paging paging)
         {
-            var query = "SELECT * FROM Employee;";
+            var parameters = new
+            {
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT * FROM Employee OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;";
 
             using (var connection = _connectionService.CreateConnection())
             {
-                var employees = await connection.QueryAsync<Employee>(query);
+                var employees = await connection.QueryAsync<Employee>(query, parameters);
 
                 foreach (var employee in employees)
                 {
@@ -104,12 +111,12 @@ namespace TestApiSalon.Services.EmployeeService
                 Id = id
             };
 
-            var query = "SELECT e.id, e.name, e.last_name, e.photo_path, e.specialization, " +
-                "s.id, s.name, s.price " +
-                "FROM Employee e " +
-                "JOIN Skill sk ON sk.employee_id = e.id " +
-                "JOIN Service s ON sk.service_id = s.id " +
-                "WHERE e.role = 'Master' AND e.id = @Id;";
+            var query = "SELECT e.id, e.name, e.last_name, e.photo_path, e.specialization, "
+                        + "s.id, s.name, s.price "
+                        + "FROM Employee e "
+                        + "JOIN Skill sk ON sk.employee_id = e.id "
+                        + "JOIN Service s ON sk.service_id = s.id "
+                        + "WHERE e.role = 'Master' AND e.id = @Id;";
 
             using (var connection = _connectionService.CreateConnection())
             {
@@ -146,20 +153,27 @@ namespace TestApiSalon.Services.EmployeeService
             }
         }
 
-        public async Task<Result<IEnumerable<MasterWithServicesDto>>> GetAllMastersWithServices(int salonId)
+        // TODO: Доделать paging
+        public async Task<Result<IEnumerable<MasterWithServicesDto>>> GetAllMastersWithServices(int salonId, Paging paging)
         {
             var parameters = new
             {
-                SalonId = salonId
+                SalonId = salonId,
+                Skip = paging.Skip,
+                Take = paging.PageSize
             };
 
-            var query = "SELECT e.id, e.name, e.last_name, e.photo_path, e.specialization, " +
-                "s.id, s.name, s.price " +
-                "FROM Employee e " +
-                "JOIN Skill sk ON sk.employee_id = e.id " +
-                "JOIN Service s ON sk.service_id = s.id " +
-                "WHERE e.salon_id = @SalonId AND e.role = 'Master' " +
-                "ORDER BY s.price DESC;";
+            var query = "SELECT e.id, e.name, e.last_name, e.photo_path, e.specialization, "
+                        + "s.id, s.name, s.price "
+                        + "FROM ( "
+                        + "SELECT * FROM Employee e "
+                        + "WHERE e.salon_id = @SalonId AND e.role = 'Master' "
+                        + "OFFSET @Skip "
+                        + "LIMIT @Take "
+                        + ") e "
+                        + "JOIN Skill sk ON sk.employee_id = e.id "
+                        + "JOIN Service s ON sk.service_id = s.id "
+                        + "ORDER BY e.id, s.price DESC;";
 
             using (var connection = _connectionService.CreateConnection())
             {

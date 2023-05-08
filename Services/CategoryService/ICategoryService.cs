@@ -5,6 +5,6 @@ namespace TestApiSalon.Services.CategoryService
 {
     public interface ICategoryService
     {
-        Task<Result<IEnumerable<ServiceCategory>>> GetAllCategories();
+        Task<Result<IEnumerable<ServiceCategory>>> GetAllCategories(Paging paging);
     }
 }

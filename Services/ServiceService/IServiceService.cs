@@ -5,7 +5,7 @@ namespace TestApiSalon.Services.ServiceService
 {
     public interface IServiceService
     {
-        Task<Result<IEnumerable<Service>>> GetAllServices();
+        Task<Result<IEnumerable<Service>>> GetAllServices(Paging paging);
         Task<Result<Service>> GetServiceById(int id);
     }
 }
