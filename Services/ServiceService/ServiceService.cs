@@ -41,6 +41,43 @@ namespace TestApiSalon.Services.ServiceService
             }
         }
 
+        public async Task<Result<IEnumerable<Service>>> GetMasterServices(int masterId, Paging paging)
+        {
+            var parameters = new
+            {
+                Id = masterId,
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT s.id, s.name, s.price, s.execution_time, "
+                        + "c.id, c.name "
+                        + "FROM Service s "
+                        + "JOIN ServiceCategory c ON c.id = s.category_id "
+                        + "JOIN Skill sk ON sk.service_id = s.id "
+                        + "JOIN Employee e ON sk.employee_id = e.id "
+                        + "WHERE e.id = @Id "
+                        + "ORDER BY s.id "
+                        + "OFFSET @Skip LIMIT @Take;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var services = await connection
+                    .QueryAsync(
+                    query, (Service service, ServiceCategory category) =>
+                    {
+                        service.Category = category;
+                        return service;
+                    }, param: parameters
+                );
+                if (!services.Any())
+                {
+                    return new Result<IEnumerable<Service>>(new NotFoundException("Master is not found"));
+                }
+                return new Result<IEnumerable<Service>>(services);
+            }
+        }
+
         public async Task<Result<Service>> GetServiceById(int id)
         {
             var parameters = new
@@ -48,9 +85,9 @@ namespace TestApiSalon.Services.ServiceService
                 Id = id
             };
 
-            var query = "SELECT s.*, c.* FROM Service s " +
-                "JOIN ServiceCategory c ON s.category_id = c.id " +
-                "WHERE s.id = @Id;";
+            var query = "SELECT s.*, c.* FROM Service s "
+                        + "JOIN ServiceCategory c ON s.category_id = c.id "
+                        + "WHERE s.id = @Id;";
 
             using (var connection = _connectionService.CreateConnection())
             {

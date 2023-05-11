@@ -29,5 +29,12 @@ namespace TestApiSalon.Controllers
             var service = await _serviceService.GetServiceById(id);
             return service.MakeResponse();
         }
+
+        [HttpGet("master/{id}")]
+        public async Task<IActionResult> GetMasterServices(int id, [FromQuery] Paging paging)
+        {
+            var services = await _serviceService.GetMasterServices(id, paging);
+            return services.MakeResponse();
+        }
     }
 }

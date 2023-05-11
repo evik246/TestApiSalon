@@ -116,7 +116,7 @@ namespace TestApiSalon.Services.EmployeeService
                         + "FROM Employee e "
                         + "JOIN Skill sk ON sk.employee_id = e.id "
                         + "JOIN Service s ON sk.service_id = s.id "
-                        + "WHERE e.role = 'Master' AND e.id = @Id;";
+                        + "WHERE e.id = @Id;";
 
             using (var connection = _connectionService.CreateConnection())
             {
@@ -153,7 +153,6 @@ namespace TestApiSalon.Services.EmployeeService
             }
         }
 
-        // TODO: Доделать paging
         public async Task<Result<IEnumerable<MasterWithServicesDto>>> GetAllMastersWithServices(int salonId, Paging paging)
         {
             var parameters = new

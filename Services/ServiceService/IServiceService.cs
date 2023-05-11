@@ -7,5 +7,6 @@ namespace TestApiSalon.Services.ServiceService
     {
         Task<Result<IEnumerable<Service>>> GetAllServices(Paging paging);
         Task<Result<Service>> GetServiceById(int id);
+        Task<Result<IEnumerable<Service>>> GetMasterServices(int masterId, Paging paging);
     }
 }
