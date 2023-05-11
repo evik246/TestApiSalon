@@ -28,13 +28,7 @@ namespace TestApiSalon.Controllers
         public async Task<IActionResult> GetEmployeePhoto(int id)
         {
             var file = await _employeeService.GetEmployeePhoto(id);
-            return file.Match(stream =>
-            {
-                return File(stream, MediaTypeNames.Image.Jpeg);
-            }, exception =>
-            {
-                return file.MakeResponse();
-            });
+            return file.MakeFileResponse(this);
         }
 
         [HttpGet("master/{id}")]

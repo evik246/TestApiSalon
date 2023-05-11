@@ -27,13 +27,7 @@ namespace TestApiSalon.Controllers
         public async Task<IActionResult> GetFile(string storedFileName)
         {
             var file = await _fileService.DownloadFile(storedFileName);
-            return file.Match(stream =>
-            {
-                return File(stream, MediaTypeNames.Image.Jpeg);
-            }, exception =>
-            {
-                return file.MakeResponse();
-            });
+            return file.MakeFileResponse(this);
         }
     }
 }

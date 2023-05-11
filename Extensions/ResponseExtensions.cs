@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using System.Net;
+using System.Net.Mime;
 using TestApiSalon.Dtos;
 using TestApiSalon.Exceptions;
 
@@ -8,6 +9,17 @@ namespace TestApiSalon.Extensions
 {
     public static class ResponseExtensions
     {
+        public static IActionResult MakeFileResponse(this Result<Stream> result, ControllerBase controllerBase)
+        {
+            return result.Match(stream =>
+            {
+                return controllerBase.File(stream, MediaTypeNames.Image.Jpeg);
+            }, exception =>
+            {
+                return result.MakeResponse();
+            });
+        }
+
         public static IActionResult MakeResponse<TResult>(this Result<TResult> result)
         {
             return result.Match(obj =>
