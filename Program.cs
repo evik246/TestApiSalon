@@ -11,6 +11,7 @@ using TestApiSalon.Services.CustomerService;
 using TestApiSalon.Services.EmployeeService;
 using TestApiSalon.Services.FileService;
 using TestApiSalon.Services.HashService;
+using TestApiSalon.Services.ScheduleService;
 using TestApiSalon.Services.ServiceService;
 using TestApiSalon.Services.TokenService;
 
@@ -37,6 +38,7 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

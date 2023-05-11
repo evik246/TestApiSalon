@@ -21,6 +21,17 @@ namespace TestApiSalon.Attributes
 
                 return date.AddYears(MaxAge) > DateTime.Now;
             }
+
+            if (value is DateOnly dateOnly)
+            {
+                DateTime dateTemp = dateOnly.ToDateTime(new TimeOnly());
+                if (dateTemp.AddYears(MinAge) > DateTime.Now)
+                {
+                    return false;
+                }
+
+                return dateTemp.AddYears(MaxAge) > DateTime.Now;
+            }
             return false;
         }
     }

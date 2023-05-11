@@ -10,7 +10,7 @@ namespace TestApiSalon.Dtos
         public required string Name { get; set; }
 
         [Birthday(MinAge = 1, MaxAge = 100, ErrorMessage = "Birthday is invalid")]
-        public DateTime? Birthday { get; set; }
+        public DateOnly? Birthday { get; set; }
 
         [Required(ErrorMessage = "Email address is required")]
         [EmailAddress(ErrorMessage = "Email address is invalid")]
