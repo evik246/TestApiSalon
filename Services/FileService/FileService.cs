@@ -1,5 +1,6 @@
 ﻿using System.Net;
-using TestApiSalon.Dtos;
+using TestApiSalon.Dtos.File;
+using TestApiSalon.Dtos.Other;
 using TestApiSalon.Exceptions;
 
 namespace TestApiSalon.Services.FileService

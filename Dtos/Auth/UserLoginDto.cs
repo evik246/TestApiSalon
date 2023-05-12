@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TestApiSalon.Dtos
+namespace TestApiSalon.Dtos.Auth
 {
     public class UserLoginDto
     {

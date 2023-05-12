@@ -1,4 +1,7 @@
-﻿using TestApiSalon.Dtos;
+﻿using TestApiSalon.Dtos.Appointment;
+using TestApiSalon.Dtos.Employee;
+using TestApiSalon.Dtos.Other;
+using TestApiSalon.Dtos.Schedule;
 using TestApiSalon.Models;
 
 namespace TestApiSalon.Services.ScheduleService

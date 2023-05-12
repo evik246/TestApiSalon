@@ -1,4 +1,4 @@
-﻿namespace TestApiSalon.Dtos
+﻿namespace TestApiSalon.Dtos.File
 {
     public class UploadFileResultDto
     {

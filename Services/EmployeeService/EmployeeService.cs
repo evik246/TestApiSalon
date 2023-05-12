@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using System.Net.NetworkInformation;
-using TestApiSalon.Dtos;
+using TestApiSalon.Dtos.Employee;
+using TestApiSalon.Dtos.Other;
+using TestApiSalon.Dtos.Service;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;

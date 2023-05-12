@@ -1,4 +1,4 @@
-﻿namespace TestApiSalon.Dtos
+﻿namespace TestApiSalon.Dtos.Employee
 {
     public class MasterDto
     {

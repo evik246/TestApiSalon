@@ -1,5 +1,5 @@
 using Dapper;
-using TestApiSalon.Dtos;
+using TestApiSalon.Dtos.Other;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;

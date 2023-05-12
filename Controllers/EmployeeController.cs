@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
-using TestApiSalon.Dtos;
+using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.EmployeeService;
 

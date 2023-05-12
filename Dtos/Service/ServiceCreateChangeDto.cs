@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TestApiSalon.Dtos
+namespace TestApiSalon.Dtos.Service
 {
     public class ServiceCreateChangeDto
     {

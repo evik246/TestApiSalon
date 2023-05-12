@@ -1,7 +1,10 @@
 ﻿using Dapper;
 using Npgsql;
 using System.Data;
-using TestApiSalon.Dtos;
+using TestApiSalon.Dtos.Appointment;
+using TestApiSalon.Dtos.Employee;
+using TestApiSalon.Dtos.Other;
+using TestApiSalon.Dtos.Service;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.ConnectionService;

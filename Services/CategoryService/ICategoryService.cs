@@ -1,4 +1,4 @@
-using TestApiSalon.Dtos;
+using TestApiSalon.Dtos.Other;
 using TestApiSalon.Models;
 
 namespace TestApiSalon.Services.CategoryService

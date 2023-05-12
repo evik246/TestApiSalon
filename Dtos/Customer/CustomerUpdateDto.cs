@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using TestApiSalon.Attributes;
 
-namespace TestApiSalon.Dtos
+namespace TestApiSalon.Dtos.Customer
 {
     [AtLeastOneProperty(ErrorMessage = "At least one property must be specified")]
     public class CustomerUpdateDto

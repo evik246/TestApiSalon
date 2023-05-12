@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TestApiSalon.Dtos;
+using TestApiSalon.Dtos.Appointment;
+using TestApiSalon.Dtos.Schedule;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.ScheduleService;
 

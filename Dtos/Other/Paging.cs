@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.ComponentModel.DataAnnotations;
 
-namespace TestApiSalon.Dtos
+namespace TestApiSalon.Dtos.Other
 {
     public class Paging
     {
@@ -14,9 +14,9 @@ namespace TestApiSalon.Dtos
         public int PageSize { get; set; } = MAX_PAGE_SIZE;
 
         [BindNever]
-        public int Skip 
-        { 
-            get { return PageSize * (PageNumber - 1); } 
+        public int Skip
+        {
+            get { return PageSize * (PageNumber - 1); }
         }
     }
 }

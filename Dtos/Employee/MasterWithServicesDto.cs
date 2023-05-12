@@ -1,4 +1,6 @@
-﻿namespace TestApiSalon.Dtos
+﻿using TestApiSalon.Dtos.Service;
+
+namespace TestApiSalon.Dtos.Employee
 {
     public class MasterWithServicesDto
     {

@@ -2,7 +2,7 @@
 using Npgsql;
 using System.Net;
 using System.Net.Mime;
-using TestApiSalon.Dtos;
+using TestApiSalon.Dtos.Other;
 using TestApiSalon.Exceptions;
 
 namespace TestApiSalon.Extensions

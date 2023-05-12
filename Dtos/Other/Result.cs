@@ -1,4 +1,4 @@
-﻿namespace TestApiSalon.Dtos
+﻿namespace TestApiSalon.Dtos.Other
 {
     public class Result<T>
     {
@@ -20,7 +20,7 @@
             Exception = exception;
         }
 
-        public TResult Match<TResult>(Func<T, TResult> success, Func<Exception, TResult> failure) 
+        public TResult Match<TResult>(Func<T, TResult> success, Func<Exception, TResult> failure)
         {
             return State switch
             {

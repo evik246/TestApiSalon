@@ -1,4 +1,5 @@
-﻿using TestApiSalon.Dtos;
+﻿using TestApiSalon.Dtos.Customer;
+using TestApiSalon.Dtos.Other;
 using TestApiSalon.Models;
 
 namespace TestApiSalon.Services.CustomerService

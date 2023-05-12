@@ -2,7 +2,8 @@
 using Npgsql;
 using System.Data;
 using TestApiSalon.Data;
-using TestApiSalon.Dtos;
+using TestApiSalon.Dtos.Auth;
+using TestApiSalon.Dtos.Other;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ClaimsIdentityService;

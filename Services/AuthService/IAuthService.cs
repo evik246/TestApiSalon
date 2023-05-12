@@ -1,4 +1,5 @@
-﻿using TestApiSalon.Dtos;
+﻿using TestApiSalon.Dtos.Auth;
+using TestApiSalon.Dtos.Other;
 
 namespace TestApiSalon.Services.AuthService
 {

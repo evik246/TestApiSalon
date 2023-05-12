@@ -1,6 +1,9 @@
 ﻿using Dapper;
 using System.Data;
-using TestApiSalon.Dtos;
+using TestApiSalon.Dtos.Appointment;
+using TestApiSalon.Dtos.Employee;
+using TestApiSalon.Dtos.Other;
+using TestApiSalon.Dtos.Schedule;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;

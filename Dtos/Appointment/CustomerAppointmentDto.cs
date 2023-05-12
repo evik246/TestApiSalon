@@ -1,4 +1,7 @@
-﻿namespace TestApiSalon.Dtos
+﻿using TestApiSalon.Dtos.Employee;
+using TestApiSalon.Dtos.Service;
+
+namespace TestApiSalon.Dtos.Appointment
 {
     public class CustomerAppointmentDto
     {

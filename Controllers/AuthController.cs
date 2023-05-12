@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TestApiSalon.Dtos;
+using TestApiSalon.Dtos.Auth;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.AuthService;
 
