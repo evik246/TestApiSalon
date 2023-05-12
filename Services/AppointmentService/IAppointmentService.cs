@@ -1,5 +1,4 @@
 ﻿using TestApiSalon.Dtos;
-using TestApiSalon.Models;
 
 namespace TestApiSalon.Services.AppointmentService
 {

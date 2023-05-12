@@ -47,10 +47,6 @@ namespace TestApiSalon.Services.ScheduleService
             using (var connection = _connectionService.CreateConnection())
             {
                 var schedule = await connection.QueryAsync<Schedule>(query, parameters);
-                if (!schedule.Any())
-                {
-                    return new Result<IEnumerable<Schedule>>(new NotFoundException("Master is not found"));
-                }
                 return new Result<IEnumerable<Schedule>>(schedule);
             }
         }

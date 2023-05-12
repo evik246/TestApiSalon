@@ -26,12 +26,12 @@ namespace TestApiSalon.Services.EmployeeService
             _contextAccessor = contextAccessor;
         }
 
-        public Result<string> GetPhotoURL(Employee employee)
+        public Result<string> GetPhotoURL(string? photopath, int employeeId)
         {
-            if (!string.IsNullOrEmpty(employee.PhotoPath) && _contextAccessor.HttpContext is not null)
+            if (!string.IsNullOrEmpty(photopath) && _contextAccessor.HttpContext is not null)
             {
                 var url = _linkGenerator.GetUriByAction(_contextAccessor.HttpContext,
-                    "GetEmployeePhoto", "Employee", new { id = employee.Id });
+                    "GetEmployeePhoto", "Employee", new { id = employeeId });
                 if (url is null)
                 {
                     return new Result<string>(new NotFoundException("Photo path is not found"));
@@ -57,7 +57,7 @@ namespace TestApiSalon.Services.EmployeeService
 
                 foreach (var employee in employees)
                 {
-                    employee.PhotoURL = GetPhotoURL(employee).Value;
+                    employee.PhotoURL = GetPhotoURL(employee.PhotoPath, employee.Id).Value;
                 }
                 return new Result<IEnumerable<Employee>>(employees);
             }
@@ -79,7 +79,7 @@ namespace TestApiSalon.Services.EmployeeService
                 {
                     return new Result<Employee>(new NotFoundException("Employee is not found"));
                 }
-                employee.PhotoURL = GetPhotoURL(employee).Value;
+                employee.PhotoURL = GetPhotoURL(employee.PhotoPath, employee.Id).Value;
                 return new Result<Employee>(employee);
             }
         }
@@ -145,10 +145,12 @@ namespace TestApiSalon.Services.EmployeeService
                     return masterEntity;
                 }, param: parameters);
 
-                if (!masters.Any())
+                var master = masters.First();
+                if (master is null)
                 {
                     return new Result<MasterWithServicesDto>(new NotFoundException("Master is not found"));
                 }
+                master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
                 return new Result<MasterWithServicesDto>(masters.First());
             }
         }
@@ -200,6 +202,11 @@ namespace TestApiSalon.Services.EmployeeService
                         }
                         return masterEntity;
                     }, param: parameters);
+
+                foreach (var master in masters)
+                {
+                    master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
+                }
                 return new Result<IEnumerable<MasterWithServicesDto>>(masters.Distinct());
             }
         }

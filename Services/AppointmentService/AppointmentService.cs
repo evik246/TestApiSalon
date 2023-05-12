@@ -4,7 +4,6 @@ using System.Data;
 using TestApiSalon.Dtos;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Extensions;
-using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
 
 namespace TestApiSalon.Services.AppointmentService

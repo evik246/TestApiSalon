@@ -70,10 +70,6 @@ namespace TestApiSalon.Services.ServiceService
                         return service;
                     }, param: parameters
                 );
-                if (!services.Any())
-                {
-                    return new Result<IEnumerable<Service>>(new NotFoundException("Master is not found"));
-                }
                 return new Result<IEnumerable<Service>>(services);
             }
         }
@@ -138,10 +134,6 @@ namespace TestApiSalon.Services.ServiceService
                     },
                     param: parameters
                 );
-                if (!services.Any())
-                {
-                    return new Result<IEnumerable<Service>>(new NotFoundException("Salon is not found"));
-                }
                 return new Result<IEnumerable<Service>>(services);
             }
         }

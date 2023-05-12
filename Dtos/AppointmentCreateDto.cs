@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using TestApiSalon.Attributes;
-using TestApiSalon.Extensions;
 
 namespace TestApiSalon.Dtos
 {

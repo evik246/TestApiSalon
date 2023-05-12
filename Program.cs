@@ -27,7 +27,6 @@ Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
 SqlMapper.AddTypeHandler(new TimeOnlyTypeHandler());
-SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
 
 var connections = new Dictionary<DbConnectionName, string>
 {
