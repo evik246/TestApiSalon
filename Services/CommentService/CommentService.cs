@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using System.Data;
 using System.Text;
+using TestApiSalon.Dtos.Comment;
 using TestApiSalon.Dtos.Customer;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Salon;
@@ -53,6 +54,18 @@ namespace TestApiSalon.Services.CommentService
                     }, param: parameters
                 );
                 return new Result<IEnumerable<Comment>>(comments);
+            }
+        }
+
+        public async Task<Result<string>> CreateComment(CommentCreateDto request)
+        {
+            var query = "INSERT INTO Comment (review, rating, salon_id, customer_id) " +
+                "VALUES (@Review, @Rating, @SalonId, @CustomerId);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, request);
+                return new Result<string>("Comment added successfully");
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TestApiSalon.Dtos.Comment;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.CommentService;
@@ -28,6 +29,13 @@ namespace TestApiSalon.Controllers
         {
             var comments = await _commentService.GetAllComments(paging, id);
             return comments.MakeResponse();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddComment([FromBody] CommentCreateDto request)
+        {
+            var result = await _commentService.CreateComment(request);
+            return result.MakeResponse();
         }
     }
 }

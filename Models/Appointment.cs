@@ -8,14 +8,17 @@ namespace TestApiSalon.Models
 
         public DateTime Date { get; set; }
 
+        [JsonIgnore]
         public int CustomerId { get; set; }
 
         public Customer? Customer { get; set; }
 
+        [JsonIgnore]
         public int EmployeeId { get; set; }
 
         public Employee? Employee { get; set; }
 
+        [JsonIgnore]
         public int ServiceId { get; set; }
 
         public Service? Service { get; set; }
@@ -23,7 +26,7 @@ namespace TestApiSalon.Models
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public AppointmentStatus Status { get; set; }
 
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; }
     }
 
     public enum AppointmentStatus

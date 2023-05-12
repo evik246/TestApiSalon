@@ -15,6 +15,6 @@ namespace TestApiSalon.Models
         [JsonIgnore]
         public int CategoryId { get; set; }
 
-        public ServiceCategory Category { get; set; } = new ServiceCategory();
+        public ServiceCategory? Category { get; set; }
     }
 }
