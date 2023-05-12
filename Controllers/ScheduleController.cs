@@ -17,7 +17,7 @@ namespace TestApiSalon.Controllers
         }
 
         [HttpGet("timeslots/available")]
-        public async Task<IActionResult> GetFreeSlots([FromQuery] CustomerAppointmentDto request)
+        public async Task<IActionResult> GetFreeSlots([FromQuery] CustomerAppointmentInputDto request)
         {
             var slots = await _scheduleService.GetAvailableTimeSlots(request);
             return slots.MakeResponse();

@@ -17,7 +17,7 @@ namespace TestApiSalon.Services.ScheduleService
         }
 
         public async Task<Result<IEnumerable<AvailableTimeSlotDto>>> GetAvailableTimeSlots
-            (CustomerAppointmentDto request)
+            (CustomerAppointmentInputDto request)
         {
             var parameters = new DynamicParameters();
             parameters.Add("EmployeeId", request.MasterId, DbType.Int32);
