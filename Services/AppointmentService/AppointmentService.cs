@@ -83,5 +83,27 @@ namespace TestApiSalon.Services.AppointmentService
                 }
             }
         }
+
+        public async Task<Result<string>> CancelAppointment(int customerId, int appointmentId)
+        {
+            var parameters = new
+            {
+                CustomerId = customerId,
+                AppointmentId = appointmentId
+            };
+
+            var query = "DELETE FROM Appointment "
+                        + "WHERE id = @AppointmentId AND customer_id = @CustomerId;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                int rows = await connection.ExecuteAsync(query, parameters);
+                if (rows == 0)
+                {
+                    return new Result<string>(new NotFoundException("Customer or appointment is not found"));
+                }
+                return new Result<string>("Appointment deleted successfully");
+            }
+        }
     }
 }

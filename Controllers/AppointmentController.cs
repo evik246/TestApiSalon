@@ -30,5 +30,12 @@ namespace TestApiSalon.Controllers
             var result = await _appointmentService.CreateAppointment(request);
             return result.MakeResponse();
         }
+
+        [HttpDelete("{appointmentId}/customer/{customerId}")]
+        public async Task<IActionResult> CancelAppointment(int customerId, int appointmentId)
+        {
+            var result = await _appointmentService.CancelAppointment(customerId, appointmentId);
+            return result.MakeResponse();
+        }
     }
 }
