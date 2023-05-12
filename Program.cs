@@ -1,6 +1,8 @@
+using Dapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using TestApiSalon.Data;
+using TestApiSalon.Extensions;
 using TestApiSalon.Middlewares;
 using TestApiSalon.Models;
 using TestApiSalon.Services.AuthService;
@@ -20,6 +22,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+SqlMapper.AddTypeHandler(new TimeOnlyTypeHandler());
 
 var connections = new Dictionary<DbConnectionName, string>
 {

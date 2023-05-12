@@ -22,5 +22,19 @@ namespace TestApiSalon.Controllers
             var slots = await _scheduleService.GetAvailableTimeSlots(request);
             return slots.MakeResponse();
         }
+
+        [HttpGet("master/{id}")]
+        public async Task<IActionResult> GetMasterSchedule(int id)
+        {
+            var schedule = await _scheduleService.GetMasterSchedule(id);
+            return schedule.MakeResponse();
+        }
+
+        [HttpGet("master/{id}/working_days")]
+        public async Task<IActionResult> GetMasterWorkingDays(int id, [FromQuery] DateRangeDto dateRange)
+        {
+            var days = await _scheduleService.GetMasterWorkingDays(id, dateRange);
+            return days.MakeResponse();
+        }
     }
 }

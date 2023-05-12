@@ -15,7 +15,8 @@ namespace TestApiSalon.Models
 
         public string Email { get; set; } = string.Empty;
 
-        public string Role { get; set; } = string.Empty;
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public EmployeeRole Role { get; set; }
 
         [JsonIgnore]
         public string? PhotoPath { get; set; }
@@ -23,5 +24,12 @@ namespace TestApiSalon.Models
         public string? PhotoURL { get; set; }
 
         public string? Specialization { get; set; }
+    }
+
+    public enum EmployeeRole
+    {
+        Master = 0,
+        Manager = 1,
+        Admin = 2
     }
 }

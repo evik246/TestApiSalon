@@ -6,11 +6,12 @@ namespace TestApiSalon.Models
     {
         public int Id { get; set; }
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Weekday Weekday { get; set; }
 
-        public TimeOnly StartTime { get; set; }
+        public TimeSpan StartTime { get; set; }
 
-        public TimeOnly EndTime { get; set; }
+        public TimeSpan EndTime { get; set; }
 
         [JsonIgnore]
         public int EmployeeId { get; set; }
@@ -18,12 +19,12 @@ namespace TestApiSalon.Models
 
     public enum Weekday
     {
-        Monday, 
-        Tuesday, 
-        Wednesday,
-        Thursday,
-        Friday,
-        Saturday,
-        Sunday
+        Monday = 0, 
+        Tuesday = 1, 
+        Wednesday = 2,
+        Thursday = 3,
+        Friday = 4,
+        Saturday = 5,
+        Sunday = 6
     }
 }

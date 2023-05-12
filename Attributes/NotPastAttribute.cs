@@ -11,12 +11,12 @@ namespace TestApiSalon.Attributes
 
             if (value is DateTime date)
             {
-                return date > DateTime.Now;
+                return date >= DateTime.Now;
             }
 
             if (value is DateOnly dateOnly)
             {
-                return dateOnly.ToDateTime(TimeOnly.MinValue) > DateTime.Today;
+                return dateOnly.ToDateTime(TimeOnly.MinValue) >= DateTime.Today;
             }
             return false;
         }

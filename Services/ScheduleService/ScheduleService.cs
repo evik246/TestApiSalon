@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using System.Data;
 using TestApiSalon.Dtos;
+using TestApiSalon.Exceptions;
+using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
 
 namespace TestApiSalon.Services.ScheduleService
@@ -14,7 +16,8 @@ namespace TestApiSalon.Services.ScheduleService
             _connectionService = connectionService;
         }
 
-        public async Task<Result<IEnumerable<AvailableTimeSlotDto>>> GetAvailableTimeSlots(CustomerAppointmentDto request)
+        public async Task<Result<IEnumerable<AvailableTimeSlotDto>>> GetAvailableTimeSlots
+            (CustomerAppointmentDto request)
         {
             var parameters = new DynamicParameters();
             parameters.Add("EmployeeId", request.MasterId, DbType.Int32);
@@ -27,6 +30,45 @@ namespace TestApiSalon.Services.ScheduleService
             {
                 var timeslots = await connection.QueryAsync<AvailableTimeSlotDto>(query, parameters);
                 return new Result<IEnumerable<AvailableTimeSlotDto>>(timeslots);
+            }
+        }
+
+        public async Task<Result<IEnumerable<Schedule>>> GetMasterSchedule(int employeeId)
+        {
+            var parameters = new
+            {
+                Id = employeeId
+            };
+
+            var query = "SELECT s.id, s.weekday, s.start_time, s.end_time "
+                        + "FROM Schedule s "
+                        + "WHERE s.employee_id =@Id;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var schedule = await connection.QueryAsync<Schedule>(query, parameters);
+                if (!schedule.Any())
+                {
+                    return new Result<IEnumerable<Schedule>>(new NotFoundException("Master is not found"));
+                }
+                return new Result<IEnumerable<Schedule>>(schedule);
+            }
+        }
+
+        public async Task<Result<IEnumerable<MasterWorkingDayDto>>> GetMasterWorkingDays
+            (int employeeId, DateRangeDto dateRange)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("EmployeeId", employeeId, DbType.Int32);
+            parameters.Add("StartDate", dateRange.StartDate, DbType.Date);
+            parameters.Add("EndDate", dateRange.EndDate, DbType.Date);
+
+            var query = "SELECT * FROM get_master_working_days(@EmployeeId, @StartDate, @EndDate);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var days = await connection.QueryAsync<MasterWorkingDayDto>(query, parameters);
+                return new Result<IEnumerable<MasterWorkingDayDto>>(days);
             }
         }
     }
