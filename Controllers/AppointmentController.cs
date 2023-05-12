@@ -22,5 +22,12 @@ namespace TestApiSalon.Controllers
             var appointments = await _appointmentService.GetCustomerAppointments(customerId, salonId, paging);
             return appointments.MakeResponse();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAppointment([FromBody] AppointmentCreateDto request)
+        {
+            var result = await _appointmentService.CreateAppointment(request);
+            return result.MakeResponse();
+        }
     }
 }

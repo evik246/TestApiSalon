@@ -1,4 +1,6 @@
-﻿namespace TestApiSalon.Models
+﻿using System.Text.Json.Serialization;
+
+namespace TestApiSalon.Models
 {
     public class Appointment
     {
@@ -18,6 +20,7 @@
 
         public Service? Service { get; set; }
 
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public AppointmentStatus Status { get; set; }
 
         public decimal Price { get; set; }

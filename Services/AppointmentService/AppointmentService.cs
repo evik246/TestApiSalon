@@ -1,5 +1,9 @@
 ﻿using Dapper;
+using Npgsql;
+using System.Data;
 using TestApiSalon.Dtos;
+using TestApiSalon.Exceptions;
+using TestApiSalon.Extensions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
 
@@ -50,6 +54,31 @@ namespace TestApiSalon.Services.AppointmentService
                     }, param: parameters
                 );
                 return new Result<IEnumerable<CustomerAppointmentDto>>(appointments);
+            }
+        }
+
+        public async Task<Result<string>> CreateAppointment(AppointmentCreateDto request)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("Date", request.Date.ToCorrectDateTime(), DbType.DateTime2);
+            parameters.Add("CustomerId", request.CustomerId, DbType.Int32);
+            parameters.Add("ServiceId", request.ServiceId, DbType.Int32);
+            parameters.Add("EmployeeId", request.EmployeeId, DbType.Int32);
+
+            var query = "INSERT INTO appointment (date, customer_id, service_id, employee_id) " +
+                "VALUES (@Date, @CustomerId, @ServiceId, @EmployeeId);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                try
+                {
+                    await connection.QueryAsync(query, parameters);
+                    return new Result<string>("Appointment is created successfully");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("P0001"))
+                {
+                    return new Result<string>(new ConflictException(ex.MessageText));
+                }
             }
         }
     }

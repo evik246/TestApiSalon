@@ -1,6 +1,4 @@
-﻿using TestApiSalon.Models;
-
-namespace TestApiSalon.Dtos
+﻿namespace TestApiSalon.Dtos
 {
     public class CustomerAppointmentDto
     {

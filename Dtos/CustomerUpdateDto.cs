@@ -11,7 +11,7 @@ namespace TestApiSalon.Dtos
 
         [NullableProperty(nameof(IsBirthdayNullable))]
         [Birthday(MinAge = 1, MaxAge = 100, ErrorMessage = "Birthday is invalid")]
-        public DateTime? Birthday { get; set; }
+        public DateOnly? Birthday { get; set; }
 
         [EmailAddress(ErrorMessage = "Email address is invalid")]
         public string? Email { get; set; }

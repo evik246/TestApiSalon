@@ -18,6 +18,12 @@ namespace TestApiSalon.Attributes
             {
                 return dateOnly.ToDateTime(TimeOnly.MinValue) >= DateTime.Today;
             }
+
+            if (value is DateTimeOffset dateOffset)
+            {
+                DateTime correctDate = dateOffset.DateTime;
+                return correctDate >= DateTime.Now;
+            }
             return false;
         }
     }
