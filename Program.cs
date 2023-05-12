@@ -10,6 +10,7 @@ using TestApiSalon.Services.AppointmentService;
 using TestApiSalon.Services.AuthService;
 using TestApiSalon.Services.CategoryService;
 using TestApiSalon.Services.ClaimsIdentityService;
+using TestApiSalon.Services.CommentService;
 using TestApiSalon.Services.ConnectionService;
 using TestApiSalon.Services.CustomerService;
 using TestApiSalon.Services.EmployeeService;
@@ -47,6 +48,7 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
