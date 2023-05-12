@@ -42,7 +42,7 @@ namespace TestApiSalon.Services.ScheduleService
 
             var query = "SELECT s.id, s.weekday, s.start_time, s.end_time "
                         + "FROM Schedule s "
-                        + "WHERE s.employee_id =@Id;";
+                        + "WHERE s.employee_id = @Id;";
 
             using (var connection = _connectionService.CreateConnection())
             {

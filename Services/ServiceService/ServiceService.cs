@@ -107,5 +107,43 @@ namespace TestApiSalon.Services.ServiceService
                 return new Result<Service>(services.First());
             }
         }
+
+        public async Task<Result<IEnumerable<Service>>> GetServicesInSalon(int salonId, Paging paging)
+        {
+            var parameters = new
+            {
+                Id = salonId,
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT DISTINCT s.id, s.name, s.price, s.execution_time, "
+                        + "c.id, c.name "
+                        + "FROM Service s "
+                        + "JOIN ServiceCategory c ON c.id = s.category_id "
+                        + "JOIN Skill sk ON sk.service_id = s.id "
+                        + "JOIN Employee e ON sk.employee_id = e.id "
+                        + "JOIN Salon sa ON e.salon_id = sa.id "
+                        + "WHERE sa.id = @Id "
+                        + "ORDER BY s.id "
+                        + "OFFSET @Skip LIMIT @Take;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var services = await connection.QueryAsync(
+                    query, (Service service, ServiceCategory category) =>
+                    {
+                        service.Category = category;
+                        return service;
+                    },
+                    param: parameters
+                );
+                if (!services.Any())
+                {
+                    return new Result<IEnumerable<Service>>(new NotFoundException("Salon is not found"));
+                }
+                return new Result<IEnumerable<Service>>(services);
+            }
+        }
     }
 }
