@@ -152,5 +152,30 @@ namespace TestApiSalon.Services.AppointmentService
                 return new Result<IEnumerable<MasterAppointmentDto>>(appointments);
             }
         }
+
+        public async Task<Result<string>> MarkAppointmentCompleted(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("Id", id, DbType.Int32);
+
+            var query = "CALL mark_appointment_completed(@Id);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                try
+                {
+                    await connection.ExecuteAsync(query, parameters);
+                    return new Result<string>("Appointment is marked as completed");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("P0001"))
+                {
+                    if (ex.MessageText.Equals("Appointment is not found"))
+                    {
+                        return new Result<string>(new NotFoundException(ex.MessageText));
+                    }
+                    return new Result<string>(new ConflictException(ex.MessageText));
+                }
+            }
+        }
     }
 }

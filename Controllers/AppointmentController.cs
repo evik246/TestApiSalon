@@ -51,5 +51,12 @@ namespace TestApiSalon.Controllers
             var appointments = await _appointmentService.GetMasterAppintments(masterId, paging, customerId);
             return appointments.MakeResponse();
         }
+
+        [HttpPut("{id}/mark_complete")]
+        public async Task<IActionResult> MarkAppointmentComplete(int id)
+        {
+            var result = await _appointmentService.MarkAppointmentCompleted(id);
+            return result.MakeResponse();
+        }
     }
 }

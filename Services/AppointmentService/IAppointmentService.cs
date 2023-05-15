@@ -9,5 +9,6 @@ namespace TestApiSalon.Services.AppointmentService
         Task<Result<string>> CreateAppointment(AppointmentCreateDto request);
         Task<Result<string>> CancelAppointment(int customerId, int appointmentId);
         Task<Result<IEnumerable<MasterAppointmentDto>>> GetMasterAppintments(int masterId, Paging paging, int? customerId = null);
+        Task<Result<string>> MarkAppointmentCompleted(int id);
     }
 }
