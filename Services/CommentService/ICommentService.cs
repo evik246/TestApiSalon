@@ -8,5 +8,6 @@ namespace TestApiSalon.Services.CommentService
     {
         Task<Result<IEnumerable<Comment>>> GetAllComments(Paging paging, int? salonId = null);
         Task<Result<string>> CreateComment(CommentCreateDto request);
+        Task<Result<string>> DeleteComment(int commentId);
     }
 }

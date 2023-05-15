@@ -37,5 +37,12 @@ namespace TestApiSalon.Controllers
             var result = await _commentService.CreateComment(request);
             return result.MakeResponse();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteComment(int id)
+        {
+            var result = await _commentService.DeleteComment(id);
+            return result.MakeResponse();
+        }
     }
 }

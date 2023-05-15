@@ -5,6 +5,7 @@ using TestApiSalon.Dtos.Comment;
 using TestApiSalon.Dtos.Customer;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Salon;
+using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
 
@@ -66,6 +67,26 @@ namespace TestApiSalon.Services.CommentService
             {
                 await connection.ExecuteAsync(query, request);
                 return new Result<string>("Comment added successfully");
+            }
+        }
+
+        public async Task<Result<string>> DeleteComment(int commentId)
+        {
+            var parameters = new
+            {
+                Id = commentId
+            };
+
+            var query = "DELETE FROM Comment WHERE id = @Id;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                int rows = await connection.ExecuteAsync(query, parameters);
+                if (rows == 0)
+                {
+                    return new Result<string>(new NotFoundException("Comment is not found"));
+                }
+                return new Result<string>("Comment deleted successfully");
             }
         }
     }
