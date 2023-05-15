@@ -22,5 +22,12 @@ namespace TestApiSalon.Controllers
             var categories = await _categoryService.GetAllCategories(paging);
             return categories.MakeResponse();
         }
+
+        [HttpGet("salon/{id}")]
+        public async Task<IActionResult> GetCategoriesInSalon(int id, [FromQuery] Paging paging)
+        {
+            var categories = await _categoryService.GetCategoriesInSalon(id, paging);
+            return categories.MakeResponse();
+        }
     }
 }
