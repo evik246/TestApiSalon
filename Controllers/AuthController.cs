@@ -17,7 +17,7 @@ namespace TestApiSalon.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody]UserLoginDto request)
+        public async Task<IActionResult> Login([FromBody] UserLoginDto request)
         {
             var token = await _authService.Login(request);
             return token.MakeResponse();
