@@ -1,7 +1,7 @@
 ﻿using Dapper;
-using System.Net.NetworkInformation;
 using TestApiSalon.Dtos.Employee;
 using TestApiSalon.Dtos.Other;
+using TestApiSalon.Dtos.Salon;
 using TestApiSalon.Dtos.Service;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
@@ -144,15 +144,15 @@ namespace TestApiSalon.Services.EmployeeService
                             masterEntity.Services.Add(service);
                         }
                     }
+                    masterEntity.PhotoPath = GetPhotoURL(masterEntity.PhotoPath, masterEntity.Id).Value;
                     return masterEntity;
                 }, param: parameters);
 
-                var master = masters.First();
+                var master = masters.FirstOrDefault();
                 if (master is null)
                 {
                     return new Result<MasterWithServicesDto>(new NotFoundException("Master is not found"));
                 }
-                master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
                 return new Result<MasterWithServicesDto>(masters.First());
             }
         }
@@ -202,14 +202,46 @@ namespace TestApiSalon.Services.EmployeeService
                                 masterEntity.Services.Add(service);
                             }
                         }
+                        masterEntity.PhotoPath = GetPhotoURL(masterEntity.PhotoPath, masterEntity.Id).Value;
                         return masterEntity;
                     }, param: parameters);
 
-                foreach (var master in masters)
-                {
-                    master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
-                }
                 return new Result<IEnumerable<MasterWithServicesDto>>(masters.Distinct());
+            }
+        }
+
+        public async Task<Result<MasterWithSalonDto>> GetMaster(int id)
+        {
+            var parameters = new
+            {
+                Id = id
+            };
+
+            var query = "SELECT e.id, e.name, e.last_name, e.email, "
+                        + "e.specialization, e.photo_path, "
+                        + "s.id, s.address "
+                        + "FROM Employee e "
+                        + "JOIN Salon s ON e.salon_id = s.id "
+                        + "WHERE e.id = @Id;";
+
+            using (var connection = _connectionService.CreateConnection
+                ())
+            {
+                var masters = await connection.QueryAsync(
+                    query, (MasterWithSalonDto master, SalonDto salon) =>
+                    {
+                        master.Salon = salon;
+                        master.SalonId = salon.Id;
+                        master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
+                        return master;
+                    }, param: parameters
+                );
+                var master = masters.FirstOrDefault();
+                if (master is null)
+                {
+                    return new Result<MasterWithSalonDto>(new NotFoundException("Master is not found"));
+                }
+                return new Result<MasterWithSalonDto>(master);
             }
         }
     }

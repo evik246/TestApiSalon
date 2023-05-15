@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Net.Mime;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.EmployeeService;
@@ -31,10 +30,17 @@ namespace TestApiSalon.Controllers
             return file.MakeFileResponse(this);
         }
 
-        [HttpGet("master/{id}")]
+        [HttpGet("master/{id}/service")]
         public async Task<IActionResult> GetMasterWithServicesById(int id)
         {
             var master = await _employeeService.GetMasterWithServices(id);
+            return master.MakeResponse();
+        }
+
+        [HttpGet("master/{id}")]
+        public async Task<IActionResult> GetMasterById(int id)
+        {
+            var master = await _employeeService.GetMaster(id);
             return master.MakeResponse();
         }
 
