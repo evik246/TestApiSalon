@@ -26,7 +26,7 @@ namespace TestApiSalon.Services.SalonService
                         + "c.id, c.name "
                         + "FROM Salon s "
                         + "JOIN City c ON s.city_id = c.id "
-                        + "ORDER BY s.id "
+                        + "ORDER BY s.address, c.name "
                         + "OFFSET @Skip LIMIT @Take;";
 
             using (var connection = _connectionService.CreateConnection())
@@ -57,7 +57,7 @@ namespace TestApiSalon.Services.SalonService
                         + "FROM Salon s "
                         + "JOIN City c ON s.city_id = c.id "
                         + "WHERE c.id = @Id "
-                        + "ORDER BY s.id "
+                        + "ORDER BY s.address "
                         + "OFFSET @Skip LIMIT @Take;";
 
             using (var connection = _connectionService.CreateConnection())
