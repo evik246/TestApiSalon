@@ -6,6 +6,7 @@ using TestApiSalon.Dtos.Appointment;
 using TestApiSalon.Dtos.Customer;
 using TestApiSalon.Dtos.Employee;
 using TestApiSalon.Dtos.Other;
+using TestApiSalon.Dtos.Schedule;
 using TestApiSalon.Dtos.Service;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Extensions;
@@ -175,6 +176,51 @@ namespace TestApiSalon.Services.AppointmentService
                     }
                     return new Result<string>(new ConflictException(ex.MessageText));
                 }
+            }
+        }
+
+        public async Task<Result<int>> GetCompletedAppointmentsCount(int masterId, DateRangeDto dateRange)
+        {
+            var parameters = new
+            {
+                Id = masterId,
+                StartDate = dateRange.StartDate,
+                EndDate = dateRange.EndDate
+            };
+
+            var query = "SELECT COUNT(*) AS completed_services "
+                        + "FROM Appointment "
+                        + "WHERE status = 'Completed' "
+                        + "AND employee_id = @Id "
+                        + "AND date BETWEEN @StartDate AND @EndDate;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(query, parameters);
+                return new Result<int>(count);
+            }
+        }
+
+        public async Task<Result<double>> GetCompletedAppointmentsIncome(int masterId, DateRangeDto dateRange)
+        {
+            var parameters = new
+            {
+                Id = masterId,
+                StartDate = dateRange.StartDate,
+                EndDate = dateRange.EndDate
+            };
+
+            var query = "SELECT SUM(s.price) AS income "
+                        + "FROM Appointment a "
+                        + "JOIN Service s ON a.service_id = s.id "
+                        + "WHERE a.status = 'Completed' "
+                        + "AND a.employee_id = @Id "
+                        + "AND a.date BETWEEN @StartDate AND @EndDate;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var income = await connection.ExecuteScalarAsync<double>(query, parameters);
+                return new Result<double>(income);
             }
         }
     }

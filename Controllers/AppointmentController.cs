@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TestApiSalon.Dtos.Appointment;
 using TestApiSalon.Dtos.Other;
+using TestApiSalon.Dtos.Schedule;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.AppointmentService;
 
@@ -57,6 +58,20 @@ namespace TestApiSalon.Controllers
         {
             var result = await _appointmentService.MarkAppointmentCompleted(id);
             return result.MakeResponse();
+        }
+
+        [HttpGet("master/{id}/count")]
+        public async Task<IActionResult> GetCompletedAppointmentsCount(int id, [FromQuery] DateRangeDto dateRange)
+        {
+            var count = await _appointmentService.GetCompletedAppointmentsCount(id, dateRange);
+            return count.MakeResponse();
+        }
+
+        [HttpGet("master/{id}/income")]
+        public async Task<IActionResult> GetCompletedAppointmentsIncome(int id, [FromQuery] DateRangeDto dateRange)
+        {
+            var income = await _appointmentService.GetCompletedAppointmentsIncome(id, dateRange);
+            return income.MakeResponse();
         }
     }
 }
