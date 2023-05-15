@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.SalonService;
@@ -21,6 +20,13 @@ namespace TestApiSalon.Controllers
         public async Task<IActionResult> GetSalons([FromQuery] Paging paging)
         {
             var salons = await _salonService.GetAllSalons(paging);
+            return salons.MakeResponse();
+        }
+
+        [HttpGet("city/{id}")]
+        public async Task<IActionResult> GetSalonsInCity(int id, [FromQuery] Paging paging)
+        {
+            var salons = await _salonService.GetSalonsInCity(id, paging);
             return salons.MakeResponse();
         }
     }
