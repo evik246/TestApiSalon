@@ -35,6 +35,7 @@ var connections = new Dictionary<DbConnectionName, string>
 {
     { DbConnectionName.Default, "DefaultConnection" },
     { DbConnectionName.Client, "ClientConnection" },
+    { DbConnectionName.Master, "MasterConnection" }
 };
 builder.Services.AddSingleton<IDictionary<DbConnectionName, string>>(connections);
 builder.Services.AddSingleton<DataContext>();
