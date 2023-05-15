@@ -37,5 +37,19 @@ namespace TestApiSalon.Controllers
             var result = await _appointmentService.CancelAppointment(customerId, appointmentId);
             return result.MakeResponse();
         }
+
+        [HttpGet("master/{masterId}")]
+        public async Task<IActionResult> GetMasterAppointments(int masterId, [FromQuery] Paging paging)
+        {
+            var appointments = await _appointmentService.GetMasterAppintments(masterId, paging);
+            return appointments.MakeResponse();
+        }
+
+        [HttpGet("master/{masterId}/customer/{customerId}")]
+        public async Task<IActionResult> GetMasterAppointments(int masterId, int customerId, [FromQuery] Paging paging)
+        {
+            var appointments = await _appointmentService.GetMasterAppintments(masterId, paging, customerId);
+            return appointments.MakeResponse();
+        }
     }
 }

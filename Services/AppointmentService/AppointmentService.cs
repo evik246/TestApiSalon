@@ -1,7 +1,9 @@
 ﻿using Dapper;
 using Npgsql;
 using System.Data;
+using System.Text;
 using TestApiSalon.Dtos.Appointment;
+using TestApiSalon.Dtos.Customer;
 using TestApiSalon.Dtos.Employee;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Service;
@@ -20,7 +22,8 @@ namespace TestApiSalon.Services.AppointmentService
             _connectionService = connectionService;
         }
 
-        public async Task<Result<IEnumerable<CustomerAppointmentDto>>> GetCustomerAppointments(int customerId, int salonId, Paging paging)
+        public async Task<Result<IEnumerable<CustomerAppointmentDto>>> GetCustomerAppointments
+            (int customerId, int salonId, Paging paging)
         {
             var parameters = new
             {
@@ -103,6 +106,50 @@ namespace TestApiSalon.Services.AppointmentService
                     return new Result<string>(new NotFoundException("Customer or appointment is not found"));
                 }
                 return new Result<string>("Appointment deleted successfully");
+            }
+        }
+
+        public async Task<Result<IEnumerable<MasterAppointmentDto>>> GetMasterAppintments
+            (int masterId, Paging paging, int? customerId = null)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("MasterId", masterId, DbType.Int32);
+            parameters.Add("Skip", paging.Skip, DbType.Int32);
+            parameters.Add("Take", paging.PageSize, DbType.Int32);
+
+            StringBuilder builder = new StringBuilder();
+            builder.Append("SELECT a.id, a.date, ");
+            builder.Append("s.id, s.name, ");
+            builder.Append("c.id, c.name ");
+            builder.Append("FROM Appointment a ");
+            builder.Append("JOIN Service s ON a.service_id = s.id ");
+            builder.Append("JOIN Customer c ON a.customer_id = c.id ");
+            builder.Append("WHERE a.employee_id = @MasterId ");
+            builder.Append("AND a.status = 'Active' ");
+
+            if (customerId != null)
+            {
+                builder.Append("AND a.customer_id = @CustomerId ");
+                parameters.Add("CustomerId", customerId, DbType.Int32);
+            }
+
+            builder.Append("ORDER BY a.date ");
+            builder.Append("OFFSET @Skip LIMIT @Take;");
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var appointments = await connection.QueryAsync(
+                    builder.ToString(), 
+                    (MasterAppointmentDto appointment,
+                    ServiceNameDto service,
+                    CustomerDto customer) =>
+                    {
+                        appointment.Service = service;
+                        appointment.Customer = customer;
+                        return appointment;
+                    }, param: parameters
+                );
+                return new Result<IEnumerable<MasterAppointmentDto>>(appointments);
             }
         }
     }
