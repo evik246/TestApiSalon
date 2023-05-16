@@ -22,6 +22,10 @@ namespace TestApiSalon.Attributes
 
             if (user == null ||  identity == null || !identity.IsAuthenticated) 
             {
+                if (_roles.Length == 0 || _roles.Contains("Guest")) 
+                {
+                    return;
+                }
                 throw new UnauthorizedException("Bearer token is missed");
             }
 

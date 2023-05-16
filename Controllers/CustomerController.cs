@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TestApiSalon.Attributes;
 using TestApiSalon.Dtos.Customer;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.CustomerService;
@@ -16,6 +17,7 @@ namespace TestApiSalon.Controllers
             _customerService = customerService;
         }
 
+        [Roles("Guest", "Client")]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]CustomerRegisterDto request)
         {
@@ -23,6 +25,7 @@ namespace TestApiSalon.Controllers
             return customer.MakeResponse();
         }
 
+        [Roles("Client")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomer(int id)
         {
@@ -30,6 +33,7 @@ namespace TestApiSalon.Controllers
             return customer.MakeResponse();
         }
 
+        [Roles("Client")]
         [HttpPut("{id}")]
         public async Task<IActionResult> ChangeCustomer(int id, [FromBody]CustomerUpdateDto request)
         {
