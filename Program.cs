@@ -33,6 +33,7 @@ SqlMapper.AddTypeHandler(new TimeOnlyTypeHandler());
 var connections = new Dictionary<DbConnectionName, string>
 {
     { DbConnectionName.Default, "DefaultConnection" },
+    { DbConnectionName.Guest, "GuestConnection" },
     { DbConnectionName.Client, "ClientConnection" },
     { DbConnectionName.Master, "MasterConnection" }
 };

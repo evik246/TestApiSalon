@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TestApiSalon.Dtos.Customer;
-using TestApiSalon.Exceptions;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.CustomerService;
 

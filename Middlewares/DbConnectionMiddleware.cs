@@ -30,7 +30,7 @@ namespace TestApiSalon.Middlewares
                     "Manager" => DbConnectionName.Manager,
                     "Master" => DbConnectionName.Master,
                     "Client" => DbConnectionName.Client,
-                    _ => DbConnectionName.Master,
+                    _ => DbConnectionName.Guest,
                 };
                 await _next(context);
             }
