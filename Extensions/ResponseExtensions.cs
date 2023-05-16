@@ -4,11 +4,37 @@ using System.Net;
 using System.Net.Mime;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Exceptions;
+using TestApiSalon.Services.CustomerService;
 
 namespace TestApiSalon.Extensions
 {
     public static class ResponseExtensions
     {
+        public static string? GetEmailFromRequest(this ControllerBase controller)
+        {
+            return controller.User.Claims.FirstOrDefault(
+                c => c.Type.Equals("email"))?.Value;
+        }
+
+        public static async Task<Result<int>> GetAuthorizedCustomerId(this ControllerBase controller, ICustomerService customerService)
+        {
+            string? email = GetEmailFromRequest(controller);
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                var result = await customerService.GetCustomerByEmail(email);
+                if (result.State == ResultState.Success)
+                {
+                    int? customerId = result.Value?.Id;
+                    if (customerId != null)
+                    {
+                        return new Result<int>(customerId.Value);
+                    }
+                }
+            }
+            return new Result<int>(new ForbiddenException("No permission to access"));
+        }
+
         public static IActionResult MakeFileResponse(this Result<Stream> result, ControllerBase controllerBase)
         {
             return result.Match(stream =>

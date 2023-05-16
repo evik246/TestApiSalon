@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TestApiSalon.Attributes;
 using TestApiSalon.Dtos.Customer;
+using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.CustomerService;
 
@@ -26,19 +27,29 @@ namespace TestApiSalon.Controllers
         }
 
         [Roles("Client")]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCustomer(int id)
+        [HttpGet("account")]
+        public async Task<IActionResult> GetCustomer()
         {
-            var customer = await _customerService.GetCustomerById(id);
-            return customer.MakeResponse();
+            var customerId = await this.GetAuthorizedCustomerId(_customerService);
+            if (customerId.State == ResultState.Success)
+            {
+                var customer = await _customerService.GetCustomerById(customerId.Value);
+                return customer.MakeResponse();
+            }
+            return customerId.MakeResponse();
         }
 
         [Roles("Client")]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> ChangeCustomer(int id, [FromBody]CustomerUpdateDto request)
+        [HttpPut("account")]
+        public async Task<IActionResult> ChangeCustomer([FromBody]CustomerUpdateDto request)
         {
-            var customer = await _customerService.UpdateCustomer(id, request);
-            return customer.MakeResponse();
+            var customerId = await this.GetAuthorizedCustomerId(_customerService);
+            if (customerId.State == ResultState.Success)
+            {
+                var customer = await _customerService.UpdateCustomer(customerId.Value, request);
+                return customer.MakeResponse();
+            }
+            return customerId.MakeResponse();
         }
     }
 }
