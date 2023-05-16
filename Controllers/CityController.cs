@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using TestApiSalon.Attributes;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.CityService;
@@ -17,6 +17,7 @@ namespace TestApiSalon.Controllers
             _cityService = cityService;
         }
 
+        [Roles("Guest", "Client")]
         [HttpGet]
         public async Task<IActionResult> GetCities([FromQuery] Paging paging)
         {

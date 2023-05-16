@@ -5,6 +5,7 @@ using System.Net.Mime;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Services.CustomerService;
+using TestApiSalon.Services.EmployeeService;
 
 namespace TestApiSalon.Extensions
 {
@@ -29,6 +30,25 @@ namespace TestApiSalon.Extensions
                     if (customerId != null)
                     {
                         return new Result<int>(customerId.Value);
+                    }
+                }
+            }
+            return new Result<int>(new ForbiddenException("No permission to access"));
+        }
+
+        public static async Task<Result<int>> GetAuthorizedEmployeeId(this ControllerBase controller, IEmployeeService employeeService)
+        {
+            string? email = GetEmailFromRequest(controller);
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                var result = await employeeService.GetEmployeeByEmail(email);
+                if (result.State == ResultState.Success)
+                {
+                    int? employeeId = result.Value?.Id;
+                    if (employeeId != null)
+                    {
+                        return new Result<int>(employeeId.Value);
                     }
                 }
             }

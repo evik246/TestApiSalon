@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TestApiSalon.Attributes;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.CategoryService;
@@ -16,13 +17,7 @@ namespace TestApiSalon.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetCategories([FromQuery] Paging paging)
-        {
-            var categories = await _categoryService.GetAllCategories(paging);
-            return categories.MakeResponse();
-        }
-
+        [Roles("Guest", "Client")]
         [HttpGet("salon/{id}")]
         public async Task<IActionResult> GetCategoriesInSalon(int id, [FromQuery] Paging paging)
         {

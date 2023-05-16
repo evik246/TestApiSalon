@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TestApiSalon.Attributes;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.SalonService;
@@ -16,6 +17,7 @@ namespace TestApiSalon.Controllers
             _salonService = salonService;
         }
 
+        [Roles("Guest", "Client")]
         [HttpGet]
         public async Task<IActionResult> GetSalons([FromQuery] Paging paging)
         {
@@ -23,6 +25,7 @@ namespace TestApiSalon.Controllers
             return salons.MakeResponse();
         }
 
+        [Roles("Guest", "Client")]
         [HttpGet("city/{id}")]
         public async Task<IActionResult> GetSalonsInCity(int id, [FromQuery] Paging paging)
         {

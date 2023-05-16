@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TestApiSalon.Attributes;
 using TestApiSalon.Dtos.Auth;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.AuthService;
@@ -23,6 +24,7 @@ namespace TestApiSalon.Controllers
             return token.MakeResponse();
         }
 
+        [Roles("Client")]
         [HttpPut("reset_password")]
         public async Task<IActionResult> ResetPassword([FromBody] UserUpdatePasswordDto request)
         {

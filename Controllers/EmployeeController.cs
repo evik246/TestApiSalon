@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TestApiSalon.Attributes;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.EmployeeService;
@@ -16,13 +17,6 @@ namespace TestApiSalon.Controllers
             _employeeService = employeeService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetEmployees([FromQuery] Paging paging)
-        {
-            var employees = await _employeeService.GetAllEmployees(paging);
-            return employees.MakeResponse();
-        }
-
         [HttpGet("{id}/photo")]
         public async Task<IActionResult> GetEmployeePhoto(int id)
         {
@@ -30,6 +24,7 @@ namespace TestApiSalon.Controllers
             return file.MakeFileResponse(this);
         }
 
+        [Roles("Guest", "Client")]
         [HttpGet("master/{id}/service")]
         public async Task<IActionResult> GetMasterWithServicesById(int id)
         {
@@ -37,13 +32,20 @@ namespace TestApiSalon.Controllers
             return master.MakeResponse();
         }
 
-        [HttpGet("master/{id}")]
-        public async Task<IActionResult> GetMasterById(int id)
+        [Roles("Master")]
+        [HttpGet("master/account")]
+        public async Task<IActionResult> GetMaster()
         {
-            var master = await _employeeService.GetMaster(id);
-            return master.MakeResponse();
+            var employeeId = await this.GetAuthorizedEmployeeId(_employeeService);
+            if (employeeId.State == ResultState.Success)
+            {
+                var master = await _employeeService.GetMaster(employeeId.Value);
+                return master.MakeResponse();
+            }
+            return employeeId.MakeResponse();
         }
 
+        [Roles("Guest", "Client")]
         [HttpGet("salon/{id}/master")]
         public async Task<IActionResult> GetAllMastersWithServices(int id, [FromQuery] Paging paging)
         {

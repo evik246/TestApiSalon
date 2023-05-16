@@ -9,6 +9,7 @@ namespace TestApiSalon.Services.EmployeeService
         Result<string> GetPhotoURL(string? photopath, int employeeId);
         Task<Result<IEnumerable<Employee>>> GetAllEmployees(Paging paging);
         Task<Result<Employee>> GetEmployeeById(int id);
+        Task<Result<Employee>> GetEmployeeByEmail(string email);
         Task<Result<Stream>> GetEmployeePhoto(int id);
         Task<Result<MasterWithServicesDto>> GetMasterWithServices(int id);
         Task<Result<IEnumerable<MasterWithServicesDto>>> GetAllMastersWithServices(int salonId, Paging paging);

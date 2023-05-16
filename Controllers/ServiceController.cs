@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TestApiSalon.Attributes;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.ServiceService;
@@ -16,20 +17,7 @@ namespace TestApiSalon.Controllers
             _serviceService = serviceService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetServices([FromQuery] Paging paging)
-        {
-            var services = await _serviceService.GetAllServices(paging);
-            return services.MakeResponse();
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetServiceById(int id)
-        {
-            var service = await _serviceService.GetServiceById(id);
-            return service.MakeResponse();
-        }
-
+        [Roles("Guest", "Client")]
         [HttpGet("master/{id}")]
         public async Task<IActionResult> GetMasterServices(int id, [FromQuery] Paging paging)
         {
@@ -37,6 +25,7 @@ namespace TestApiSalon.Controllers
             return services.MakeResponse();
         }
 
+        [Roles("Guest", "Client")]
         [HttpGet("salon/{id}")]
         public async Task<IActionResult> GetSalonServices(int id, [FromQuery] Paging paging)
         {

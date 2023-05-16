@@ -86,6 +86,27 @@ namespace TestApiSalon.Services.EmployeeService
             }
         }
 
+        public async Task<Result<Employee>> GetEmployeeByEmail(string email)
+        {
+            var parameters = new
+            {
+                Email = email
+            };
+
+            var query = "SELECT * FROM Employee WHERE email = @Email;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var employee = await connection.QueryFirstOrDefaultAsync<Employee>(query, parameters);
+                if (employee is null)
+                {
+                    return new Result<Employee>(new NotFoundException("Employee is not found"));
+                }
+                employee.PhotoURL = GetPhotoURL(employee.PhotoPath, employee.Id).Value;
+                return new Result<Employee>(employee);
+            }
+        }
+
         public async Task<Result<Stream>> GetEmployeePhoto(int id)
         {
             Result<Employee> employee = await GetEmployeeById(id);
