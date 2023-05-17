@@ -41,11 +41,16 @@ namespace TestApiSalon.Controllers
         }
 
         [Roles("Client")]
-        [HttpPost]
+        [HttpPost("customer/account")]
         public async Task<IActionResult> CreateAppointment([FromBody] AppointmentCreateDto request)
         {
-            var result = await _appointmentService.CreateAppointment(request);
-            return result.MakeResponse();
+            var customerId = await this.GetAuthorizedCustomerId(_customerService);
+            if (customerId.State == ResultState.Success)
+            {
+                var result = await _appointmentService.CreateAppointment(customerId.Value, request);
+                return result.MakeResponse();
+            }
+            return customerId.MakeResponse();
         }
 
         [Roles("Client")]

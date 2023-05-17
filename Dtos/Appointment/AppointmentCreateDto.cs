@@ -9,9 +9,6 @@ namespace TestApiSalon.Dtos.Appointment
         [NotPast(ErrorMessage = "Date must not be in the past")]
         public required DateTimeOffset Date { get; set; }
 
-        [Required(ErrorMessage = "Customer id is required")]
-        public required int CustomerId { get; set; }
-
         [Required(ErrorMessage = "Service id is required")]
         public required int ServiceId { get; set; }
 

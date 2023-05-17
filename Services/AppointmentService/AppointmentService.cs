@@ -63,11 +63,11 @@ namespace TestApiSalon.Services.AppointmentService
             }
         }
 
-        public async Task<Result<string>> CreateAppointment(AppointmentCreateDto request)
+        public async Task<Result<string>> CreateAppointment(int customerId, AppointmentCreateDto request)
         {
             var parameters = new DynamicParameters();
             parameters.Add("Date", request.Date.ToCorrectDateTime(), DbType.DateTime2);
-            parameters.Add("CustomerId", request.CustomerId, DbType.Int32);
+            parameters.Add("CustomerId", customerId, DbType.Int32);
             parameters.Add("ServiceId", request.ServiceId, DbType.Int32);
             parameters.Add("EmployeeId", request.EmployeeId, DbType.Int32);
 
