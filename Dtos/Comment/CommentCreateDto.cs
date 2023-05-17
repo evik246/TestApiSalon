@@ -13,8 +13,5 @@ namespace TestApiSalon.Dtos.Comment
 
         [Required(ErrorMessage = "Salon id is required")]
         public required int SalonId { get; set; }
-
-        [Required(ErrorMessage = "Customer is is required")]
-        public required int CustomerId { get; set; }
     }
 }

@@ -7,7 +7,7 @@ namespace TestApiSalon.Services.CommentService
     public interface ICommentService
     {
         Task<Result<IEnumerable<Comment>>> GetAllComments(Paging paging, int? salonId = null);
-        Task<Result<string>> CreateComment(CommentCreateDto request);
-        Task<Result<string>> DeleteComment(int commentId);
+        Task<Result<string>> CreateComment(int customerId, CommentCreateDto request);
+        Task<Result<string>> DeleteComment(int customerId, int commentId);
     }
 }

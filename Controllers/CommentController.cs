@@ -4,6 +4,7 @@ using TestApiSalon.Dtos.Comment;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.CommentService;
+using TestApiSalon.Services.CustomerService;
 
 namespace TestApiSalon.Controllers
 {
@@ -12,10 +13,12 @@ namespace TestApiSalon.Controllers
     public class CommentController : ControllerBase
     {
         private readonly ICommentService _commentService;
+        private readonly ICustomerService _customerService;
 
-        public CommentController(ICommentService commentService)
+        public CommentController(ICommentService commentService, ICustomerService customerService)
         {
             _commentService = commentService;
+            _customerService = customerService;
         }
 
         [Roles("Guest", "Client")]
@@ -35,19 +38,29 @@ namespace TestApiSalon.Controllers
         }
 
         [Roles("Client")]
-        [HttpPost]
+        [HttpPost("customer/account")]
         public async Task<IActionResult> AddComment([FromBody] CommentCreateDto request)
         {
-            var result = await _commentService.CreateComment(request);
-            return result.MakeResponse();
+            var customerId = await this.GetAuthorizedCustomerId(_customerService);
+            if (customerId.State == ResultState.Success)
+            {
+                var result = await _commentService.CreateComment(customerId.Value, request);
+                return result.MakeResponse();
+            }
+            return customerId.MakeResponse();
         }
 
         [Roles("Client")]
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}/customer/account")]
         public async Task<IActionResult> DeleteComment(int id)
         {
-            var result = await _commentService.DeleteComment(id);
-            return result.MakeResponse();
+            var customerId = await this.GetAuthorizedCustomerId(_customerService);
+            if (customerId.State == ResultState.Success)
+            {
+                var result = await _commentService.DeleteComment(customerId.Value, id);
+                return result.MakeResponse();
+            }
+            return customerId.MakeResponse();
         }
     }
 }

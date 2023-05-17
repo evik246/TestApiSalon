@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Text;
 using TestApiSalon.Dtos.Comment;
@@ -58,26 +59,35 @@ namespace TestApiSalon.Services.CommentService
             }
         }
 
-        public async Task<Result<string>> CreateComment(CommentCreateDto request)
+        public async Task<Result<string>> CreateComment(int customerId, CommentCreateDto request)
         {
+            var parameters = new
+            {
+                CustomerId = customerId,
+                SalonId = request.SalonId,
+                Review = request.Review,
+                Rating = request.Rating
+            };
+
             var query = "INSERT INTO Comment (review, rating, salon_id, customer_id) " +
                 "VALUES (@Review, @Rating, @SalonId, @CustomerId);";
 
             using (var connection = _connectionService.CreateConnection())
             {
-                await connection.ExecuteAsync(query, request);
+                await connection.ExecuteAsync(query, parameters);
                 return new Result<string>("Comment added successfully");
             }
         }
 
-        public async Task<Result<string>> DeleteComment(int commentId)
+        public async Task<Result<string>> DeleteComment(int customerId, int commentId)
         {
             var parameters = new
             {
-                Id = commentId
+                CommentId = commentId,
+                CustomerId = customerId
             };
 
-            var query = "DELETE FROM Comment WHERE id = @Id;";
+            var query = "DELETE FROM Comment WHERE customer_id = @CustomerId AND id = @CommentId;";
 
             using (var connection = _connectionService.CreateConnection())
             {
