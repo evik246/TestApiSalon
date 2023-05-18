@@ -154,12 +154,13 @@ namespace TestApiSalon.Services.AppointmentService
             }
         }
 
-        public async Task<Result<string>> MarkAppointmentCompleted(int id)
+        public async Task<Result<string>> MarkMasterAppointmentCompleted(int masterId, int appointmentId)
         {
             var parameters = new DynamicParameters();
-            parameters.Add("Id", id, DbType.Int32);
+            parameters.Add("MasterId", masterId, DbType.Int32);
+            parameters.Add("AppointmentId", appointmentId, DbType.Int32);
 
-            var query = "CALL mark_appointment_completed(@Id);";
+            var query = "CALL mark_master_appointment_completed(@MasterId, @AppointmentId);";
 
             using (var connection = _connectionService.CreateConnection())
             {

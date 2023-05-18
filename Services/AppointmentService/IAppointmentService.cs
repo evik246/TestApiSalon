@@ -10,7 +10,7 @@ namespace TestApiSalon.Services.AppointmentService
         Task<Result<string>> CreateAppointment(int customerId, AppointmentCreateDto request);
         Task<Result<string>> CancelAppointment(int customerId, int appointmentId);
         Task<Result<IEnumerable<MasterAppointmentDto>>> GetMasterAppintments(int masterId, Paging paging, int? customerId = null);
-        Task<Result<string>> MarkAppointmentCompleted(int id);
+        Task<Result<string>> MarkMasterAppointmentCompleted(int masterId, int appointmentId);
         Task<Result<int>> GetCompletedAppointmentsCount(int masterId, DateRangeDto dateRange);
         Task<Result<double>> GetCompletedAppointmentsIncome(int masterId, DateRangeDto dateRange);
     }

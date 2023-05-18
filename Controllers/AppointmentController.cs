@@ -85,11 +85,16 @@ namespace TestApiSalon.Controllers
         }
 
         [Roles("Master")]
-        [HttpPut("{id}/mark_complete")]
+        [HttpPut("{id}/master/account/mark_complete")]
         public async Task<IActionResult> MarkAppointmentComplete(int id)
         {
-            var result = await _appointmentService.MarkAppointmentCompleted(id);
-            return result.MakeResponse();
+            var masterId = this.GetAuthorizedUserId();
+            if (masterId.State == ResultState.Success)
+            {
+                var result = await _appointmentService.MarkMasterAppointmentCompleted(masterId.Value, id);
+                return result.MakeResponse();
+            }
+            return masterId.MakeResponse();
         }
 
         [Roles("Master")]
