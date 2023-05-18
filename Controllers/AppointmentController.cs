@@ -5,8 +5,6 @@ using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Schedule;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.AppointmentService;
-using TestApiSalon.Services.CustomerService;
-using TestApiSalon.Services.EmployeeService;
 
 namespace TestApiSalon.Controllers
 {
@@ -15,23 +13,17 @@ namespace TestApiSalon.Controllers
     public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
-        private readonly ICustomerService _customerService;
-        private readonly IEmployeeService _employeeService;
 
-        public AppointmentController(IAppointmentService appointmentService,
-            ICustomerService customerService,
-            IEmployeeService employeeService)
+        public AppointmentController(IAppointmentService appointmentService)
         {
             _appointmentService = appointmentService;
-            _customerService = customerService;
-            _employeeService = employeeService;
         }
 
         [Roles("Client")]
         [HttpGet("customer/account/salon/{salonId}")]
         public async Task<IActionResult> GetCustomerAppointmentsInAccount(int salonId, [FromQuery] Paging paging)
         {
-            var customerId = await this.GetAuthorizedCustomerId(_customerService);
+            var customerId = this.GetAuthorizedUserId();
             if (customerId.State == ResultState.Success)
             {
                 var appointments = await _appointmentService.GetCustomerAppointments(customerId.Value, salonId, paging);
@@ -44,7 +36,7 @@ namespace TestApiSalon.Controllers
         [HttpPost("customer/account")]
         public async Task<IActionResult> CreateAppointment([FromBody] AppointmentCreateDto request)
         {
-            var customerId = await this.GetAuthorizedCustomerId(_customerService);
+            var customerId = this.GetAuthorizedUserId();
             if (customerId.State == ResultState.Success)
             {
                 var result = await _appointmentService.CreateAppointment(customerId.Value, request);
@@ -57,7 +49,7 @@ namespace TestApiSalon.Controllers
         [HttpDelete("{appointmentId}/customer/account")]
         public async Task<IActionResult> CancelAppointment(int appointmentId)
         {
-            var customerId = await this.GetAuthorizedCustomerId(_customerService);
+            var customerId = this.GetAuthorizedUserId();
             if (customerId.State == ResultState.Success)
             {
                 var result = await _appointmentService.CancelAppointment(customerId.Value, appointmentId);
@@ -70,7 +62,7 @@ namespace TestApiSalon.Controllers
         [HttpGet("master/account")]
         public async Task<IActionResult> GetMasterAppointments([FromQuery] Paging paging)
         {
-            var employeeId = await this.GetAuthorizedEmployeeId(_employeeService);
+            var employeeId = this.GetAuthorizedUserId();
             if (employeeId.State == ResultState.Success)
             {
                 var appointments = await _appointmentService.GetMasterAppintments(employeeId.Value, paging);
@@ -83,7 +75,7 @@ namespace TestApiSalon.Controllers
         [HttpGet("master/account/customer/{customerId}")]
         public async Task<IActionResult> GetMasterAppointments(int customerId, [FromQuery] Paging paging)
         {
-            var employeeId = await this.GetAuthorizedEmployeeId(_employeeService);
+            var employeeId = this.GetAuthorizedUserId();
             if (employeeId.State == ResultState.Success)
             {
                 var appointments = await _appointmentService.GetMasterAppintments(employeeId.Value, paging, customerId);
@@ -104,7 +96,7 @@ namespace TestApiSalon.Controllers
         [HttpGet("master/account/count")]
         public async Task<IActionResult> GetCompletedAppointmentsCount([FromQuery] DateRangeDto dateRange)
         {
-            var employeeId = await this.GetAuthorizedEmployeeId(_employeeService);
+            var employeeId = this.GetAuthorizedUserId();
             if (employeeId.State == ResultState.Success)
             {
                 var count = await _appointmentService.GetCompletedAppointmentsCount(employeeId.Value, dateRange);
@@ -117,7 +109,7 @@ namespace TestApiSalon.Controllers
         [HttpGet("master/account/income")]
         public async Task<IActionResult> GetCompletedAppointmentsIncome([FromQuery] DateRangeDto dateRange)
         {
-            var employeeId = await this.GetAuthorizedEmployeeId(_employeeService);
+            var employeeId = this.GetAuthorizedUserId();
             if (employeeId.State == ResultState.Success)
             {
                 var income = await _appointmentService.GetCompletedAppointmentsIncome(employeeId.Value, dateRange);

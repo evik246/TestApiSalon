@@ -4,53 +4,31 @@ using System.Net;
 using System.Net.Mime;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Exceptions;
-using TestApiSalon.Services.CustomerService;
-using TestApiSalon.Services.EmployeeService;
 
 namespace TestApiSalon.Extensions
 {
     public static class ResponseExtensions
     {
-        public static string? GetEmailFromRequest(this ControllerBase controller)
+        public static Result<int> GetAuthorizedUserId(this ControllerBase controller)
         {
-            return controller.User.Claims.FirstOrDefault(
-                c => c.Type.Equals("email"))?.Value;
-        }
-
-        public static async Task<Result<int>> GetAuthorizedCustomerId(this ControllerBase controller, ICustomerService customerService)
-        {
-            string? email = GetEmailFromRequest(controller);
-
-            if (!string.IsNullOrEmpty(email))
+            string? stringId = controller.User.Claims.FirstOrDefault(
+                c => c.Type.Equals("nameid"))?.Value;
+            
+            if (int.TryParse(stringId, out int id))
             {
-                var result = await customerService.GetCustomerByEmail(email);
-                if (result.State == ResultState.Success)
-                {
-                    int? customerId = result.Value?.Id;
-                    if (customerId != null)
-                    {
-                        return new Result<int>(customerId.Value);
-                    }
-                }
+                return new Result<int>(id);
             }
             return new Result<int>(new ForbiddenException("No permission to access"));
         }
 
-        public static async Task<Result<int>> GetAuthorizedEmployeeId(this ControllerBase controller, IEmployeeService employeeService)
+        public static Result<int> GetAuthorizedEmployeeSalonId(this ControllerBase controller)
         {
-            string? email = GetEmailFromRequest(controller);
+            string? stringSalonId = controller.User.Claims.FirstOrDefault(
+                c => c.Type.Equals("salonid"))?.Value;
 
-            if (!string.IsNullOrEmpty(email))
+            if (int.TryParse(stringSalonId, out int salonId))
             {
-                var result = await employeeService.GetEmployeeByEmail(email);
-                if (result.State == ResultState.Success)
-                {
-                    int? employeeId = result.Value?.Id;
-                    if (employeeId != null)
-                    {
-                        return new Result<int>(employeeId.Value);
-                    }
-                }
+                return new Result<int>(salonId);
             }
             return new Result<int>(new ForbiddenException("No permission to access"));
         }

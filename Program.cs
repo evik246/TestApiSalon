@@ -40,6 +40,8 @@ var connections = new Dictionary<DbConnectionName, string>
 builder.Services.AddSingleton<IDictionary<DbConnectionName, string>>(connections);
 builder.Services.AddSingleton<DataContext>();
 builder.Services.AddScoped<IClaimsIdentityService<User>, UserClaimsIdentityService>();
+builder.Services.AddScoped<IClaimsIdentityService<Customer>, CustomerClaimsIdentityService>();
+builder.Services.AddScoped<IClaimsIdentityService<Employee>, EmployeeClaimsIdentityService>();
 builder.Services.AddScoped<ITokenService, JwtService>();
 builder.Services.AddScoped<IHashService, SHA384HashService>();
 builder.Services.AddScoped<IDbConnectionService, DbConnectionService>();

@@ -4,7 +4,6 @@ using TestApiSalon.Dtos.Appointment;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Schedule;
 using TestApiSalon.Extensions;
-using TestApiSalon.Services.EmployeeService;
 using TestApiSalon.Services.ScheduleService;
 
 namespace TestApiSalon.Controllers
@@ -14,12 +13,10 @@ namespace TestApiSalon.Controllers
     public class ScheduleController : Controller
     {
         private readonly IScheduleService _scheduleService;
-        private readonly IEmployeeService _employeeService;
 
-        public ScheduleController(IScheduleService scheduleService, IEmployeeService employeeService)
+        public ScheduleController(IScheduleService scheduleService)
         {
             _scheduleService = scheduleService;
-            _employeeService = employeeService;
         }
 
         [Roles("Client")]
@@ -42,7 +39,7 @@ namespace TestApiSalon.Controllers
         [HttpGet("master/account")]
         public async Task<IActionResult> GetMasterScheduleAccount()
         {
-            var employeeId = await this.GetAuthorizedEmployeeId(_employeeService);
+            var employeeId = this.GetAuthorizedUserId();
             if (employeeId.State == ResultState.Success)
             {
                 var schedule = await _scheduleService.GetMasterSchedule(employeeId.Value);

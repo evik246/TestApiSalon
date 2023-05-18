@@ -4,7 +4,6 @@ using TestApiSalon.Dtos.Comment;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.CommentService;
-using TestApiSalon.Services.CustomerService;
 
 namespace TestApiSalon.Controllers
 {
@@ -13,12 +12,10 @@ namespace TestApiSalon.Controllers
     public class CommentController : ControllerBase
     {
         private readonly ICommentService _commentService;
-        private readonly ICustomerService _customerService;
 
-        public CommentController(ICommentService commentService, ICustomerService customerService)
+        public CommentController(ICommentService commentService)
         {
             _commentService = commentService;
-            _customerService = customerService;
         }
 
         [Roles("Guest", "Client")]
@@ -41,7 +38,7 @@ namespace TestApiSalon.Controllers
         [HttpPost("customer/account")]
         public async Task<IActionResult> AddComment([FromBody] CommentCreateDto request)
         {
-            var customerId = await this.GetAuthorizedCustomerId(_customerService);
+            var customerId = this.GetAuthorizedUserId();
             if (customerId.State == ResultState.Success)
             {
                 var result = await _commentService.CreateComment(customerId.Value, request);
@@ -54,7 +51,7 @@ namespace TestApiSalon.Controllers
         [HttpDelete("{id}/customer/account")]
         public async Task<IActionResult> DeleteComment(int id)
         {
-            var customerId = await this.GetAuthorizedCustomerId(_customerService);
+            var customerId = this.GetAuthorizedUserId();
             if (customerId.State == ResultState.Success)
             {
                 var result = await _commentService.DeleteComment(customerId.Value, id);

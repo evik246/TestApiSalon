@@ -30,7 +30,7 @@ namespace TestApiSalon.Controllers
         [HttpGet("account")]
         public async Task<IActionResult> GetCustomer()
         {
-            var customerId = await this.GetAuthorizedCustomerId(_customerService);
+            var customerId = this.GetAuthorizedUserId();
             if (customerId.State == ResultState.Success)
             {
                 var customer = await _customerService.GetCustomerById(customerId.Value);
@@ -43,7 +43,7 @@ namespace TestApiSalon.Controllers
         [HttpPut("account")]
         public async Task<IActionResult> ChangeCustomer([FromBody]CustomerUpdateDto request)
         {
-            var customerId = await this.GetAuthorizedCustomerId(_customerService);
+            var customerId = this.GetAuthorizedUserId();
             if (customerId.State == ResultState.Success)
             {
                 var customer = await _customerService.UpdateCustomer(customerId.Value, request);

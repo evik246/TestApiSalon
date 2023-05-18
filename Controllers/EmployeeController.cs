@@ -36,7 +36,7 @@ namespace TestApiSalon.Controllers
         [HttpGet("master/account")]
         public async Task<IActionResult> GetMaster()
         {
-            var employeeId = await this.GetAuthorizedEmployeeId(_employeeService);
+            var employeeId = this.GetAuthorizedUserId();
             if (employeeId.State == ResultState.Success)
             {
                 var master = await _employeeService.GetMaster(employeeId.Value);

@@ -8,6 +8,8 @@ using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ClaimsIdentityService;
 using TestApiSalon.Services.ConnectionService;
+using TestApiSalon.Services.CustomerService;
+using TestApiSalon.Services.EmployeeService;
 using TestApiSalon.Services.TokenService;
 
 namespace TestApiSalon.Services.AuthService
@@ -16,14 +18,25 @@ namespace TestApiSalon.Services.AuthService
     {
         private readonly IDbConnectionService _connectionService;
         private readonly ITokenService _tokenService;
-        private readonly IClaimsIdentityService<User> _identityService;
+        
+        private readonly IClaimsIdentityService<Customer> _customerIdentityService;
+        private readonly IClaimsIdentityService<Employee> _employeeIdentityService;
+
+        private readonly ICustomerService _customerService;
+        private readonly IEmployeeService _employeeService;
 
         public AuthService(IDbConnectionService connectionService, ITokenService tokenService,
-            IClaimsIdentityService<User> identityService)
+            ICustomerService customerService,
+            IEmployeeService employeeService,
+            IClaimsIdentityService<Customer> customerIdentityService, 
+            IClaimsIdentityService<Employee> employeeIdentityService)
         {
             _connectionService = connectionService;
             _tokenService = tokenService;
-            _identityService = identityService;
+            _customerService = customerService;
+            _employeeService = employeeService;
+            _customerIdentityService = customerIdentityService;
+            _employeeIdentityService = employeeIdentityService;
         }
 
         public async Task<Result<string>> Login(UserLoginDto request)
@@ -49,8 +62,33 @@ namespace TestApiSalon.Services.AuthService
                     return new Result<string>(new UnauthorizedException("Invalid email or password"));
                 }
             }
-            string token = _tokenService.CreateToken(_identityService.CreateClaimsIdentity(user));
-            return new Result<string>(token);
+
+            _connectionService.ConnectionName = DbConnectionName.Guest;
+            if (user.Role == UserRole.Client)
+            {
+                var customer = await _customerService.GetCustomerByEmail(user.Email);
+
+                return customer.Match(c =>
+                {
+                    string token = _tokenService.CreateToken(_customerIdentityService.CreateClaimsIdentity(c));
+                    return new Result<string>(token);
+                }, 
+                exception =>
+                {
+                    return new Result<string>(new NotFoundException("Customer is not found"));
+                });
+            }
+            var employee = await _employeeService.GetEmployeeByEmail(user.Email);
+
+            return employee.Match(e =>
+            {
+                string token = _tokenService.CreateToken(_employeeIdentityService.CreateClaimsIdentity(e));
+                return new Result<string>(token);
+            }, 
+            exception =>
+            {
+                return new Result<string>(new NotFoundException("Employee is not found"));
+            });
         }
 
         public async Task<Result<string>> ResetPassword(UserUpdatePasswordDto request)
