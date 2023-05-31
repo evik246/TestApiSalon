@@ -25,6 +25,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(b =>
+    {
+        b.WithOrigins("https://localhost:7267")
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
+});
+
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
@@ -105,6 +115,13 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+
+app.UseCors(cors => cors
+.AllowAnyMethod()
+.AllowAnyHeader()
+.SetIsOriginAllowed(origin => true)
+.AllowCredentials()
+);
 
 app.UseAuthorization();
 
