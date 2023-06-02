@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TestApiSalon.Attributes;
+using TestApiSalon.Dtos.Auth;
 using TestApiSalon.Dtos.Customer;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
@@ -50,6 +51,19 @@ namespace TestApiSalon.Controllers
                 return customer.MakeResponse();
             }
             return customerId.MakeResponse();
+        }
+
+        [Roles("Client")]
+        [HttpPut("account/reset_password")]
+        public async Task<IActionResult> ChangePassword([FromBody] CustomerChangePassword request)
+        {
+            var customerEmail = this.GetAuthorizedUserEmail();
+            if (customerEmail.State == ResultState.Success)
+            {
+                var result = await _customerService.ResetPassword(customerEmail.Value!, request);
+                return result.MakeResponse();
+            }
+            return customerEmail.MakeResponse();
         }
     }
 }

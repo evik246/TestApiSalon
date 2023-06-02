@@ -21,6 +21,18 @@ namespace TestApiSalon.Extensions
             return new Result<int>(new ForbiddenException("No permission to access"));
         }
 
+        public static Result<string> GetAuthorizedUserEmail(this ControllerBase controller)
+        {
+            string? stringemail = controller.User.Claims.FirstOrDefault(
+                c => c.Type.Equals("email"))?.Value;
+
+            if (!string.IsNullOrEmpty(stringemail))
+            {
+                return new Result<string>(stringemail);
+            }
+            return new Result<string>(new ForbiddenException("No permission to access"));
+        }
+
         public static Result<int> GetAuthorizedEmployeeSalonId(this ControllerBase controller)
         {
             string? stringSalonId = controller.User.Claims.FirstOrDefault(

@@ -1,4 +1,5 @@
-﻿using TestApiSalon.Dtos.Customer;
+﻿using TestApiSalon.Dtos.Auth;
+using TestApiSalon.Dtos.Customer;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Models;
 
@@ -10,5 +11,6 @@ namespace TestApiSalon.Services.CustomerService
         Task<Result<Customer>> GetCustomerById(int id);
         Task<Result<Customer>> GetCustomerByEmail(string email);
         Task<Result<Customer>> UpdateCustomer(int id, CustomerUpdateDto request);
+        Task<Result<string>> ResetPassword(string email, CustomerChangePassword request);
     }
 }

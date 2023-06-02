@@ -89,6 +89,29 @@ namespace TestApiSalon.Services.CustomerService
             }
         }
 
+        public async Task<Result<string>> ResetPassword(string email, CustomerChangePassword request)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("Email", email, DbType.AnsiStringFixedLength);
+            parameters.Add("OldPassword", request.CurrentPassword, DbType.AnsiStringFixedLength);
+            parameters.Add("NewPassword", request.NewPassword, DbType.AnsiStringFixedLength);
+
+            var query = "CALL change_password(@Email, @OldPassword, @NewPassword);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                try
+                {
+                    await connection.ExecuteAsync(query, parameters);
+                    return new Result<string>("Password is changed");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("P0001"))
+                {
+                    return new Result<string>(new UnauthorizedException(ex.MessageText));
+                }
+            }
+        }
+
         public async Task<Result<Customer>> UpdateCustomer(int id, CustomerUpdateDto request)
         {
             var query = new StringBuilder("UPDATE Customer SET ");

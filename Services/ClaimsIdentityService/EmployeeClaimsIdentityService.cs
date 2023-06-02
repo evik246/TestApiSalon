@@ -10,7 +10,8 @@ namespace TestApiSalon.Services.ClaimsIdentityService
             var claimsIdentity = new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.Role, identity.Role.ToString()),
-                new Claim(ClaimTypes.NameIdentifier, identity.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, identity.Id.ToString()),
+                new Claim("email", identity.Email)
             });
 
             if (identity.SalonId != null)
