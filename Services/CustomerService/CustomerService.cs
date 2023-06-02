@@ -128,12 +128,30 @@ namespace TestApiSalon.Services.CustomerService
 
             using (var connection = _connectionService.CreateConnection())
             {
-                var customer = await connection.QueryFirstOrDefaultAsync<Customer>(query.ToString(), parameters);
-                if (customer is null)
+                try
                 {
-                    return new Result<Customer>(new NotFoundException("Client is not found"));
+                    var customer = await connection.QueryFirstOrDefaultAsync<Customer>(query.ToString(), parameters);
+                    if (customer is null)
+                    {
+                        return new Result<Customer>(new NotFoundException("Client is not found"));
+                    }
+                    return new Result<Customer>(customer);
                 }
-                return new Result<Customer>(customer);
+                catch (PostgresException ex) when (ex.SqlState.Equals("23505"))
+                {
+                    if (!string.IsNullOrEmpty(ex.ConstraintName))
+                    {
+                        if (ex.ConstraintName.Equals("customer_email_key"))
+                        {
+                            return new Result<Customer>(new ConflictException("This email is already used"));
+                        }
+                        if (ex.ConstraintName.Equals("customer_phone_key"))
+                        {
+                            return new Result<Customer>(new ConflictException("This phone number is already used"));
+                        }
+                    }
+                    return new Result<Customer>(new ConflictException("Invalid data"));
+                }
             }
         }
     }
