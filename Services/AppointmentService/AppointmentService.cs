@@ -45,7 +45,7 @@ namespace TestApiSalon.Services.AppointmentService
                         + "AND sa.id = @SalonId "
                         + "AND a.status = 'Active' "
                         + "ORDER BY a.date "
-                        + "OFFSET 0 LIMIT 50;";
+                        + "OFFSET @Skip LIMIT @Take;";
 
             using (var connection = _connectionService.CreateConnection())
             {
