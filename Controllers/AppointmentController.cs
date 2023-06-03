@@ -58,6 +58,19 @@ namespace TestApiSalon.Controllers
             return customerId.MakeResponse();
         }
 
+        [Roles("Client")]
+        [HttpGet("{appointmentId}/customer/account")]
+        public async Task<IActionResult> GetCustomerAppointmentById(int appointmentId)
+        {
+            var customerId = this.GetAuthorizedUserId();
+            if (customerId.State == ResultState.Success)
+            {
+                var result = await _appointmentService.GetCustomerAppointmentById(customerId.Value, appointmentId);
+                return result.MakeResponse();
+            }
+            return customerId.MakeResponse();
+        }
+
         [Roles("Master")]
         [HttpGet("master/account")]
         public async Task<IActionResult> GetMasterAppointments([FromQuery] Paging paging)

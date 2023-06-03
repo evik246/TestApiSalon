@@ -13,5 +13,6 @@ namespace TestApiSalon.Services.AppointmentService
         Task<Result<string>> MarkMasterAppointmentCompleted(int masterId, int appointmentId);
         Task<Result<int>> GetCompletedAppointmentsCount(int masterId, DateRangeDto dateRange);
         Task<Result<double>> GetCompletedAppointmentsIncome(int masterId, DateRangeDto dateRange);
+        Task<Result<CustomerAppointmentDto>> GetCustomerAppointmentById(int customerId, int appointmentId);
     }
 }
