@@ -15,6 +15,6 @@ namespace TestApiSalon.Services.EmployeeService
         Task<Result<IEnumerable<MasterWithServicesDto>>> GetAllMastersWithServices(int salonId, Paging paging);
         Task<Result<MasterWithSalonDto>> GetMaster(int id);
         Task<Result<MasterFullDto>> GetMasterById(int masterId);
-        Task<Result<IEnumerable<MasterDto>>> GetMastersWithNameByService(int salonId, int serviceId, Paging paging);
+        Task<Result<IEnumerable<MasterFullDto>>> GetMastersWithNameByService(int salonId, int serviceId, Paging paging);
     }
 }

@@ -290,7 +290,7 @@ namespace TestApiSalon.Services.EmployeeService
             }
         }
 
-        public async Task<Result<IEnumerable<MasterDto>>> GetMastersWithNameByService(int salonId, int serviceId, Paging paging)
+        public async Task<Result<IEnumerable<MasterFullDto>>> GetMastersWithNameByService(int salonId, int serviceId, Paging paging)
         {
             var parameters = new
             {
@@ -300,7 +300,8 @@ namespace TestApiSalon.Services.EmployeeService
                 Take = paging.PageSize
             };
 
-            var query = "SELECT e.id, e.name, e.last_name "
+            var query = "SELECT e.id, e.name, e.last_name, "
+                        + "e.specialization, e.photo_path "
                         + "FROM Employee e "
                         + "JOIN Skill sk on sk.employee_id = e.id "
                         + "WHERE e.salon_id = @SalonId AND sk.service_id = @ServiceId "
@@ -309,8 +310,8 @@ namespace TestApiSalon.Services.EmployeeService
 
             using (var connection = _connectionService.CreateConnection())
             {
-                var masters = await connection.QueryAsync<MasterDto>(query, parameters);
-                return new Result<IEnumerable<MasterDto>>(masters);
+                var masters = await connection.QueryAsync<MasterFullDto>(query, parameters);
+                return new Result<IEnumerable<MasterFullDto>>(masters);
             }
         }
     }
