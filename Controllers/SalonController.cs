@@ -32,5 +32,13 @@ namespace TestApiSalon.Controllers
             var salons = await _salonService.GetSalonsInCity(id, paging);
             return salons.MakeResponse();
         }
+
+        [Roles("Guest", "Client")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSalonWithAddressById(int id)
+        {
+            var salon = await _salonService.GetSalonWithAddressById(id);
+            return salon.MakeResponse();
+        }
     }
 }

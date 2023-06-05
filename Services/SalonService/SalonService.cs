@@ -1,5 +1,8 @@
 ﻿using Dapper;
+using System.Net.NetworkInformation;
 using TestApiSalon.Dtos.Other;
+using TestApiSalon.Dtos.Salon;
+using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
 
@@ -71,6 +74,36 @@ namespace TestApiSalon.Services.SalonService
                     }, param: parameters
                 );
                 return new Result<IEnumerable<Salon>>(salons);
+            }
+        }
+
+        public async Task<Result<SalonWithAddress>> GetSalonWithAddressById(int salonId)
+        {
+            var parameters = new
+            {
+                SalonId = salonId
+            };
+
+            var query = "SELECT s.id, s.address, "
+                        + "c.id, c.name "
+                        + "FROM Salon s "
+                        + "JOIN City c ON s.city_id = c.id "
+                        + "WHERE s.id = @SalonId;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var salons = await connection.QueryAsync(
+                    query, (SalonWithAddress salon, City city) =>
+                    {
+                        salon.City = city;
+                        return salon;
+                    }, param: parameters
+                );
+                if (!salons.Any())
+                {
+                    return new Result<SalonWithAddress>(new NotFoundException("Salon is not found"));
+                }
+                return new Result<SalonWithAddress>(salons.First());
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using TestApiSalon.Dtos.Other;
+using TestApiSalon.Dtos.Salon;
 using TestApiSalon.Models;
 
 namespace TestApiSalon.Services.SalonService
@@ -7,5 +8,6 @@ namespace TestApiSalon.Services.SalonService
     {
         Task<Result<IEnumerable<Salon>>> GetAllSalons(Paging paging);
         Task<Result<IEnumerable<Salon>>> GetSalonsInCity(int cityId, Paging paging);
+        Task<Result<SalonWithAddress>> GetSalonWithAddressById(int salonId);
     }
 }
