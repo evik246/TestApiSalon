@@ -265,5 +265,29 @@ namespace TestApiSalon.Services.EmployeeService
                 return new Result<MasterWithSalonDto>(master);
             }
         }
+
+        public async Task<Result<MasterFullDto>> GetMasterById(int masterId)
+        {
+            var parameters = new
+            {
+                MasterId = masterId
+            };
+
+            var query = "SELECT e.id, e.name, e.last_name, "
+                        + "e.specialization, e.photo_path "
+                        + "FROM Employee e "
+                        + "WHERE e.id = @MasterId "
+                        + "AND e.role = 'Master';";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var master = await connection.QueryFirstOrDefaultAsync<MasterFullDto>(query, parameters);
+                if (master is null)
+                {
+                    return new Result<MasterFullDto>(new NotFoundException("Master is not found"));
+                }
+                return new Result<MasterFullDto>(master);
+            }
+        }
     }
 }

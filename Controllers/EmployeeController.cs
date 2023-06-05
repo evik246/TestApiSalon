@@ -32,6 +32,14 @@ namespace TestApiSalon.Controllers
             return master.MakeResponse();
         }
 
+        [Roles("Guest", "Client")]
+        [HttpGet("master/{id}")]
+        public async Task<IActionResult> GetMasterById(int id)
+        {
+            var master = await _employeeService.GetMasterById(id);
+            return master.MakeResponse();
+        }
+
         [Roles("Master")]
         [HttpGet("master/account")]
         public async Task<IActionResult> GetMaster()

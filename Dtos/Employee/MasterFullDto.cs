@@ -1,6 +1,6 @@
 ﻿namespace TestApiSalon.Dtos.Employee
 {
-    public class MasterWithoutServicesDto
+    public class MasterFullDto
     {
         public int Id { get; set; }
 
