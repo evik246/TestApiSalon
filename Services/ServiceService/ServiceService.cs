@@ -192,5 +192,27 @@ namespace TestApiSalon.Services.ServiceService
                 return new Result<IEnumerable<ServiceWithoutCategoryDto>>(services);
             }
         }
+
+        public async Task<Result<ServiceWithoutCategoryDto>> GetServiceWithoutCategoryById(int serviceId)
+        {
+            var parameters = new
+            {
+                ServiceId = serviceId
+            };
+
+            var query = "SELECT s.* FROM Service s "
+                        + "WHERE s.id = @ServiceId;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var service = await connection.QueryFirstOrDefaultAsync<ServiceWithoutCategoryDto>(query, parameters);
+
+                if (service == null)
+                {
+                    return new Result<ServiceWithoutCategoryDto>(new NotFoundException("Service is not found"));
+                }
+                return new Result<ServiceWithoutCategoryDto>(service);
+            }
+        }
     }
 }
