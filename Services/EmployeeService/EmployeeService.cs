@@ -289,5 +289,28 @@ namespace TestApiSalon.Services.EmployeeService
                 return new Result<MasterFullDto>(master);
             }
         }
+
+        public async Task<Result<IEnumerable<MasterDto>>> GetMastersWithNameByService(int serviceId, Paging paging)
+        {
+            var parameters = new
+            {
+                ServiceId = serviceId,
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT e.id, e.name, e.last_name "
+                        + "FROM Employee e "
+                        + "JOIN Skill sk on sk.employee_id = e.id "
+                        + "WHERE sk.service_id = @ServiceId "
+                        + "ORDER BY e.last_name, e.name "
+                        + "OFFSET @Skip LIMIT @Take;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var masters = await connection.QueryAsync<MasterDto>(query, parameters);
+                return new Result<IEnumerable<MasterDto>>(masters);
+            }
+        }
     }
 }
