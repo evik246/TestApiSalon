@@ -166,5 +166,31 @@ namespace TestApiSalon.Services.ServiceService
                 return new Result<IEnumerable<ServiceWithoutCategoryDto>>(services);
             }
         }
+
+        public async Task<Result<IEnumerable<ServiceWithoutCategoryDto>>> GetMasterServicesByCategory(int masterId, int categoryId, Paging paging)
+        {
+            var parameters = new
+            {
+                MasterId = masterId,
+                CategoryId = categoryId,
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT DISTINCT s.id, s.name, s.price, s.execution_time "
+                        + "FROM Service s "
+                        + "JOIN ServiceCategory c ON c.id = s.category_id "
+                        + "JOIN Skill sk ON sk.service_id = s.id "
+                        + "WHERE sk.employee_id = @MasterId "
+                        + "AND c.id = @CategoryId "
+                        + "ORDER BY s.id "
+                        + "OFFSET @Skip LIMIT @Take;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var services = await connection.QueryAsync<ServiceWithoutCategoryDto>(query, parameters);
+                return new Result<IEnumerable<ServiceWithoutCategoryDto>>(services);
+            }
+        }
     }
 }

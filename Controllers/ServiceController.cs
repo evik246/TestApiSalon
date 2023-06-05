@@ -40,5 +40,13 @@ namespace TestApiSalon.Controllers
             var services = await _serviceService.GetServicesByCategory(salonId, categoryId, paging);
             return services.MakeResponse();
         }
+
+        [Roles("Guest", "Client")]
+        [HttpGet("master/{masterId}/category/{categoryId}")]
+        public async Task<IActionResult> GetMasterServicesByCategory(int masterId, int categoryId, [FromQuery] Paging paging)
+        {
+            var services = await _serviceService.GetMasterServicesByCategory(masterId, categoryId, paging);
+            return services.MakeResponse();
+        }
     }
 }
