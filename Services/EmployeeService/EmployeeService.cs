@@ -290,11 +290,12 @@ namespace TestApiSalon.Services.EmployeeService
             }
         }
 
-        public async Task<Result<IEnumerable<MasterDto>>> GetMastersWithNameByService(int serviceId, Paging paging)
+        public async Task<Result<IEnumerable<MasterDto>>> GetMastersWithNameByService(int salonId, int serviceId, Paging paging)
         {
             var parameters = new
             {
                 ServiceId = serviceId,
+                SalonId = salonId,
                 Skip = paging.Skip,
                 Take = paging.PageSize
             };
@@ -302,7 +303,7 @@ namespace TestApiSalon.Services.EmployeeService
             var query = "SELECT e.id, e.name, e.last_name "
                         + "FROM Employee e "
                         + "JOIN Skill sk on sk.employee_id = e.id "
-                        + "WHERE sk.service_id = @ServiceId "
+                        + "WHERE e.salon_id = @SalonId AND sk.service_id = @ServiceId "
                         + "ORDER BY e.last_name, e.name "
                         + "OFFSET @Skip LIMIT @Take;";
 

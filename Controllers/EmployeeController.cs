@@ -33,10 +33,10 @@ namespace TestApiSalon.Controllers
         }
 
         [Roles("Guest", "Client")]
-        [HttpGet("master/service/{id}")]
-        public async Task<IActionResult> GetMastersByService(int id, [FromQuery] Paging paging)
+        [HttpGet("salon/{salonId}/master/service/{serviceId}")]
+        public async Task<IActionResult> GetMastersByService(int salonId, int serviceId, [FromQuery] Paging paging)
         {
-            var masters = await _employeeService.GetMastersWithNameByService(id, paging);
+            var masters = await _employeeService.GetMastersWithNameByService(salonId, serviceId, paging);
             return masters.MakeResponse();
         }
 
