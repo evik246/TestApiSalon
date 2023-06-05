@@ -7,5 +7,6 @@ namespace TestApiSalon.Services.CategoryService
     {
         Task<Result<IEnumerable<ServiceCategory>>> GetAllCategories(Paging paging);
         Task<Result<IEnumerable<ServiceCategory>>> GetCategoriesInSalon(int salonId, Paging paging);
+        Task<Result<IEnumerable<ServiceCategory>>> GetMasterCategories(int masterId, Paging paging);
     }
 }

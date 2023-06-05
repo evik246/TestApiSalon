@@ -24,5 +24,13 @@ namespace TestApiSalon.Controllers
             var categories = await _categoryService.GetCategoriesInSalon(id, paging);
             return categories.MakeResponse();
         }
+
+        [Roles("Guest", "Client")]
+        [HttpGet("master/{id}")]
+        public async Task<IActionResult> GetMasterCategories(int id, [FromQuery] Paging paging)
+        {
+            var categories = await _categoryService.GetMasterCategories(id, paging);
+            return categories.MakeResponse();
+        }
     }
 }
