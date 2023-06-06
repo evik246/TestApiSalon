@@ -265,5 +265,44 @@ namespace TestApiSalon.Services.AppointmentService
                 return new Result<double>(income);
             }
         }
+
+        public async Task<Result<IEnumerable<ManagerAppointmentDto>>> GetManagerAppointments(int salonId, Paging paging)
+        {
+            var parameters = new
+            {
+                SalonId = salonId,
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT a.id, a.date, a.status, a.price, "
+                        + "c.id, c.name, "
+                        + "s.id, s.name, "
+                        + "e.id, e.name, e.last_name "
+                        + "FROM Appointment a "
+                        + "JOIN Customer c ON a.customer_id = c.id "
+                        + "JOIN Service s ON a.service_id = s.id "
+                        + "JOIN Employee e ON a.employee_id = e.id "
+                        + "WHERE e.salon_id = @SalonId "
+                        + "ORDER BY a.date "
+                        + "OFFSET @Skip LIMIT @Take;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var appointments = await connection.QueryAsync(
+                    query, (ManagerAppointmentDto appointment,
+                            CustomerDto customer,
+                            ServiceNameDto service,
+                            MasterDto master) =>
+                    {
+                        appointment.Master = master;
+                        appointment.Service = service;
+                        appointment.Customer = customer;
+                        return appointment;
+                    }, param: parameters
+                );
+                return new Result<IEnumerable<ManagerAppointmentDto>>(appointments);
+            }
+        }
     }
 }

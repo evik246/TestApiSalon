@@ -1,6 +1,7 @@
 ﻿using TestApiSalon.Dtos.Appointment;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Schedule;
+using TestApiSalon.Models;
 
 namespace TestApiSalon.Services.AppointmentService
 {
@@ -14,5 +15,6 @@ namespace TestApiSalon.Services.AppointmentService
         Task<Result<int>> GetCompletedAppointmentsCount(int masterId, DateRangeDto dateRange);
         Task<Result<double>> GetCompletedAppointmentsIncome(int masterId, DateRangeDto dateRange);
         Task<Result<CustomerAppointmentDto>> GetCustomerAppointmentById(int customerId, int appointmentId);
+        Task<Result<IEnumerable<ManagerAppointmentDto>>> GetManagerAppointments(int salonId, Paging paging);
     }
 }
