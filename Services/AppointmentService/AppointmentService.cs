@@ -422,5 +422,38 @@ namespace TestApiSalon.Services.AppointmentService
                 return new Result<IEnumerable<AppointmentWithoutStatus>>(appointments);
             }
         }
+
+        public async Task<Result<string>> MarkManagerAppointmentCompleted(int salonId, int appointmentId)
+        {
+            var parameters = new
+            {
+                SalonId = salonId,
+                AppointmentId = appointmentId
+            };
+
+            var query = "CALL mark_salon_appointment_completed(@SalonId, @AppointmentId);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                try
+                {
+                    await connection.ExecuteAsync(query, parameters);
+                    return new Result<string>("Appointment is marked completed successfuly");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("P0001"))
+                {
+                    if (ex.MessageText.Contains("Appointment has not happened yet"))
+                    {
+                        return new Result<string>(new ConflictException("Appointment has not happened yet"));
+                    }
+
+                    if (ex.Message.Contains("Appointment is not found"))
+                    {
+                        return new Result<string>(new NotFoundException("Appointment is not found"));
+                    }
+                    return new Result<string>(new ConflictException(ex.MessageText));
+                }
+            }
+        }
     }
 }

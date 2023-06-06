@@ -187,5 +187,18 @@ namespace TestApiSalon.Controllers
             }
             return salonId.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpPut("{appointmentId}/manager/account/mark_complete")]
+        public async Task<IActionResult> MarkManagerAppointmentCompleted(int appointmentId)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var result = await _appointmentService.MarkManagerAppointmentCompleted(salonId.Value!, appointmentId);
+                return result.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }
