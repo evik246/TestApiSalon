@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Npgsql;
 using System.Data;
 using TestApiSalon.Dtos.Appointment;
 using TestApiSalon.Dtos.Employee;
@@ -17,6 +18,38 @@ namespace TestApiSalon.Services.ScheduleService
         public ScheduleService(IDbConnectionService connectionService)
         {
             _connectionService = connectionService;
+        }
+
+        public async Task<Result<string>> ChangeManagerMasterSchedule(int salonId, int scheduleId, MasterScheduleChangeDto request)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("SalonId", salonId, DbType.Int32);
+            parameters.Add("ScheduleId", scheduleId, DbType.Int32);
+            parameters.Add("Weekday", request.Weekday?.ToString(), DbType.AnsiStringFixedLength);
+            parameters.Add("StartTime", request.StartTime, DbType.Time);
+            parameters.Add("EndTime", request.EndTime, DbType.Time);
+
+            var query = "CALL update_master_schedule(@SalonId, @ScheduleId, @Weekday, @StartTime, @EndTime);";
+
+            using (var connection =  _connectionService.CreateConnection())
+            {
+                try
+                {
+                    await connection.ExecuteAsync(query, parameters);
+                    return new Result<string>("Master schedule is changed successfully");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("23514"))
+                {
+                    if (!string.IsNullOrEmpty(ex.ConstraintName))
+                    {
+                        if (ex.ConstraintName.Equals("check_time"))
+                        {
+                            return new Result<string>(new ConflictException("The number of working hours exceeds the maximum limit"));
+                        }
+                    }
+                    return new Result<string>(new ConflictException(ex.Message));
+                }
+            }
         }
 
         public async Task<Result<IEnumerable<AvailableTimeSlotDto>>> GetAvailableTimeSlots

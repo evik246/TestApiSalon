@@ -68,5 +68,18 @@ namespace TestApiSalon.Controllers
             var days = await _scheduleService.GetMasterWorkingDays(id, dateRange);
             return days.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpPut("{scheduleId}/manager/account")]
+        public async Task<IActionResult> ChangeManagerMasterSchedule(int scheduleId, [FromBody] MasterScheduleChangeDto request)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var result = await _scheduleService.ChangeManagerMasterSchedule(salonId.Value, scheduleId, request);
+                return result.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }

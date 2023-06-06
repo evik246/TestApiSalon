@@ -12,5 +12,6 @@ namespace TestApiSalon.Services.ScheduleService
         Task<Result<IEnumerable<Schedule>>> GetMasterSchedule(int employeeId);
         Task<Result<IEnumerable<Schedule>>> GetManagerMasterSchedule(int salonId, int masterId);
         Task<Result<IEnumerable<MasterWorkingDayDto>>> GetMasterWorkingDays(int employeeId, DateRangeDto dateRange);
+        Task<Result<string>> ChangeManagerMasterSchedule(int salonId, int scheduleId, MasterScheduleChangeDto request);
     }
 }

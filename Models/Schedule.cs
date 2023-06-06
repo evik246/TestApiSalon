@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace TestApiSalon.Models
 {
@@ -19,6 +20,7 @@ namespace TestApiSalon.Models
 
     public enum Weekday
     {
+        [Description("Monday")]
         Monday = 0, 
         Tuesday = 1, 
         Wednesday = 2,
