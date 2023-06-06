@@ -68,5 +68,31 @@ namespace TestApiSalon.Controllers
             var master = await _employeeService.GetAllMastersWithServices(id, paging);
             return master.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpGet("manager/account/master")]
+        public async Task<IActionResult> GetManagerMasters([FromQuery] Paging paging)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var masters = await _employeeService.GetManagerMasters(salonId.Value, paging);
+                return masters.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
+
+        [Roles("Manager")]
+        [HttpGet("manager/account/master/service/{serviceId}")]
+        public async Task<IActionResult> GetManagerMastersByService(int serviceId, [FromQuery] Paging paging)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var masters = await _employeeService.GetManagerMastersByService(salonId.Value, serviceId, paging);
+                return masters.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }

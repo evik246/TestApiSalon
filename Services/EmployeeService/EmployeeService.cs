@@ -286,6 +286,7 @@ namespace TestApiSalon.Services.EmployeeService
                 {
                     return new Result<MasterFullDto>(new NotFoundException("Master is not found"));
                 }
+                master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
                 return new Result<MasterFullDto>(master);
             }
         }
@@ -311,7 +312,67 @@ namespace TestApiSalon.Services.EmployeeService
             using (var connection = _connectionService.CreateConnection())
             {
                 var masters = await connection.QueryAsync<MasterFullDto>(query, parameters);
+                foreach (var master in masters)
+                {
+                    master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
+                }
                 return new Result<IEnumerable<MasterFullDto>>(masters);
+            }
+        }
+
+        public async Task<Result<IEnumerable<MasterForManagerDto>>> GetManagerMasters(int salonId, Paging paging)
+        {
+            var parameters = new
+            {
+                SalonId = salonId,
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT e.id, e.name, e.last_name, e.email, "
+                        + "e.specialization, e.photo_path "
+                        + "FROM Employee e "
+                        + "WHERE e.salon_id = @SalonId AND e.role = 'Master' "
+                        + "ORDER BY e.last_name, e.name "
+                        + "OFFSET @Skip LIMIT @Take;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var masters = await connection.QueryAsync<MasterForManagerDto>(query, parameters);
+                foreach (var master in masters)
+                {
+                    master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
+                }
+                return new Result<IEnumerable<MasterForManagerDto>>(masters);
+            }
+        }
+
+        public async Task<Result<IEnumerable<MasterForManagerDto>>> GetManagerMastersByService(int salonId, int serviceId, Paging paging)
+        {
+            var parameters = new
+            {
+                ServiceId = serviceId,
+                SalonId = salonId,
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT e.id, e.name, e.last_name, e.email, "
+                        + "e.specialization, e.photo_path "
+                        + "FROM Employee e "
+                        + "JOIN Skill sk on sk.employee_id = e.id "
+                        + "WHERE e.salon_id = @SalonId AND sk.service_id = @ServiceId "
+                        + "ORDER BY e.last_name, e.name "
+                        + "OFFSET @Skip LIMIT @Take;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var masters = await connection.QueryAsync<MasterForManagerDto>(query, parameters);
+                foreach (var master in masters)
+                {
+                    master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
+                }
+                return new Result<IEnumerable<MasterForManagerDto>>(masters);
             }
         }
     }
