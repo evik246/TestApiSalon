@@ -25,6 +25,19 @@ namespace TestApiSalon.Controllers
             return categories.MakeResponse();
         }
 
+        [Roles("Manager")]
+        [HttpGet("manager/account")]
+        public async Task<IActionResult> GetManagerSalonCategories([FromQuery] Paging paging)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var categories = await _categoryService.GetCategoriesInSalon(salonId.Value, paging);
+                return categories.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
+
         [Roles("Guest", "Client")]
         [HttpGet("master/{id}")]
         public async Task<IActionResult> GetMasterCategories(int id, [FromQuery] Paging paging)
