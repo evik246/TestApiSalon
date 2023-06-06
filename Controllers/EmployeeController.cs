@@ -107,5 +107,18 @@ namespace TestApiSalon.Controllers
             }
             return salonId.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpGet("manager/account/master/{masterId}")]
+        public async Task<IActionResult> GetManagerMasterById(int masterId)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var master = await _employeeService.GetManagerMasterById(salonId.Value, masterId);
+                return master.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }

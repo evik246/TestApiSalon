@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System.Net.NetworkInformation;
 using TestApiSalon.Dtos.Employee;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Salon;
@@ -403,6 +404,31 @@ namespace TestApiSalon.Services.EmployeeService
                     master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
                 }
                 return new Result<IEnumerable<MasterForManagerDto>>(masters);
+            }
+        }
+
+        public async Task<Result<MasterForManagerDto>> GetManagerMasterById(int salonId, int masterId)
+        {
+            var parameters = new
+            {
+                MasterId = masterId,
+                SalonId = salonId,
+            };
+
+            var query = "SELECT e.id, e.name, e.last_name, e.email, "
+                        + "e.specialization, e.photo_path "
+                        + "FROM Employee e "
+                        + "WHERE e.salon_id = @SalonId AND e.role = 'Master' AND e.id = @MasterId;";
+
+            using (var connection = _connectionService.CreateConnection()) 
+            {
+                var master = await connection.QueryFirstOrDefaultAsync<MasterForManagerDto>(query, parameters);
+                if (master == null)
+                {
+                    return new Result<MasterForManagerDto>(new NotFoundException("Master is not found"));
+                }
+                master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
+                return new Result<MasterForManagerDto>(master);
             }
         }
     }
