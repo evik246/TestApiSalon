@@ -10,6 +10,7 @@ namespace TestApiSalon.Services.ScheduleService
     {
         Task<Result<IEnumerable<AvailableTimeSlotDto>>> GetAvailableTimeSlots(CustomerAppointmentInputDto request);
         Task<Result<IEnumerable<Schedule>>> GetMasterSchedule(int employeeId);
+        Task<Result<IEnumerable<Schedule>>> GetManagerMasterSchedule(int salonId, int masterId);
         Task<Result<IEnumerable<MasterWorkingDayDto>>> GetMasterWorkingDays(int employeeId, DateRangeDto dateRange);
     }
 }

@@ -36,6 +36,26 @@ namespace TestApiSalon.Services.ScheduleService
             }
         }
 
+        public async Task<Result<IEnumerable<Schedule>>> GetManagerMasterSchedule(int salonId, int masterId)
+        {
+            var parameters = new
+            {
+                SalonId = salonId,
+                MasterId = masterId
+            };
+
+            var query = "SELECT s.id, s.weekday, s.start_time, s.end_time "
+                        + "FROM Schedule s "
+                        + "JOIN Employee e ON s.employee_id = e.id "
+                        + "WHERE e.salon_id = @SalonId AND s.employee_id = @MasterId;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var schedule = await connection.QueryAsync<Schedule>(query, parameters);
+                return new Result<IEnumerable<Schedule>>(schedule);
+            }
+        }
+
         public async Task<Result<IEnumerable<Schedule>>> GetMasterSchedule(int employeeId)
         {
             var parameters = new

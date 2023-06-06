@@ -48,6 +48,19 @@ namespace TestApiSalon.Controllers
             return employeeId.MakeResponse();
         }
 
+        [Roles("Manager")]
+        [HttpGet("manager/account/master/{masterId}")]
+        public async Task<IActionResult> GetManagerMasterSchedule(int masterId)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var schedule = await _scheduleService.GetManagerMasterSchedule(salonId.Value, masterId);
+                return schedule.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
+
         [Roles("Client")]
         [HttpGet("master/{id}/working_days")]
         public async Task<IActionResult> GetMasterWorkingDays(int id, [FromQuery] DateRangeDto dateRange)
