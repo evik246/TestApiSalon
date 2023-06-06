@@ -94,5 +94,18 @@ namespace TestApiSalon.Controllers
             }
             return salonId.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpDelete("{scheduleId}/manager/account")]
+        public async Task<IActionResult> DeleteManagerMasterSchedule(int scheduleId)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var result = await _scheduleService.DeleteManagerMasterSchedule(salonId.Value, scheduleId);
+                return result.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }

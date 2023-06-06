@@ -52,6 +52,32 @@ namespace TestApiSalon.Services.ScheduleService
             }
         }
 
+        public async Task<Result<string>> DeleteManagerMasterSchedule(int salonId, int scheduleId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("SalonId", salonId, DbType.Int32);
+            parameters.Add("ScheduleId", scheduleId, DbType.Int32);
+
+            var query = "CALL delete_master_schedule(@SalonId, @ScheduleId);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                try
+                {
+                    await connection.ExecuteAsync(query, parameters);
+                    return new Result<string>("Master schedule is deleted successfully");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("P0001"))
+                {
+                    if (ex.MessageText.Contains("master does not work at this salon"))
+                    {
+                        return new Result<string>(new ConflictException("Master does not work at this salon"));
+                    }
+                    return new Result<string>(ex.MessageText);
+                }
+            }
+        }
+
         public async Task<Result<IEnumerable<AvailableTimeSlotDto>>> GetAvailableTimeSlots
             (CustomerAppointmentInputDto request)
         {
