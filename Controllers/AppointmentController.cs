@@ -148,5 +148,44 @@ namespace TestApiSalon.Controllers
             }
             return salonId.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpGet("active/manager/account")]
+        public async Task<IActionResult> GetManagerActiveAppointments([FromQuery] Paging paging)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var appointments = await _appointmentService.GetManagerActiveAppointments(salonId.Value!, paging);
+                return appointments.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
+
+        [Roles("Manager")]
+        [HttpGet("completed/manager/account")]
+        public async Task<IActionResult> GetManagerCompletedAppointments([FromQuery] Paging paging)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var appointments = await _appointmentService.GetManagerCompletedAppointments(salonId.Value!, paging);
+                return appointments.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
+
+        [Roles("Manager")]
+        [HttpGet("uncompleted/manager/account")]
+        public async Task<IActionResult> GetManagerUncompletedAppointments([FromQuery] Paging paging)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var appointments = await _appointmentService.GetManagerUncompletedAppointments(salonId.Value!, paging);
+                return appointments.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }

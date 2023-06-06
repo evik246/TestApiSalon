@@ -304,5 +304,123 @@ namespace TestApiSalon.Services.AppointmentService
                 return new Result<IEnumerable<ManagerAppointmentDto>>(appointments);
             }
         }
+
+        public async Task<Result<IEnumerable<AppointmentWithoutStatus>>> GetManagerActiveAppointments(int salonId, Paging paging)
+        {
+            var parameters = new
+            {
+                SalonId = salonId,
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT a.id, a.date, a.price, "
+                        + "c.id, c.name, "
+                        + "s.id, s.name, "
+                        + "e.id, e.name, e.last_name "
+                        + "FROM Appointment a "
+                        + "JOIN Customer c ON a.customer_id = c.id "
+                        + "JOIN Service s ON a.service_id = s.id "
+                        + "JOIN Employee e ON a.employee_id = e.id "
+                        + "WHERE e.salon_id = @SalonId AND a.status = 'Active' "
+                        + "ORDER BY a.date "
+                        + "OFFSET @Skip LIMIT @Take;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var appointments = await connection.QueryAsync(
+                    query, (AppointmentWithoutStatus appointment,
+                            CustomerDto customer,
+                            ServiceNameDto service,
+                            MasterDto master) =>
+                    {
+                        appointment.Master = master;
+                        appointment.Service = service;
+                        appointment.Customer = customer;
+                        return appointment;
+                    }, param: parameters
+                );
+                return new Result<IEnumerable<AppointmentWithoutStatus>>(appointments);
+            }
+        }
+
+        public async Task<Result<IEnumerable<AppointmentWithoutStatus>>> GetManagerCompletedAppointments(int salonId, Paging paging)
+        {
+            var parameters = new
+            {
+                SalonId = salonId,
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT a.id, a.date, a.price, "
+                        + "c.id, c.name, "
+                        + "s.id, s.name, "
+                        + "e.id, e.name, e.last_name "
+                        + "FROM Appointment a "
+                        + "JOIN Customer c ON a.customer_id = c.id "
+                        + "JOIN Service s ON a.service_id = s.id "
+                        + "JOIN Employee e ON a.employee_id = e.id "
+                        + "WHERE e.salon_id = @SalonId AND a.status = 'Completed' "
+                        + "ORDER BY a.date "
+                        + "OFFSET @Skip LIMIT @Take;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var appointments = await connection.QueryAsync(
+                    query, (AppointmentWithoutStatus appointment,
+                            CustomerDto customer,
+                            ServiceNameDto service,
+                            MasterDto master) =>
+                    {
+                        appointment.Master = master;
+                        appointment.Service = service;
+                        appointment.Customer = customer;
+                        return appointment;
+                    }, param: parameters
+                );
+                return new Result<IEnumerable<AppointmentWithoutStatus>>(appointments);
+            }
+        }
+
+        public async Task<Result<IEnumerable<AppointmentWithoutStatus>>> GetManagerUncompletedAppointments(int salonId, Paging paging)
+        {
+            var parameters = new
+            {
+                SalonId = salonId,
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT a.id, a.date, a.price, "
+                        + "c.id, c.name, "
+                        + "s.id, s.name, "
+                        + "e.id, e.name, e.last_name "
+                        + "FROM Appointment a "
+                        + "JOIN Customer c ON a.customer_id = c.id "
+                        + "JOIN Service s ON a.service_id = s.id "
+                        + "JOIN Employee e ON a.employee_id = e.id "
+                        + "WHERE e.salon_id = @SalonId AND a.status = 'Active' "
+                        + "AND a.date <= CURRENT_TIMESTAMP "
+                        + "ORDER BY a.date "
+                        + "OFFSET @Skip LIMIT @Take;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var appointments = await connection.QueryAsync(
+                    query, (AppointmentWithoutStatus appointment,
+                            CustomerDto customer,
+                            ServiceNameDto service,
+                            MasterDto master) =>
+                    {
+                        appointment.Master = master;
+                        appointment.Service = service;
+                        appointment.Customer = customer;
+                        return appointment;
+                    }, param: parameters
+                );
+                return new Result<IEnumerable<AppointmentWithoutStatus>>(appointments);
+            }
+        }
     }
 }
