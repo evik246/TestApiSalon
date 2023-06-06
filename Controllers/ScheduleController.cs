@@ -81,5 +81,18 @@ namespace TestApiSalon.Controllers
             }
             return salonId.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpPost("manager/account/master/{masterId}")]
+        public async Task<IActionResult> CreateManagerMasterSchedule(int masterId, [FromBody] MasterScheduleCreateDto request)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var result = await _scheduleService.SetManagerMasterSchedule(salonId.Value, masterId, request);
+                return result.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }

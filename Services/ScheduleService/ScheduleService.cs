@@ -123,5 +123,37 @@ namespace TestApiSalon.Services.ScheduleService
                 return new Result<IEnumerable<MasterWorkingDayDto>>(days);
             }
         }
+
+        public async Task<Result<string>> SetManagerMasterSchedule(int salonId, int masterId, MasterScheduleCreateDto request)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("SalonId", salonId, DbType.Int32);
+            parameters.Add("MasterId", masterId, DbType.Int32);
+            parameters.Add("Weekday", request.Weekday.ToString(), DbType.AnsiStringFixedLength);
+            parameters.Add("StartTime", request.StartTime, DbType.Time);
+            parameters.Add("EndTime", request.EndTime, DbType.Time);
+
+            var query = "CALL set_master_schedule(@SalonId, @MasterId, @Weekday, @StartTime, @EndTime);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                try
+                {
+                    await connection.ExecuteAsync(query, parameters);
+                    return new Result<string>("Master schedule is created successfully");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("23514"))
+                {
+                    if (!string.IsNullOrEmpty(ex.ConstraintName))
+                    {
+                        if (ex.ConstraintName.Equals("check_time"))
+                        {
+                            return new Result<string>(new ConflictException("The number of working hours exceeds the maximum limit"));
+                        }
+                    }
+                    return new Result<string>(new ConflictException(ex.Message));
+                }
+            }
+        }
     }
 }
