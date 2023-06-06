@@ -200,5 +200,18 @@ namespace TestApiSalon.Controllers
             }
             return salonId.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpPut("{appointmentId}/master/{masterId}/change/manager/account")]
+        public async Task<IActionResult> ChangeAppointmentMaster(int appointmentId, int masterId)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var result = await _appointmentService.ChangeMasterInAppointment(salonId.Value!, appointmentId, masterId);
+                return result.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }

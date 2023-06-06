@@ -20,5 +20,6 @@ namespace TestApiSalon.Services.EmployeeService
         Task<Result<IEnumerable<MasterForManagerDto>>> GetManagerMastersByService(int salonId, int serviceId, Paging paging);
         Task<Result<IEnumerable<MasterForManagerDto>>> GetManagerMastersByCategory(int salonId, int categoryId, Paging paging);
         Task<Result<MasterForManagerDto>> GetManagerMasterById(int salonId, int masterId);
+        Task<Result<IEnumerable<MasterForManagerDto>>> GetAvailableMastersToChangeAnother(int salonId, int appointmentId);
     }
 }

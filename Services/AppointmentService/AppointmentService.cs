@@ -455,5 +455,32 @@ namespace TestApiSalon.Services.AppointmentService
                 }
             }
         }
+
+        public async Task<Result<string>> ChangeMasterInAppointment(int salonId, int appointmentId, int masterId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("SalonId", salonId, DbType.Int32);
+            parameters.Add("AppointmentId", appointmentId, DbType.Int32);
+            parameters.Add("MasterId", masterId, DbType.Int32);
+
+            var query = "CALL set_another_master(@SalonId, @AppointmentId, @MasterId);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                try
+                {
+                    await connection.ExecuteAsync(query, parameters);
+                    return new Result<string>("Master is changed");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("P0001"))
+                {
+                    if (ex.MessageText.Contains("is not found"))
+                    {
+                        return new Result<string>(new NotFoundException(ex.MessageText));
+                    }
+                    return new Result<string>(new ConflictException(ex.MessageText));
+                }
+            }
+        }
     }
 }

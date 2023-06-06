@@ -19,5 +19,6 @@ namespace TestApiSalon.Services.AppointmentService
         Task<Result<IEnumerable<AppointmentWithoutStatus>>> GetManagerActiveAppointments(int salonId, Paging paging);
         Task<Result<IEnumerable<AppointmentWithoutStatus>>> GetManagerCompletedAppointments(int salonId, Paging paging);
         Task<Result<IEnumerable<AppointmentWithoutStatus>>> GetManagerUncompletedAppointments(int salonId, Paging paging);
+        Task<Result<string>> ChangeMasterInAppointment(int salonId, int appointmentId, int masterId);
     }
 }

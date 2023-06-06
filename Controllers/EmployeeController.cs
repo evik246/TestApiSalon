@@ -120,5 +120,18 @@ namespace TestApiSalon.Controllers
             }
             return salonId.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpGet("appointment/{appointmentId}/available/manager/account")]
+        public async Task<IActionResult> GetAvailableMasters(int appointmentId)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var masters = await _employeeService.GetAvailableMastersToChangeAnother(salonId.Value!, appointmentId);
+                return masters.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }

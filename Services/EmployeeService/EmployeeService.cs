@@ -1,5 +1,6 @@
 ﻿using Dapper;
-using System.Net.NetworkInformation;
+using Npgsql;
+using System.Data;
 using TestApiSalon.Dtos.Employee;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Salon;
@@ -429,6 +430,32 @@ namespace TestApiSalon.Services.EmployeeService
                 }
                 master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
                 return new Result<MasterForManagerDto>(master);
+            }
+        }
+
+        public async Task<Result<IEnumerable<MasterForManagerDto>>> GetAvailableMastersToChangeAnother(int salonId, int appointmentId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("SalonId", salonId, DbType.Int32);
+            parameters.Add("AppointmentId", appointmentId, DbType.Int32);
+
+            var query = "SELECT * FROM get_available_masters(@SalonId, @AppointmentId);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                try
+                {
+                    var masters = await connection.QueryAsync<MasterForManagerDto>(query, parameters);
+                    return new Result<IEnumerable<MasterForManagerDto>>(masters);
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("P0001"))
+                {
+                    if (ex.MessageText.Contains("is not found"))
+                    {
+                        return new Result<IEnumerable<MasterForManagerDto>>(new NotFoundException(ex.MessageText));
+                    }
+                    return new Result<IEnumerable<MasterForManagerDto>>(new ConflictException(ex.MessageText));
+                }
             }
         }
     }
