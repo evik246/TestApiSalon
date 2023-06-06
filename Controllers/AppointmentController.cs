@@ -213,5 +213,18 @@ namespace TestApiSalon.Controllers
             }
             return salonId.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpGet("{appointmentId}/manager/account")]
+        public async Task<IActionResult> GetManagerAppointment(int appointmentId)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var appointment = await _appointmentService.GetManagerAppointmentById(salonId.Value!, appointmentId);
+                return appointment.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }

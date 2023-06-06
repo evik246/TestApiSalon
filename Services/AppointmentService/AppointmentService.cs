@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Npgsql;
 using System.Data;
-using System.Net.NetworkInformation;
 using System.Text;
 using TestApiSalon.Dtos.Appointment;
 using TestApiSalon.Dtos.Customer;
@@ -11,7 +10,6 @@ using TestApiSalon.Dtos.Schedule;
 using TestApiSalon.Dtos.Service;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Extensions;
-using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
 
 namespace TestApiSalon.Services.AppointmentService
@@ -480,6 +478,46 @@ namespace TestApiSalon.Services.AppointmentService
                     }
                     return new Result<string>(new ConflictException(ex.MessageText));
                 }
+            }
+        }
+
+        public async Task<Result<ManagerAppointmentDto>> GetManagerAppointmentById(int salonId, int appointmentId)
+        {
+            var parameters = new
+            {
+                SalonId = salonId,
+                AppointmentId = appointmentId
+            };
+
+            var query = "SELECT a.id, a.date, a.status, a.price, "
+                        + "c.id, c.name, "
+                        + "s.id, s.name, "
+                        + "e.id, e.name, e.last_name "
+                        + "FROM Appointment a "
+                        + "JOIN Customer c ON a.customer_id = c.id "
+                        + "JOIN Service s ON a.service_id = s.id "
+                        + "JOIN Employee e ON a.employee_id = e.id "
+                        + "WHERE e.salon_id = @SalonId AND a.id = @AppointmentId;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var appointments = await connection.QueryAsync(
+                    query, (ManagerAppointmentDto appointment,
+                            CustomerDto customer,
+                            ServiceNameDto service,
+                            MasterDto master) =>
+                    {
+                        appointment.Master = master;
+                        appointment.Service = service;
+                        appointment.Customer = customer;
+                        return appointment;
+                    }, param: parameters
+                );
+                if (!appointments.Any())
+                {
+                    return new Result<ManagerAppointmentDto>(new NotFoundException("Appointment is not found"));
+                }
+                return new Result<ManagerAppointmentDto>(appointments.First());
             }
         }
     }
