@@ -375,5 +375,35 @@ namespace TestApiSalon.Services.EmployeeService
                 return new Result<IEnumerable<MasterForManagerDto>>(masters);
             }
         }
+
+        public async Task<Result<IEnumerable<MasterForManagerDto>>> GetManagerMastersByCategory(int salonId, int categoryId, Paging paging)
+        {
+            var parameters = new
+            {
+                CategoryId = categoryId,
+                SalonId = salonId,
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT DISTINCT e.id, e.name, e.last_name, e.email, "
+                        + "e.specialization, e.photo_path "
+                        + "FROM Employee e "
+                        + "JOIN Skill sk on sk.employee_id = e.id "
+                        + "JOIN Service s ON sk.service_id = s.id "
+                        + "WHERE e.salon_id = @SalonId AND s.category_id = @CategoryId "
+                        + "ORDER BY e.last_name, e.name "
+                        + "OFFSET @Skip LIMIT @Take;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var masters = await connection.QueryAsync<MasterForManagerDto>(query, parameters);
+                foreach (var master in masters)
+                {
+                    master.PhotoPath = GetPhotoURL(master.PhotoPath, master.Id).Value;
+                }
+                return new Result<IEnumerable<MasterForManagerDto>>(masters);
+            }
+        }
     }
 }
