@@ -65,5 +65,13 @@ namespace TestApiSalon.Controllers
             }
             return customerEmail.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpGet("manager/account")]
+        public async Task<IActionResult> GetAllCustomers([FromQuery] Paging paging)
+        {
+            var customers = await _customerService.GetAllCustomers(paging);
+            return customers.MakeResponse();
+        }
     }
 }

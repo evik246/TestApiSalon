@@ -55,6 +55,23 @@ namespace TestApiSalon.Services.CustomerService
             }
         }
 
+        public async Task<Result<IEnumerable<Customer>>> GetAllCustomers(Paging paging)
+        {
+            var parameters = new
+            {
+                Skip = paging.Skip,
+                Take = paging.PageSize
+            };
+
+            var query = "SELECT * FROM Customer ORDER BY name OFFSET @Skip LIMIT @Take;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var customers = await connection.QueryAsync<Customer>(query, parameters);
+                return new Result<IEnumerable<Customer>>(customers);
+            }
+        }
+
         public async Task<Result<Customer>> GetCustomerByEmail(string email)
         {
             var parameters = new { Email = email };
