@@ -67,7 +67,7 @@ namespace TestApiSalon.Controllers
         }
 
         [Roles("Manager")]
-        [HttpGet("manager/account")]
+        [HttpGet()]
         public async Task<IActionResult> GetAllCustomers([FromQuery] Paging paging)
         {
             var customers = await _customerService.GetAllCustomers(paging);
