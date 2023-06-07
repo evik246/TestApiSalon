@@ -115,7 +115,7 @@ namespace TestApiSalon.Services.CustomerService
             };
 
             var query = "SELECT MIN(a.date)::DATE AS appointment_date, "
-                        + "DATE_PART('day', CURRENT_DATE) - DATE_PART('day', MIN(a.date)::DATE) AS duration "
+                        + "DATE_PART('day', CURRENT_DATE - MIN(a.date)) AS duration "
                         + "FROM Appointment a "
                         + "JOIN Employee e ON a.employee_id = e.id "
                         + "WHERE a.customer_id = @CustomerId AND e.salon_id = @SalonId "
@@ -144,7 +144,7 @@ namespace TestApiSalon.Services.CustomerService
             };
 
             var query = "SELECT MAX(a.date)::DATE AS appointment_date, "
-                        + "DATE_PART('day', CURRENT_DATE) - DATE_PART('day', MAX(a.date)::DATE) AS duration "
+                        + "DATE_PART('day', CURRENT_DATE - MAX(a.date)) AS duration "
                         + "FROM Appointment a "
                         + "JOIN Employee e ON a.employee_id = e.id "
                         + "WHERE a.customer_id = @CustomerId AND e.salon_id = @SalonId "
