@@ -458,5 +458,32 @@ namespace TestApiSalon.Services.EmployeeService
                 }
             }
         }
+
+        public async Task<Result<IEnumerable<MasterAppointmentCount>>> GetTopMasters(int salonId, int top)
+        {
+            var parameters = new
+            {
+                SalonId = salonId,
+                Top = top
+            };
+
+            var query = "SELECT e.id, e.name, e.last_name, "
+                        + "e.specialization, e.photo_path, "
+                        + "COUNT(*) AS appointments_count "
+                        + "FROM Appointment a "
+                        + "JOIN Employee e ON e.id = a.employee_id "
+                        + "WHERE e.salon_id = @SalonId "
+                        //+ "AND a.status = 'Completed' "
+                        + "GROUP BY e.id, e.name, e.last_name, "
+                        + "e.specialization, e.photo_path "
+                        + "ORDER BY appointments_count DESC "
+                        + "LIMIT @Top;";
+
+            using (var connection = _connectionService.CreateConnection()) 
+            {
+                var masters = await connection.QueryAsync<MasterAppointmentCount>(query, parameters);
+                return new Result<IEnumerable<MasterAppointmentCount>>(masters);
+            }
+        }
     }
 }

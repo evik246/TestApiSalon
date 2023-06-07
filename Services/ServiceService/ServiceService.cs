@@ -244,7 +244,7 @@ namespace TestApiSalon.Services.ServiceService
             }
         }
 
-        public async Task<Result<IEnumerable<ServiceAppointmentAccount>>> GetTopServices(int salonId, int top)
+        public async Task<Result<IEnumerable<ServiceAppointmentCount>>> GetTopServices(int salonId, int top)
         {
             var parameters = new
             {
@@ -269,7 +269,7 @@ namespace TestApiSalon.Services.ServiceService
             {
                 var result = await connection.QueryAsync(query, parameters);
 
-                var services = result.Select(r => new ServiceAppointmentAccount
+                var services = result.Select(r => new ServiceAppointmentCount
                 {
                     Id = r.id,
                     Name = r.name,
@@ -283,7 +283,7 @@ namespace TestApiSalon.Services.ServiceService
                     AppointmentsCount = r.appointments_count
                 });
 
-                return new Result<IEnumerable<ServiceAppointmentAccount>>(services);
+                return new Result<IEnumerable<ServiceAppointmentCount>>(services);
             }
         }
     }

@@ -2,7 +2,7 @@
 
 namespace TestApiSalon.Dtos.Service
 {
-    public class ServiceAppointmentAccount
+    public class ServiceAppointmentCount
     {
         public long Id { get; set; }
 

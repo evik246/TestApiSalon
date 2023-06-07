@@ -133,5 +133,18 @@ namespace TestApiSalon.Controllers
             }
             return salonId.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpGet("top/{top}/manager/account")]
+        public async Task<IActionResult> GetTopMasters(int top)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var masters = await _employeeService.GetTopMasters(salonId.Value!, top);
+                return masters.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }
