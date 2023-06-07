@@ -12,5 +12,7 @@ namespace TestApiSalon.Services.CustomerService
         Task<Result<Customer>> UpdateCustomer(int id, CustomerUpdateDto request);
         Task<Result<string>> ResetPassword(string email, CustomerChangePassword request);
         Task<Result<IEnumerable<Customer>>> GetAllCustomers(Paging paging);
+        Task<Result<CustomerAppointmentDate>> GetFirstCustomerAppointmentDate(int salonId,  int customerId);
+        Task<Result<CustomerAppointmentDate>> GetLastCustomerAppointmentDate(int salonId, int customerId);
     }
 }

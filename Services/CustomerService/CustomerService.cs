@@ -106,6 +106,63 @@ namespace TestApiSalon.Services.CustomerService
             }
         }
 
+        public async Task<Result<CustomerAppointmentDate>> GetFirstCustomerAppointmentDate(int salonId, int customerId)
+        {
+            var parameters = new
+            {
+                SalonId = salonId,
+                CustomerId = customerId
+            };
+
+            var query = "SELECT MIN(a.date)::DATE AS appointment_date, "
+                        + "DATE_PART('day', CURRENT_DATE) - DATE_PART('day', MIN(a.date)::DATE) AS duration "
+                        + "FROM Appointment a "
+                        + "JOIN Employee e ON a.employee_id = e.id "
+                        + "WHERE a.customer_id = @CustomerId AND e.salon_id = @SalonId "
+                        + "AND a.status = 'Completed';";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var result = await connection.QueryFirstOrDefaultAsync(query, parameters);
+
+                var firstDate = new CustomerAppointmentDate
+                {
+                    AppointmentDate = result.appointment_date != null ? 
+                        DateOnly.FromDateTime(result.appointment_date) : null,
+                    Duration = (int?) result.duration
+                };
+                return new Result<CustomerAppointmentDate>(firstDate);
+            }
+        }
+
+        public async Task<Result<CustomerAppointmentDate>> GetLastCustomerAppointmentDate(int salonId, int customerId)
+        {
+            var parameters = new
+            {
+                SalonId = salonId,
+                CustomerId = customerId
+            };
+
+            var query = "SELECT MAX(a.date)::DATE AS appointment_date, "
+                        + "DATE_PART('day', CURRENT_DATE) - DATE_PART('day', MAX(a.date)::DATE) AS duration "
+                        + "FROM Appointment a "
+                        + "JOIN Employee e ON a.employee_id = e.id "
+                        + "WHERE a.customer_id = @CustomerId AND e.salon_id = @SalonId "
+                        + "AND a.status = 'Completed';";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var result = await connection.QueryFirstOrDefaultAsync(query, parameters);
+                var lastDate = new CustomerAppointmentDate
+                {
+                    AppointmentDate = result.appointment_date != null ?
+                        DateOnly.FromDateTime(result.appointment_date) : null,
+                    Duration = (int?)result.duration
+                };
+                return new Result<CustomerAppointmentDate>(lastDate);
+            }
+        }
+
         public async Task<Result<string>> ResetPassword(string email, CustomerChangePassword request)
         {
             var parameters = new DynamicParameters();

@@ -73,5 +73,21 @@ namespace TestApiSalon.Controllers
             var customers = await _customerService.GetAllCustomers(paging);
             return customers.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpGet("{customerId}/salon/{salonId}/appointment/first")]
+        public async Task<IActionResult> GetFirstCustomerAppointmentDate(int salonId, int customerId)
+        {
+            var firstDate = await _customerService.GetFirstCustomerAppointmentDate(salonId, customerId);
+            return firstDate.MakeResponse();
+        }
+
+        [Roles("Manager")]
+        [HttpGet("{customerId}/salon/{salonId}/appointment/last")]
+        public async Task<IActionResult> GetLastCustomerAppointmentDate(int salonId, int customerId)
+        {
+            var lastDate = await _customerService.GetLastCustomerAppointmentDate(salonId, customerId);
+            return lastDate.MakeResponse();
+        }
     }
 }
