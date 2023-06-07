@@ -260,7 +260,7 @@ namespace TestApiSalon.Services.ServiceService
                         + "JOIN ServiceCategory c ON c.id = s.category_id "
                         + "JOIN Employee e ON e.id = a.employee_id "
                         + "WHERE e.salon_id = @SalonId "
-                        + "AND a.status = 'Completed' "
+                        //+ "AND a.status = 'Completed' "
                         + "GROUP BY s.id, s.name, s.price, s.execution_time, c.id, c.name "
                         + "ORDER BY appointments_count DESC "
                         + "LIMIT @Top;";
