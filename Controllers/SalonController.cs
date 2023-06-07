@@ -40,5 +40,18 @@ namespace TestApiSalon.Controllers
             var salon = await _salonService.GetSalonWithAddressById(id);
             return salon.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpGet("manager/account")]
+        public async Task<IActionResult> GetManagerSalon()
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var salon = await _salonService.GetSalonById(salonId.Value!);
+                return salon.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }

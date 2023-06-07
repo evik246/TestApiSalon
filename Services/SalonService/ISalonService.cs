@@ -9,5 +9,6 @@ namespace TestApiSalon.Services.SalonService
         Task<Result<IEnumerable<Salon>>> GetAllSalons(Paging paging);
         Task<Result<IEnumerable<Salon>>> GetSalonsInCity(int cityId, Paging paging);
         Task<Result<SalonWithAddress>> GetSalonWithAddressById(int salonId);
+        Task<Result<Salon>> GetSalonById(int salonId);
     }
 }

@@ -46,6 +46,37 @@ namespace TestApiSalon.Services.SalonService
             }
         }
 
+        public async Task<Result<Salon>> GetSalonById(int salonId)
+        {
+            var parameters = new
+            {
+                SalonId = salonId
+            };
+
+            var query = "SELECT s.id, s.address, s.phone, "
+                        + "c.id, c.name "
+                        + "FROM Salon s "
+                        + "JOIN City c ON s.city_id = c.id "
+                        + "WHERE s.id = @SalonId;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var salons = await connection.QueryAsync(
+                    query, (Salon salon, City city) =>
+                    {
+                        salon.City = city;
+                        salon.CityId = city.Id;
+                        return salon;
+                    }, param: parameters
+                );
+                if (!salons.Any())
+                {
+                    return new Result<Salon>(new NotFoundException("Salon is not found"));
+                }
+                return new Result<Salon>(salons.First());
+            }
+        }
+
         public async Task<Result<IEnumerable<Salon>>> GetSalonsInCity(int cityId, Paging paging)
         {
             var parameters = new
