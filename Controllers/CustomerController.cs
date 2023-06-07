@@ -75,19 +75,29 @@ namespace TestApiSalon.Controllers
         }
 
         [Roles("Manager")]
-        [HttpGet("{customerId}/salon/{salonId}/appointment/first")]
-        public async Task<IActionResult> GetFirstCustomerAppointmentDate(int salonId, int customerId)
+        [HttpGet("{customerId}/appointment/date/first/manager/account")]
+        public async Task<IActionResult> GetFirstCustomerAppointmentDate(int customerId)
         {
-            var firstDate = await _customerService.GetFirstCustomerAppointmentDate(salonId, customerId);
-            return firstDate.MakeResponse();
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var firstDate = await _customerService.GetFirstCustomerAppointmentDate(salonId.Value!, customerId);
+                return firstDate.MakeResponse();
+            }
+            return salonId.MakeResponse();
         }
 
         [Roles("Manager")]
-        [HttpGet("{customerId}/salon/{salonId}/appointment/last")]
-        public async Task<IActionResult> GetLastCustomerAppointmentDate(int salonId, int customerId)
+        [HttpGet("{customerId}/appointment/date/last/manager/account")]
+        public async Task<IActionResult> GetLastCustomerAppointmentDate(int customerId)
         {
-            var lastDate = await _customerService.GetLastCustomerAppointmentDate(salonId, customerId);
-            return lastDate.MakeResponse();
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var lastDate = await _customerService.GetLastCustomerAppointmentDate(salonId.Value!, customerId);
+                return lastDate.MakeResponse();
+            }
+            return salonId.MakeResponse();
         }
     }
 }
