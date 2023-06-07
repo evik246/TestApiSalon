@@ -40,6 +40,14 @@ namespace TestApiSalon.Controllers
             return customerId.MakeResponse();
         }
 
+        [Roles("Manager")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCustomerById(int id)
+        {
+            var customer = await _customerService.GetCustomerById(id);
+            return customer.MakeResponse();
+        }
+
         [Roles("Client")]
         [HttpPut("account")]
         public async Task<IActionResult> ChangeCustomer([FromBody]CustomerUpdateDto request)
