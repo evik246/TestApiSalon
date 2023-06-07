@@ -82,5 +82,18 @@ namespace TestApiSalon.Controllers
             }
             return salonId.MakeResponse();
         }
+
+        [Roles("Manager")]
+        [HttpGet("top/{top}/manager/account")]
+        public async Task<IActionResult> GetTopServices(int top)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var services = await _serviceService.GetTopServices(salonId.Value, top);
+                return services.MakeResponse();
+            }
+            return salonId.MakeResponse();
+        }
     }
 }

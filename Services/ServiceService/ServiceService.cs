@@ -243,5 +243,48 @@ namespace TestApiSalon.Services.ServiceService
                 return new Result<IEnumerable<ServiceWithoutCategoryDto>>(services);
             }
         }
+
+        public async Task<Result<IEnumerable<ServiceAppointmentAccount>>> GetTopServices(int salonId, int top)
+        {
+            var parameters = new
+            {
+                SalonId = salonId,
+                Top = top
+            };
+
+            var query = "SELECT s.id, s.name, s.price, s.execution_time, "
+                        + "c.id AS category_id, c.name AS category_name, "
+                        + "COUNT(*) AS appointments_count "
+                        + "FROM Appointment a "
+                        + "JOIN Service s ON a.service_id = s.id "
+                        + "JOIN ServiceCategory c ON c.id = s.category_id "
+                        + "JOIN Employee e ON e.id = a.employee_id "
+                        + "WHERE e.salon_id = @SalonId "
+                        + "AND a.status = 'Completed' "
+                        + "GROUP BY s.id, s.name, s.price, s.execution_time, c.id, c.name "
+                        + "ORDER BY appointments_count DESC "
+                        + "LIMIT @Top;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var result = await connection.QueryAsync(query, parameters);
+
+                var services = result.Select(r => new ServiceAppointmentAccount
+                {
+                    Id = r.id,
+                    Name = r.name,
+                    Price = r.price,
+                    ExecutionTime = r.execution_time,
+                    Category = new ServiceCategory
+                    {
+                        Id = r.category_id,
+                        Name = r.category_name
+                    },
+                    AppointmentsCount = r.appointments_count
+                });
+
+                return new Result<IEnumerable<ServiceAppointmentAccount>>(services);
+            }
+        }
     }
 }
