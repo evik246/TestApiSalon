@@ -33,11 +33,19 @@ namespace TestApiSalon.Controllers
             return services.MakeResponse();
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet("salon/{salonId}/category/{categoryId}")]
         public async Task<IActionResult> GetSalonServicesByCategory(int salonId, int categoryId, [FromQuery] Paging paging)
         {
-            var services = await _serviceService.GetServicesByCategory(salonId, categoryId, paging);
+            var services = await _serviceService.GetServicesInSalonByCategory(salonId, categoryId, paging);
+            return services.MakeResponse();
+        }
+
+        [Roles("Admin")]
+        [HttpGet("category/{categoryId}")]
+        public async Task<IActionResult> GetSalonServicesByCategory(int categoryId, [FromQuery] Paging paging)
+        {
+            var services = await _serviceService.GetAllServicesByCategory(categoryId, paging);
             return services.MakeResponse();
         }
 
@@ -48,7 +56,7 @@ namespace TestApiSalon.Controllers
             var salonId = this.GetAuthorizedEmployeeSalonId();
             if (salonId.State == ResultState.Success)
             {
-                var services = await _serviceService.GetServicesByCategory(salonId.Value, categoryId, paging);
+                var services = await _serviceService.GetServicesInSalonByCategory(salonId.Value, categoryId, paging);
                 return services.MakeResponse();
             }
             return salonId.MakeResponse();

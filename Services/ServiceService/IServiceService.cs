@@ -13,7 +13,8 @@ namespace TestApiSalon.Services.ServiceService
         Task<Result<IEnumerable<ServiceWithoutCategoryDto>>> GetMasterServicesByCategory(int masterId, int categoryId, Paging paging);
         Task<Result<IEnumerable<ServiceWithoutCategoryDto>>> GetMasterServicesByCategoryAndSalon(int salonId, int masterId, int categoryId, Paging paging);
         Task<Result<IEnumerable<Service>>> GetServicesInSalon(int salonId, Paging paging);
-        Task<Result<IEnumerable<ServiceWithoutCategoryDto>>> GetServicesByCategory(int salonId, int categoryId, Paging paging);
+        Task<Result<IEnumerable<ServiceWithoutCategoryDto>>> GetServicesInSalonByCategory(int salonId, int categoryId, Paging paging);
+        Task<Result<IEnumerable<ServiceWithoutCategoryDto>>> GetAllServicesByCategory(int categoryId, Paging paging);
         Task<Result<IEnumerable<ServiceAppointmentCount>>> GetTopServices(int salonId, int top);
     }
 }

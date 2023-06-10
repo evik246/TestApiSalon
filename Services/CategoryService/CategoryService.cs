@@ -1,5 +1,7 @@
 using Dapper;
+using TestApiSalon.Dtos.Category;
 using TestApiSalon.Dtos.Other;
+using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
 
@@ -12,6 +14,63 @@ namespace TestApiSalon.Services.CategoryService
         public CategoryService(IDbConnectionService connectionManager)
         {
             _connectionService = connectionManager;
+        }
+
+        public async Task<Result<string>> CreateCategory(CategoryDto request)
+        {
+            var parameters = new
+            {
+                Name = request.Name
+            };
+
+            var query = "INSERT INTO ServiceCategory(name) VALUES (@Name);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, parameters);
+                return new Result<string>("Service category is created");
+            }
+        }
+
+        public async Task<Result<string>> UpdateCategory(int categoryId, CategoryDto request)
+        {
+            var parameters = new
+            {
+                CategoryId = categoryId,
+                Name = request.Name
+            };
+
+            var query = "UPDATE ServiceCategory SET name = @Name WHERE id = @CategoryId;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                int rows = await connection.ExecuteAsync(query, parameters);
+                if (rows == 0)
+                {
+                    return new Result<string>(new NotFoundException("Service category is not found"));
+                }
+                return new Result<string>("Service category is changed");
+            }
+        }
+
+        public async Task<Result<string>> DeleteCategory(int categoryId)
+        {
+            var parameters = new
+            {
+                CategoryId = categoryId
+            };
+
+            var query = "DELETE FROM ServiceCategory WHERE id = @CategoryId;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                int rows = await connection.ExecuteAsync(query, parameters);
+                if (rows == 0)
+                {
+                    return new Result<string>(new NotFoundException("Service category is not found"));
+                }
+                return new Result<string>("Service category is deleted");
+            }
         }
 
         public async Task<Result<IEnumerable<ServiceCategory>>> GetAllCategories(Paging paging)
