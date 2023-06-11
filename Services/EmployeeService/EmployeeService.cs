@@ -518,8 +518,9 @@ namespace TestApiSalon.Services.EmployeeService
             parameters.Add("Password", request.Password, DbType.AnsiStringFixedLength);
             parameters.Add("Role", request.Role.ToString(), DbType.AnsiStringFixedLength);
             parameters.Add("SalonId", request.SalonId, DbType.Int32);
+            parameters.Add("Specialization", request.Specialization, DbType.AnsiStringFixedLength);
 
-            var query = "CALL register_employee(@Name, @LastName, @Email, @Password, @Role, @SalonId);";
+            var query = "CALL register_employee(@Name, @LastName, @Email, @Password, @Role, @SalonId, NULL, @Specialization);";
 
             using (var connection = _connectionService.CreateConnection())
             {
@@ -539,6 +540,100 @@ namespace TestApiSalon.Services.EmployeeService
                     }
                     return new Result<string>(new ConflictException("Invalid data"));
                 }
+            }
+        }
+
+        public async Task<Result<string>> UpdateEmployee(int employeeId, EmployeeChangeDto request)
+        {
+            var query = new StringBuilder("UPDATE Employee SET ");
+            var parameters = new DynamicParameters();
+
+            if (!string.IsNullOrEmpty(request.Name))
+            {
+                query.Append("name = @Name, ");
+                parameters.Add("Name", request.Name, DbType.AnsiStringFixedLength);
+            }
+
+            if (!string.IsNullOrEmpty(request.LastName))
+            {
+                query.Append("last_name = @LastName, ");
+                parameters.Add("LastName", request.LastName, DbType.AnsiStringFixedLength);
+            }
+
+            if (!string.IsNullOrEmpty(request.Email))
+            {
+                query.Append("email = @Email, ");
+                parameters.Add("Email", request.Email, DbType.AnsiStringFixedLength);
+            }
+
+            if (request.Role != null)
+            {
+                query.Append("role = @Role, ");
+                parameters.Add("Role", request.Role.ToString(), DbType.AnsiStringFixedLength);
+            }
+
+            if (request.IsSalonIdNullable || request.SalonId > 0) 
+            {
+                query.Append("salon_id = @SalonId, ");
+                parameters.Add("SalonId", request.SalonId, DbType.Int32);
+            }
+
+            if (request.IsSpecializationNullable || !string.IsNullOrEmpty(request.Specialization))
+            {
+                query.Append("specialization = @Specialization, ");
+                parameters.Add("Specialization", request.Specialization, DbType.AnsiStringFixedLength);
+            }
+
+            if (query.ToString().EndsWith(", "))
+            {
+                query.Remove(query.Length - 2, 2);
+            }
+
+            query.Append(" WHERE id = @Id RETURNING *;");
+            parameters.Add("Id", employeeId, DbType.Int32);
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                try
+                {
+                    int rows = await connection.ExecuteAsync(query.ToString(), parameters);
+                    if (rows == 0)
+                    {
+                        return new Result<string>(new NotFoundException("Employee is not found"));
+                    }
+                    return new Result<string>("Employee is changed");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("23505"))
+                {
+                    if (!string.IsNullOrEmpty(ex.ConstraintName))
+                    {
+                        if (ex.ConstraintName.Equals("employee_email_key"))
+                        {
+                            return new Result<string>(new ConflictException("This email is already used"));
+                        }
+                    }
+                    return new Result<string>(new ConflictException("Invalid data"));
+                }
+            }
+        }
+
+        public async Task<Result<string>> DeleteEmployee(int employeeId)
+        {
+            var parameters = new
+            {
+                Id = employeeId
+            };
+
+            var query = "DELETE FROM Employee WHERE id = @Id;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                int rows = await connection.ExecuteAsync(query, parameters);
+                if (rows == 0)
+                {
+                    return new Result<string>(new NotFoundException("Employee is not found"));
+                }
+                return new Result<string>("Employee is deleted");
             }
         }
     }

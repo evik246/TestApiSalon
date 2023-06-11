@@ -41,6 +41,22 @@ namespace TestApiSalon.Controllers
             return result.MakeResponse();
         }
 
+        [Roles("Admin")]
+        [HttpPut("{employeeId}")]
+        public async Task<IActionResult> ChangeEmployee(int employeeId, [FromBody] EmployeeChangeDto request)
+        {
+            var result = await _employeeService.UpdateEmployee(employeeId, request);
+            return result.MakeResponse();
+        }
+
+        [Roles("Admin")]
+        [HttpDelete("{employeeId}")]
+        public async Task<IActionResult> DeleteEmployee(int employeeId)
+        {
+            var result = await _employeeService.DeleteEmployee(employeeId);
+            return result.MakeResponse();
+        }
+
         [Roles("Guest", "Client", "Admin")]
         [HttpGet("master/{id}/service")]
         public async Task<IActionResult> GetMasterWithServicesById(int id)

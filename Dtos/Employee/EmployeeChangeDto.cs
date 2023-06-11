@@ -1,33 +1,36 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using TestApiSalon.Attributes;
 using TestApiSalon.Models;
 
 namespace TestApiSalon.Dtos.Employee
 {
-    public class EmployeeCreateDto
+    [AtLeastOneProperty(ErrorMessage = "At least one property must be specified")]
+    public class EmployeeChangeDto
     {
         [StringLength(40, ErrorMessage = "Max length of the name is 40")]
-        [Required(ErrorMessage = "Name is required")]
-        public required string Name { get; set; }
+        public string? Name { get; set; }
 
         [StringLength(40, ErrorMessage = "Max length of the name is 40")]
-        [Required(ErrorMessage = "Last name is required")]
-        public required string LastName { get; set; }
+        public string? LastName { get; set; }
 
-        [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Email address is invalid")]
-        public required string Email { get; set; }
+        public string? Email { get; set; }
 
-        [Required(ErrorMessage = "Password is required")]
         [MinLength(8, ErrorMessage = "Password should be greater than or equal 8 characters")]
-        public required string Password { get; set; }
+        public string? Password { get; set; }
 
-        [Required(ErrorMessage = "Role is required")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public required EmployeeRole Role { get; set; }
+        public EmployeeRole? Role { get; set; }
 
+        [NullableProperty(nameof(IsSalonIdNullable))]
         public int? SalonId { get; set; }
 
+        [NullableProperty(nameof(IsSpecializationNullable))]
         public string? Specialization { get; set; }
+
+        public bool IsSalonIdNullable { get; set; } = false;
+
+        public bool IsSpecializationNullable { get; set; } = false;
     }
 }
