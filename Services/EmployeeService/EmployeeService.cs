@@ -628,12 +628,26 @@ namespace TestApiSalon.Services.EmployeeService
 
             using (var connection = _connectionService.CreateConnection())
             {
-                int rows = await connection.ExecuteAsync(query, parameters);
-                if (rows == 0)
+                try
                 {
-                    return new Result<string>(new NotFoundException("Employee is not found"));
+                    int rows = await connection.ExecuteAsync(query, parameters);
+                    if (rows == 0)
+                    {
+                        return new Result<string>(new NotFoundException("Employee is not found"));
+                    }
+                    return new Result<string>("Employee is deleted");
                 }
-                return new Result<string>("Employee is deleted");
+                catch (PostgresException ex) when (ex.SqlState.Equals("23503"))
+                {
+                    if (!string.IsNullOrEmpty(ex.ConstraintName))
+                    {
+                        if (ex.ConstraintName.Equals("schedule_employee_id_fkey"))
+                        {
+                            return new Result<string>(new ConflictException("This employee has schedule"));
+                        }
+                    }
+                    return new Result<string>(new ConflictException("Unable to delete the employee"));
+                }
             }
         }
     }
