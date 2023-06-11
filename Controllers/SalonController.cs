@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TestApiSalon.Attributes;
 using TestApiSalon.Dtos.Other;
+using TestApiSalon.Dtos.Salon;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.SalonService;
 
@@ -52,6 +53,30 @@ namespace TestApiSalon.Controllers
                 return salon.MakeResponse();
             }
             return salonId.MakeResponse();
+        }
+
+        [Roles("Admin")]
+        [HttpPost]
+        public async Task<IActionResult> CreateSalon([FromBody] SalonCreateDto request)
+        {
+            var result = await _salonService.CreateSalon(request);
+            return result.MakeResponse();
+        }
+
+        [Roles("Admin")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ChangeSalon(int id, [FromBody] SalonChangeDto request)
+        {
+            var result = await _salonService.UpdateSalon(id, request);
+            return result.MakeResponse();
+        }
+
+        [Roles("Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSalon(int id)
+        {
+            var result = await _salonService.DeleteSalon(id);
+            return result.MakeResponse();
         }
     }
 }

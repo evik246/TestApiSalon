@@ -1,5 +1,7 @@
 ﻿using Dapper;
+using System.Data;
 using System.Net.NetworkInformation;
+using System.Text;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Salon;
 using TestApiSalon.Exceptions;
@@ -15,6 +17,84 @@ namespace TestApiSalon.Services.SalonService
         public SalonService(IDbConnectionService connectionService)
         {
             _connectionService = connectionService;
+        }
+
+        public async Task<Result<string>> CreateSalon(SalonCreateDto request)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("Address", request.Address, DbType.AnsiStringFixedLength);
+            parameters.Add("CityId", request.CityId, DbType.Int32);
+            parameters.Add("Phone", request.Phone, DbType.AnsiStringFixedLength);
+
+            var query = "INSERT INTO Salon(address, city_id, phone) VALUES (@Address, @CityId, @Phone);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, parameters);
+                return new Result<string>("Salon is created");
+            }
+        }
+
+        public async Task<Result<string>> UpdateSalon(int salonId, SalonChangeDto request)
+        {
+            var query = new StringBuilder("UPDATE Salon SET ");
+            var parameters = new DynamicParameters();
+
+            if (!string.IsNullOrEmpty(request.Address))
+            {
+                query.Append("address = @Address, ");
+                parameters.Add("Address", request.Address, DbType.AnsiStringFixedLength);
+            }
+
+            if (request.CityId != null)
+            {
+                query.Append("city_id = @CityId, ");
+                parameters.Add("CityId", request.CityId, DbType.Int32);
+            }
+
+            if (!string.IsNullOrEmpty(request.Phone))
+            {
+                query.Append("phone = @Phone, ");
+                parameters.Add("Phone", request.Phone, DbType.AnsiStringFixedLength);
+            }
+
+            if (query.ToString().EndsWith(", "))
+            {
+                query.Remove(query.Length - 2, 2);
+            }
+
+            query.Append(" WHERE id = @Id;");
+            parameters.Add("Id", salonId, DbType.Int32);
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                int rows = await connection.ExecuteAsync(query.ToString(), parameters);
+                if (rows == 0)
+                {
+                    return new Result<string>(new NotFoundException("Salon is not found"));
+                }
+                return new Result<string>("Salon is changed");
+            }
+        }
+
+        public async Task<Result<string>> DeleteSalon(int salonId)
+        {
+            var parameters = new
+            {
+                SalonId = salonId
+            };
+
+            var query = "DELETE FROM Salon WHERE id = @SalonId;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                int rows = await connection.ExecuteAsync(query, parameters);
+                if (rows == 0)
+                {
+                    return new Result<string>(new NotFoundException("Salon is not found"));
+                }
+                return new Result<string>("Salon is created");
+            }
         }
 
         public async Task<Result<IEnumerable<Salon>>> GetAllSalons(Paging paging)

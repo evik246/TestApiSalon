@@ -593,7 +593,7 @@ namespace TestApiSalon.Services.EmployeeService
                 query.Remove(query.Length - 2, 2);
             }
 
-            query.Append(" WHERE id = @Id RETURNING *;");
+            query.Append(" WHERE id = @Id;");
             parameters.Add("Id", employeeId, DbType.Int32);
 
             using (var connection = _connectionService.CreateConnection())
