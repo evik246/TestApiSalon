@@ -22,5 +22,6 @@ namespace TestApiSalon.Services.EmployeeService
         Task<Result<MasterForManagerDto>> GetManagerMasterById(int salonId, int masterId);
         Task<Result<IEnumerable<MasterForManagerDto>>> GetAvailableMastersToChangeAnother(int salonId, int appointmentId);
         Task<Result<IEnumerable<MasterAppointmentCount>>> GetTopMasters(int salonId, int top);
+        Task<Result<string>> CreateEmployee(EmployeeCreateDto request);
     }
 }

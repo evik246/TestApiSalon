@@ -508,5 +508,38 @@ namespace TestApiSalon.Services.EmployeeService
                 return new Result<IEnumerable<MasterAppointmentCount>>(masters);
             }
         }
+
+        public async Task<Result<string>> CreateEmployee(EmployeeCreateDto request)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("Name", request.Name, DbType.AnsiStringFixedLength);
+            parameters.Add("LastName", request.LastName, DbType.AnsiStringFixedLength);
+            parameters.Add("Email", request.Email, DbType.AnsiStringFixedLength);
+            parameters.Add("Password", request.Password, DbType.AnsiStringFixedLength);
+            parameters.Add("Role", request.Role.ToString(), DbType.AnsiStringFixedLength);
+            parameters.Add("SalonId", request.SalonId, DbType.Int32);
+
+            var query = "CALL register_employee(@Name, @LastName, @Email, @Password, @Role, @SalonId);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                try
+                {
+                    await connection.ExecuteAsync(query, parameters);
+                    return new Result<string>("Employee is created");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("23505"))
+                {
+                    if (!string.IsNullOrEmpty(ex.ConstraintName))
+                    {
+                        if (ex.ConstraintName.Equals("employee_email_key"))
+                        {
+                            return new Result<string>(new ConflictException("This email is already used"));
+                        }
+                    }
+                    return new Result<string>(new ConflictException("Invalid data"));
+                }
+            }
+        }
     }
 }

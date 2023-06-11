@@ -33,6 +33,14 @@ namespace TestApiSalon.Controllers
             return employees.MakeResponse();
         }
 
+        [Roles("Admin")]
+        [HttpPost]
+        public async Task<IActionResult> CreateEmployee([FromBody] EmployeeCreateDto request)
+        {
+            var result = await _employeeService.CreateEmployee(request);
+            return result.MakeResponse();
+        }
+
         [Roles("Guest", "Client", "Admin")]
         [HttpGet("master/{id}/service")]
         public async Task<IActionResult> GetMasterWithServicesById(int id)
