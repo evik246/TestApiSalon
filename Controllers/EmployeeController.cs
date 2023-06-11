@@ -24,7 +24,7 @@ namespace TestApiSalon.Controllers
             return file.MakeFileResponse(this);
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet("master/{id}/service")]
         public async Task<IActionResult> GetMasterWithServicesById(int id)
         {
@@ -32,7 +32,7 @@ namespace TestApiSalon.Controllers
             return master.MakeResponse();
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet("salon/{salonId}/master/service/{serviceId}")]
         public async Task<IActionResult> GetMastersByService(int salonId, int serviceId, [FromQuery] Paging paging)
         {
@@ -40,7 +40,7 @@ namespace TestApiSalon.Controllers
             return masters.MakeResponse();
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet("master/{id}")]
         public async Task<IActionResult> GetMasterById(int id)
         {
@@ -61,7 +61,7 @@ namespace TestApiSalon.Controllers
             return employeeId.MakeResponse();
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet("salon/{id}/master")]
         public async Task<IActionResult> GetAllMastersWithServices(int id, [FromQuery] Paging paging)
         {
