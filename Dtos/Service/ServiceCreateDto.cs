@@ -13,7 +13,7 @@ namespace TestApiSalon.Dtos.Service
         public required decimal Price { get; set; }
 
         [Required(ErrorMessage = "Execution time is required")]
-        [Range(typeof(TimeSpan), "00:00", "23:59", ErrorMessage = "Execution time should be less than 24 hours")]
+        [Range(typeof(TimeSpan), "00:00:01", "23:59:59", ErrorMessage = "Execution time should be less than 24 hours")]
         public required TimeSpan ExecutionTime { get; set; }
 
         [Required(ErrorMessage = "Category id is required")]

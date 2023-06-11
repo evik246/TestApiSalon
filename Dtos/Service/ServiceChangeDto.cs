@@ -12,7 +12,7 @@ namespace TestApiSalon.Dtos.Service
         [Range(0.01, 9999.99, ErrorMessage = "Price is invalid")]
         public decimal? Price { get; set; }
 
-        [Range(typeof(TimeSpan), "00:00", "23:59", ErrorMessage = "Execution time should be less than 24 hours")]
+        [Range(typeof(TimeSpan), "00:00:01", "23:59:59", ErrorMessage = "Execution time should be less than 24 hours")]
         public TimeSpan? ExecutionTime { get; set; }
 
         public int? CategoryId { get; set; }
