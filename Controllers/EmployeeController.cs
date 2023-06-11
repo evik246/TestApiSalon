@@ -34,6 +34,14 @@ namespace TestApiSalon.Controllers
         }
 
         [Roles("Admin")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetEmployeeById(int id)
+        {
+            var employee = await _employeeService.GetEmployeeById(id);
+            return employee.MakeResponse();
+        }
+
+        [Roles("Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateEmployee([FromBody] EmployeeCreateDto request)
         {

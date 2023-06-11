@@ -97,7 +97,7 @@ namespace TestApiSalon.Services.EmployeeService
                 Id = id
             };
 
-            var query = "SELECT * FROM Employee WHERE id = @Id;";
+            var query = "SELECT e.id, e.name, e.last_name, e.role, e.photo_path, e.email, e.specialization FROM Employee e WHERE id = @Id;";
 
             using (var connection = _connectionService.CreateConnection())
             {
