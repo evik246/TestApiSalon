@@ -47,7 +47,7 @@ namespace TestApiSalon.Controllers
             return salonId.MakeResponse();
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet("master/{id}")]
         public async Task<IActionResult> GetMasterCategories(int id, [FromQuery] Paging paging)
         {

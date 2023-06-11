@@ -654,5 +654,52 @@ namespace TestApiSalon.Services.EmployeeService
                 }
             }
         }
+
+        public async Task<Result<string>> AddMasterService(int masterId, int serviceId)
+        {
+            var parameters = new
+            {
+                MasterId = masterId,
+                ServiceId = serviceId
+            };
+
+            var query = "INSERT INTO Skill (employee_id, service_id) VALUES "
+                        + "(@MasterId, @ServiceId);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                try
+                {
+                    await connection.ExecuteAsync(query, parameters);
+                    return new Result<string>("Service is added to master");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("23503"))
+                {
+                    if (!string.IsNullOrEmpty(ex.ConstraintName))
+                    {
+                        if (ex.ConstraintName.Equals("skill_service_id_fkey"))
+                        {
+                            return new Result<string>(new NotFoundException("Service is not found"));
+                        }
+                    }
+                    return new Result<string>(new ConflictException("Unable to add service to the master"));
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("23503"))
+                {
+                    return new Result<string>(new ConflictException(ex.Message));
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("23505"))
+                {
+                    if (!string.IsNullOrEmpty(ex.ConstraintName))
+                    {
+                        if (ex.ConstraintName.Equals("skill_pkey"))
+                        {
+                            return new Result<string>(new ConflictException("Service is already added to master"));
+                        }
+                    }
+                    return new Result<string>(new ConflictException("Unable to add service to the master"));
+                }
+            }
+        }
     }
 }

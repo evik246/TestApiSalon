@@ -187,5 +187,13 @@ namespace TestApiSalon.Controllers
             }
             return salonId.MakeResponse();
         }
+
+        [Roles("Admin")]
+        [HttpPost("master/{masterId}/add/service/{serviceId}")]
+        public async Task<IActionResult> AddMasterService(int masterId, int serviceId)
+        {
+            var result = await _employeeService.AddMasterService(masterId, serviceId);
+            return result.MakeResponse();
+        }
     }
 }
