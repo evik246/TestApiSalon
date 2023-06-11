@@ -540,6 +540,10 @@ namespace TestApiSalon.Services.EmployeeService
                     }
                     return new Result<string>(new ConflictException("Invalid data"));
                 }
+                catch (PostgresException ex) when (ex.SqlState.Equals("P0001"))
+                {
+                    return new Result<string>(new ConflictException(ex.MessageText));
+                }
             }
         }
 
