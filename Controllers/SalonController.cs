@@ -17,7 +17,7 @@ namespace TestApiSalon.Controllers
             _salonService = salonService;
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetSalons([FromQuery] Paging paging)
         {
@@ -25,7 +25,7 @@ namespace TestApiSalon.Controllers
             return salons.MakeResponse();
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet("city/{id}")]
         public async Task<IActionResult> GetSalonsInCity(int id, [FromQuery] Paging paging)
         {
@@ -33,7 +33,7 @@ namespace TestApiSalon.Controllers
             return salons.MakeResponse();
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSalonWithAddressById(int id)
         {

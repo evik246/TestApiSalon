@@ -17,7 +17,7 @@ namespace TestApiSalon.Controllers
             _cityService = cityService;
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetCities([FromQuery] Paging paging)
         {

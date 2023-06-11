@@ -24,7 +24,7 @@ namespace TestApiSalon.Controllers
             return token.MakeResponse();
         }
 
-        [Roles("Client")]
+        [Roles("Client", "Master", "Manager", "Admin")]
         [HttpPut("reset_password")]
         public async Task<IActionResult> ResetPassword([FromBody] UserUpdatePasswordDto request)
         {
