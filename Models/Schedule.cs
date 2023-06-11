@@ -21,12 +21,18 @@ namespace TestApiSalon.Models
     public enum Weekday
     {
         [Description("Monday")]
-        Monday = 0, 
-        Tuesday = 1, 
+        Monday = 0,
+        [Description("Tuesday")]
+        Tuesday = 1,
+        [Description("Wednesday")]
         Wednesday = 2,
+        [Description("Thursday")]
         Thursday = 3,
+        [Description("Friday")]
         Friday = 4,
+        [Description("Saturday")]
         Saturday = 5,
+        [Description("Sunday")]
         Sunday = 6
     }
 }

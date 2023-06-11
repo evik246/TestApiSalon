@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace TestApiSalon.Models
 {
@@ -28,8 +29,11 @@ namespace TestApiSalon.Models
 
     public enum EmployeeRole
     {
+        [Description("Master")]
         Master = 0,
+        [Description("Manager")]
         Manager = 1,
+        [Description("Admin")]
         Admin = 2
     }
 }

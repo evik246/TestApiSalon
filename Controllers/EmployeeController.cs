@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TestApiSalon.Attributes;
+using TestApiSalon.Dtos.Employee;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.EmployeeService;
@@ -22,6 +23,14 @@ namespace TestApiSalon.Controllers
         {
             var file = await _employeeService.GetEmployeePhoto(id);
             return file.MakeFileResponse(this);
+        }
+
+        [Roles("Admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllEmployees([FromQuery] Paging paging, [FromQuery] EmployeeFiltrationDto filtration)
+        {
+            var employees = await _employeeService.GetAllEmployees(paging, filtration);
+            return employees.MakeResponse();
         }
 
         [Roles("Guest", "Client", "Admin")]

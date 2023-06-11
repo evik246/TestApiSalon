@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Npgsql;
 using System.Data;
+using System.Text;
 using TestApiSalon.Dtos.Employee;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Salon;
@@ -45,19 +46,41 @@ namespace TestApiSalon.Services.EmployeeService
             return new Result<string>(new NotFoundException("Photo path is not found"));
         }
 
-        public async Task<Result<IEnumerable<Employee>>> GetAllEmployees(Paging paging)
+        public async Task<Result<IEnumerable<Employee>>> GetAllEmployees(Paging paging, EmployeeFiltrationDto filtration)
         {
-            var parameters = new
-            {
-                Skip = paging.Skip,
-                Take = paging.PageSize
-            };
+            var query = new StringBuilder("SELECT e.id, e.name, e.last_name, e.role, e.photo_path, e.email, e.specialization FROM Employee e WHERE ");
 
-            var query = "SELECT * FROM Employee OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;";
+            var parameters = new DynamicParameters();
+            parameters.Add("Skip", paging.Skip);
+            parameters.Add("Take", paging.PageSize);
+
+            if (filtration.SalonId != null)
+            {
+                query.Append("e.salon_id = @SalonId AND ");
+                parameters.Add("SalonId", filtration.SalonId);
+            }
+
+            if (filtration.Role != null)
+            {
+                query.Append("e.role = @Role AND ");
+                parameters.Add("Role", filtration.Role?.ToString());
+            }
+
+            if (query.ToString().EndsWith("AND "))
+            {
+                query.Remove(query.Length - 4, 4);
+            }
+
+            if (query.ToString().EndsWith("WHERE "))
+            {
+                query.Remove(query.Length - 6, 6);
+            }
+
+            query.Append(" ORDER BY e.last_name, e.name OFFSET @Skip LIMIT @Take;");
 
             using (var connection = _connectionService.CreateConnection())
             {
-                var employees = await connection.QueryAsync<Employee>(query, parameters);
+                var employees = await connection.QueryAsync<Employee>(query.ToString(), parameters);
 
                 foreach (var employee in employees)
                 {
