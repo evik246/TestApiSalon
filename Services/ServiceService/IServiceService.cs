@@ -16,5 +16,8 @@ namespace TestApiSalon.Services.ServiceService
         Task<Result<IEnumerable<ServiceWithoutCategoryDto>>> GetServicesInSalonByCategory(int salonId, int categoryId, Paging paging);
         Task<Result<IEnumerable<ServiceWithoutCategoryDto>>> GetAllServicesByCategory(int categoryId, Paging paging);
         Task<Result<IEnumerable<ServiceAppointmentCount>>> GetTopServices(int salonId, int top);
+        Task<Result<string>> CreateService(ServiceCreateDto request);
+        Task<Result<string>> UpdateService(int serviceId, ServiceChangeDto request);
+        Task<Result<string>> DeleteService(int serviceId);
     }
 }

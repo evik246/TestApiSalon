@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TestApiSalon.Attributes;
 using TestApiSalon.Dtos.Other;
+using TestApiSalon.Dtos.Service;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.ServiceService;
 
@@ -17,7 +18,7 @@ namespace TestApiSalon.Controllers
             _serviceService = serviceService;
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet("master/{id}")]
         public async Task<IActionResult> GetMasterServices(int id, [FromQuery] Paging paging)
         {
@@ -25,7 +26,7 @@ namespace TestApiSalon.Controllers
             return services.MakeResponse();
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet("salon/{id}")]
         public async Task<IActionResult> GetSalonServices(int id, [FromQuery] Paging paging)
         {
@@ -43,7 +44,7 @@ namespace TestApiSalon.Controllers
 
         [Roles("Admin")]
         [HttpGet("category/{categoryId}")]
-        public async Task<IActionResult> GetSalonServicesByCategory(int categoryId, [FromQuery] Paging paging)
+        public async Task<IActionResult> GetAllServicesByCategory(int categoryId, [FromQuery] Paging paging)
         {
             var services = await _serviceService.GetAllServicesByCategory(categoryId, paging);
             return services.MakeResponse();
@@ -62,7 +63,7 @@ namespace TestApiSalon.Controllers
             return salonId.MakeResponse();
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet("master/{masterId}/category/{categoryId}")]
         public async Task<IActionResult> GetMasterServicesByCategory(int masterId, int categoryId, [FromQuery] Paging paging)
         {
@@ -70,7 +71,7 @@ namespace TestApiSalon.Controllers
             return services.MakeResponse();
         }
 
-        [Roles("Guest", "Client")]
+        [Roles("Guest", "Client", "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetServiceById(int id)
         {
@@ -102,6 +103,38 @@ namespace TestApiSalon.Controllers
                 return services.MakeResponse();
             }
             return salonId.MakeResponse();
+        }
+
+        [Roles("Admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllServices([FromQuery] Paging paging)
+        {
+            var result = await _serviceService.GetAllServices(paging);
+            return result.MakeResponse();
+        }
+
+        [Roles("Admin")]
+        [HttpPost]
+        public async Task<IActionResult> CreateService([FromBody] ServiceCreateDto request)
+        {
+            var result = await _serviceService.CreateService(request);
+            return result.MakeResponse();
+        }
+
+        [Roles("Admin")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ChangeService(int id, [FromBody] ServiceChangeDto request)
+        {
+            var result = await _serviceService.UpdateService(id, request);
+            return result.MakeResponse();
+        }
+
+        [Roles("Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteService(int id)
+        {
+            var result = await _serviceService.DeleteService(id);
+            return result.MakeResponse();
         }
     }
 }

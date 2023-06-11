@@ -1,4 +1,7 @@
 using Dapper;
+using Npgsql;
+using System.Data;
+using System.Text;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Service;
 using TestApiSalon.Exceptions;
@@ -296,12 +299,9 @@ namespace TestApiSalon.Services.ServiceService
                 Take = paging.PageSize
             };
 
-            var query = "SELECT DISTINCT s.id, s.name, s.price, s.execution_time "
+            var query = "SELECT s.id, s.name, s.price, s.execution_time "
                         + "FROM Service s "
                         + "JOIN ServiceCategory c ON c.id = s.category_id "
-                        + "JOIN Skill sk ON sk.service_id = s.id "
-                        + "JOIN Employee e ON sk.employee_id = e.id "
-                        + "JOIN Salon sa ON e.salon_id = sa.id "
                         + "WHERE c.id = @CategoryId "
                         + "ORDER BY s.id "
                         + "OFFSET @Skip LIMIT @Take;";
@@ -310,6 +310,99 @@ namespace TestApiSalon.Services.ServiceService
             {
                 var services = await connection.QueryAsync<ServiceWithoutCategoryDto>(query, parameters);
                 return new Result<IEnumerable<ServiceWithoutCategoryDto>>(services);
+            }
+        }
+
+        public async Task<Result<string>> CreateService(ServiceCreateDto request)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("Name", request.Name, DbType.AnsiStringFixedLength);
+            parameters.Add("CategoryId", request.CategoryId, DbType.Int32);
+            parameters.Add("Price", request.Price, DbType.Decimal);
+            parameters.Add("ExecutionTime", request.ExecutionTime, DbType.Time);
+
+            var query = "INSERT INTO Service (name, category_id, price, execution_time) " 
+                        + "VALUES (@Name, @CategoryId, @Price, @ExecutionTime);";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                try
+                {
+                    await connection.QueryAsync(query, parameters);
+                    return new Result<string>("Service is created successfully");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("P0001"))
+                {
+                    return new Result<string>(new ConflictException(ex.MessageText));
+                }
+            }
+        }
+
+        public async Task<Result<string>> UpdateService(int serviceId, ServiceChangeDto request)
+        {
+            var query = new StringBuilder("UPDATE Service SET ");
+            var parameters = new DynamicParameters();
+
+            if (!string.IsNullOrEmpty(request.Name))
+            {
+                query.Append("name = @Name, ");
+                parameters.Add("Name", request.Name, DbType.AnsiStringFixedLength);
+            }
+
+            if (request.CategoryId != null)
+            {
+                query.Append("category_id = @CategoryId, ");
+                parameters.Add("CategoryId", request.CategoryId, DbType.Int32);
+            }
+
+            if (request.Price != null)
+            {
+                query.Append("price = @Price, ");
+                parameters.Add("Price", request.Price, DbType.Decimal);
+            }
+
+            if (request.ExecutionTime != null)
+            {
+                query.Append("execution_time = @ExecutionTime, ");
+                parameters.Add("ExecutionTime", request.ExecutionTime, DbType.Time);
+            }
+
+            if (query.ToString().EndsWith(", "))
+            {
+                query.Remove(query.Length - 2, 2);
+            }
+
+            query.Append(" WHERE id = @Id;");
+            parameters.Add("Id", serviceId, DbType.Int32);
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                int rows = await connection.ExecuteAsync(query.ToString(), parameters);
+                if (rows == 0)
+                {
+                    return new Result<string>(new NotFoundException("Service is not found"));
+                }
+                return new Result<string>("Service is changed");
+            }
+        }
+
+        public async Task<Result<string>> DeleteService(int serviceId)
+        {
+            var parameters = new
+            {
+                ServiceId = serviceId
+            };
+
+            var query = "DELETE FROM Service WHERE id = @ServiceId;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                int rows = await connection.ExecuteAsync(query, parameters);
+                if (rows == 0)
+                {
+                    return new Result<string>(new NotFoundException("Service is not found"));
+                }
+                return new Result<string>("Service is deleted");
             }
         }
     }
