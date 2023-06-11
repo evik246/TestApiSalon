@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TestApiSalon.Attributes;
 
 namespace TestApiSalon.Dtos.Salon
 {
+    [AtLeastOneProperty(ErrorMessage = "At least one property must be specified")]
     public class SalonChangeDto
     {
         public string? Address { get; set; }

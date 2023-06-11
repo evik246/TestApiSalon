@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Npgsql;
 using System.Data;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -30,8 +31,22 @@ namespace TestApiSalon.Services.SalonService
 
             using (var connection = _connectionService.CreateConnection())
             {
-                await connection.ExecuteAsync(query, parameters);
-                return new Result<string>("Salon is created");
+                try
+                {
+                    await connection.ExecuteAsync(query, parameters);
+                    return new Result<string>("Salon is created");
+                }
+                catch (PostgresException ex) when (ex.SqlState.Equals("23505"))
+                {
+                    if (!string.IsNullOrEmpty(ex.ConstraintName))
+                    {
+                        if (ex.ConstraintName.Equals("salon_phone_key"))
+                        {
+                            return new Result<string>(new ConflictException("This phone is already used"));
+                        }
+                    }
+                    return new Result<string>(new ConflictException("Invalid data"));
+                }
             }
         }
 
@@ -68,12 +83,26 @@ namespace TestApiSalon.Services.SalonService
 
             using (var connection = _connectionService.CreateConnection())
             {
-                int rows = await connection.ExecuteAsync(query.ToString(), parameters);
-                if (rows == 0)
+                try
                 {
-                    return new Result<string>(new NotFoundException("Salon is not found"));
+                    int rows = await connection.ExecuteAsync(query.ToString(), parameters);
+                    if (rows == 0)
+                    {
+                        return new Result<string>(new NotFoundException("Salon is not found"));
+                    }
+                    return new Result<string>("Salon is changed");
                 }
-                return new Result<string>("Salon is changed");
+                catch (PostgresException ex) when (ex.SqlState.Equals("23505"))
+                {
+                    if (!string.IsNullOrEmpty(ex.ConstraintName))
+                    {
+                        if (ex.ConstraintName.Equals("salon_phone_key"))
+                        {
+                            return new Result<string>(new ConflictException("This phone is already used"));
+                        }
+                    }
+                    return new Result<string>(new ConflictException("Invalid data"));
+                }
             }
         }
 
