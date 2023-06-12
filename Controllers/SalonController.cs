@@ -2,6 +2,7 @@
 using TestApiSalon.Attributes;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Salon;
+using TestApiSalon.Dtos.Schedule;
 using TestApiSalon.Extensions;
 using TestApiSalon.Services.SalonService;
 
@@ -77,6 +78,27 @@ namespace TestApiSalon.Controllers
         {
             var result = await _salonService.DeleteSalon(id);
             return result.MakeResponse();
+        }
+
+        [Roles("Admin")]
+        [HttpGet("{salonId}/income")]
+        public async Task<IActionResult> GetSalonIncome(int salonId, [FromQuery] DateRangeDto dateRange)
+        {
+            var income = await _salonService.GetSalonIncome(salonId, dateRange);
+            return income.MakeResponse();
+        }
+
+        [Roles("Manager")]
+        [HttpGet("manager/account/income")]
+        public async Task<IActionResult> GetSalonIncome([FromQuery] DateRangeDto dateRange)
+        {
+            var salonId = this.GetAuthorizedEmployeeSalonId();
+            if (salonId.State == ResultState.Success)
+            {
+                var income = await _salonService.GetSalonIncome(salonId.Value!, dateRange);
+                return income.MakeResponse();
+            }
+            return salonId.MakeResponse();
         }
     }
 }

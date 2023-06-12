@@ -1,10 +1,10 @@
 ﻿using Dapper;
 using Npgsql;
 using System.Data;
-using System.Net.NetworkInformation;
 using System.Text;
 using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Salon;
+using TestApiSalon.Dtos.Schedule;
 using TestApiSalon.Exceptions;
 using TestApiSalon.Models;
 using TestApiSalon.Services.ConnectionService;
@@ -244,6 +244,29 @@ namespace TestApiSalon.Services.SalonService
                     return new Result<SalonWithAddress>(new NotFoundException("Salon is not found"));
                 }
                 return new Result<SalonWithAddress>(salons.First());
+            }
+        }
+
+        public async Task<Result<decimal>> GetSalonIncome(int salonId, DateRangeDto dateRange)
+        {
+            var parameters = new
+            {
+                Id = salonId,
+                StartDate = dateRange.StartDate,
+                EndDate = dateRange.EndDate
+            };
+
+            var query = "SELECT SUM(a.price) AS income "
+                        + "FROM Appointment a "
+                        + "JOIN Employee e ON a.employee_id = e.id "
+                        + "WHERE e.salon_id = @Id "
+                        + "AND a.status = 'Completed' "
+                        + "AND a.date BETWEEN @StartDate AND @EndDate;";
+
+            using (var connection = _connectionService.CreateConnection())
+            {
+                var income = await connection.ExecuteScalarAsync<decimal>(query, parameters);
+                return new Result<decimal>(income);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using TestApiSalon.Dtos.Other;
 using TestApiSalon.Dtos.Salon;
+using TestApiSalon.Dtos.Schedule;
 using TestApiSalon.Models;
 
 namespace TestApiSalon.Services.SalonService
@@ -13,5 +14,6 @@ namespace TestApiSalon.Services.SalonService
         Task<Result<string>> CreateSalon(SalonCreateDto request);
         Task<Result<string>> UpdateSalon(int salonId, SalonChangeDto request);
         Task<Result<string>> DeleteSalon(int salonId);
+        Task<Result<decimal>> GetSalonIncome(int salonId, DateRangeDto dateRange);
     }
 }
