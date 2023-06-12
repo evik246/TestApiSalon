@@ -26,5 +26,6 @@ namespace TestApiSalon.Services.EmployeeService
         Task<Result<string>> UpdateEmployee(int employeeId, EmployeeChangeDto request);
         Task<Result<string>> DeleteEmployee(int employeeId);
         Task<Result<string>> AddMasterService(int masterId, int serviceId);
+        Task<Result<string>> RemoveMasterService(int masterId, int serviceId);
     }
 }

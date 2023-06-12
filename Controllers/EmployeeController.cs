@@ -195,5 +195,13 @@ namespace TestApiSalon.Controllers
             var result = await _employeeService.AddMasterService(masterId, serviceId);
             return result.MakeResponse();
         }
+
+        [Roles("Admin")]
+        [HttpDelete("master/{masterId}/remove/service/{serviceId}")]
+        public async Task<IActionResult> RemoveMasterService(int masterId, int serviceId)
+        {
+            var result = await _employeeService.RemoveMasterService(masterId, serviceId);
+            return result.MakeResponse();
+        }
     }
 }
